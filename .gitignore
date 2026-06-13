@@ -1,0 +1,21 @@
+# Environment files
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Backend runtime files
+backend/db.sqlite3
+backend/staticfiles/
+backend/media/
+
+# Frontend build/runtime files
+frontend/node_modules/
+frontend/dist/
