@@ -3,41 +3,31 @@ Django settings for core project.
 """
 
 import os
-from datetime import timedelta
 from pathlib import Path
-
+from datetime import timedelta
 import dj_database_url
-from dotenv import load_dotenv
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()
+# Quick-start development settings - unsuitable for production
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    if os.environ.get("DEBUG", "").lower() == "true":
+        SECRET_KEY = "django-insecure-local-development-only-change-me"
+    else:
+        raise RuntimeError("SECRET_KEY must be set in production.")
 
+DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "yes")
 
-def _env_bool(name, default=False):
-    value = os.environ.get(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
-
-
+# Hosts Configuration
+default_allowed_hosts = ["localhost", "127.0.0.1", "[::1]"] if DEBUG else []
 def _env_list(name, default=None):
     value = os.environ.get(name)
     if value is None or not value.strip():
         return list(default or [])
     return [item.strip() for item in value.split(",") if item.strip()]
 
-
-DEBUG = _env_bool("DEBUG", False)
-
-SECRET_KEY = os.environ.get("SECRET_KEY")
-if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = "django-insecure-local-development-only-change-me"
-    else:
-        raise RuntimeError("SECRET_KEY must be set in production.")
-
-default_allowed_hosts = ["localhost", "127.0.0.1", "[::1]"] if DEBUG else []
 ALLOWED_HOSTS = _env_list("ALLOWED_HOSTS", default_allowed_hosts)
 render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if render_hostname and render_hostname not in ALLOWED_HOSTS:
@@ -45,7 +35,7 @@ if render_hostname and render_hostname not in ALLOWED_HOSTS:
 if not ALLOWED_HOSTS and not DEBUG:
     raise RuntimeError("ALLOWED_HOSTS must be set in production.")
 
-
+# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -94,15 +84,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-
+# Database Configuration
 db_url = os.environ.get("DATABASE_URL", "").replace('"', "").replace("'", "").strip()
-
 if db_url:
     DATABASES = {
         "default": dj_database_url.parse(
             db_url,
             conn_max_age=600,
             conn_health_checks=True,
+            ssl_require=True,
         )
     }
 elif DEBUG:
@@ -115,7 +105,7 @@ elif DEBUG:
 else:
     raise RuntimeError("DATABASE_URL must be set in production.")
 
-
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -128,6 +118,7 @@ TIME_ZONE = "Asia/Dhaka"
 USE_I18N = True
 USE_TZ = True
 
+# Static and Media
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -140,19 +131,13 @@ CLOUDINARY_STORAGE = {
     "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
-
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+# REST Framework & CORS
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOW_CREDENTIALS = True
-
 frontend_url = os.environ.get("FRONTEND_URL")
-CORS_ALLOWED_ORIGINS = _env_list(
-    "CORS_ALLOWED_ORIGINS",
-    [frontend_url] if frontend_url else [],
-)
+CORS_ALLOWED_ORIGINS = _env_list("CORS_ALLOWED_ORIGINS", [frontend_url] if frontend_url else [])
+CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
