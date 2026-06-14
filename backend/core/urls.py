@@ -1,6 +1,7 @@
 """
 URL configuration for core project.
 """
+import os
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -17,8 +18,10 @@ router.register(r'posts', PostViewSet, basename='post')
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'submit', SubmitPostView, basename='submit')
 
+admin_url_path = os.environ.get("ADMIN_URL_PATH", "admin").strip().strip("/")
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(f'{admin_url_path}/', admin.site.urls),
     path('api/', include(router.urls)),
     # Auth endpoints
     path('api/auth/login/', LoginView.as_view(), name='auth-login'),
