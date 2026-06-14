@@ -4,7 +4,7 @@ djangorestframework
 djangorestframework-simplejwt
 django-filter
 Pillow
-gunicorn==20.1.0
+gunicorn
 psycopg2-binary
 dj-database-url==2.1.0
 whitenoise==6.5.0
