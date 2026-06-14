@@ -1,7 +1,12 @@
-"""Setup script: Create supreme admin, seed categories, and insert 10 demo posts."""
-import os, sys, io
+"""Setup script: Create supreme admin from env, seed categories, and insert 10 demo posts."""
+import os
+import sys
+import io
+import datetime
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
+# Ensure UTF-8 output for Render logs
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 import django
@@ -9,37 +14,49 @@ django.setup()
 
 from django.contrib.auth.models import User
 from archive.models import Category, Post, ActivityLog
-import datetime
 
-# ─── 1. Create supreme admin ────────────────────────────────────────────────
-user, created = User.objects.get_or_create(username='oporadhnama', defaults={
-    'email': 'admin@oporadhnama.com',
-    'is_staff': True,
-    'is_superuser': True,
-})
-user.set_password('Jubayer@310')
+# --- 1. Get Credentials from Environment Variables ---
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "").strip()
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "").strip()
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+
+if not ADMIN_USERNAME or not ADMIN_EMAIL or not ADMIN_PASSWORD:
+    raise RuntimeError(
+        "CRITICAL ERROR: Set ADMIN_USERNAME, ADMIN_EMAIL, and ADMIN_PASSWORD in Render Environment Variables before running setup_admin.py."
+    )
+
+# --- 2. Create or Update Supreme Admin ---
+user, created = User.objects.get_or_create(
+    username=ADMIN_USERNAME,
+    defaults={
+        'email': ADMIN_EMAIL,
+        'is_staff': True,
+        'is_superuser': True,
+    }
+)
+user.email = ADMIN_EMAIL
 user.is_staff = True
 user.is_superuser = True
+user.set_password(ADMIN_PASSWORD)
 user.save()
-print(f"Supreme Admin {'created' if created else 'updated'}: oporadhnama / Jubayer@310")
+print(f"Supreme Admin {'created' if created else 'updated'}: {ADMIN_USERNAME}")
 
-# Remove old 'admin' user if exists (cleanup)
+# Remove old hardcoded 'admin' or 'oporadhnama' user if they exist and are not the current admin
 old_admin = User.objects.filter(username='admin').first()
-if old_admin:
+if old_admin and old_admin.username != ADMIN_USERNAME:
     old_admin.delete()
     print("Old 'admin' user removed.")
 
-# ─── 2. Seed categories ────────────────────────────────────────────────────
+# --- 3. Seed Categories ---
 category_names = ['খুন', 'ধর্ষণ', 'চাঁদাবাজি', 'দুর্নীতি', 'অন্যান্য']
 cats = {}
 for name in category_names:
     cat, c = Category.objects.get_or_create(name=name)
     cats[name] = cat
-    print(f"  Category '{name}': {'new' if c else 'exists'}")
+    print(f"Category '{name}': {'new' if c else 'exists'}")
 
-# ─── 3. Insert 10 demo posts (2 per category) ───────────────────────────────
+# --- 4. Insert 10 Demo Posts (If Database is Empty) ---
 demo_posts = [
-    # খুন (2)
     {
         'title': 'রাজধানীতে গুলিতে যুবক নিহত, পুলিশ তদন্ত শুরু',
         'description': 'ঢাকার মিরপুর এলাকায় গত রাতে পরিচয় না জানা দুর্বৃত্তদের গুলিতে একজন যুবক নিহত হয়েছেন। পুলিশ ঘটনাস্থল থেকে ৩টি খালি কার্তুজ উদ্ধার করেছে। নিহত ব্যক্তি স্থানীয় একটি গার্মেন্টস ফ্যাক্টরিতে কর্মরত ছিলেন। তদন্ত চলছে।',
@@ -56,7 +73,6 @@ demo_posts = [
         'location_text': 'পটিয়া, চট্টগ্রাম',
         'date': datetime.date(2026, 6, 5),
     },
-    # ধর্ষণ (2)
     {
         'title': 'সিলেটে স্কুল ছাত্রীকে নির্যাতনের অভিযোগে শিক্ষক গ্রেফতার',
         'description': 'সিলেটের একটি বেসরকারি স্কুলে ৮ম শ্রেণীর ছাত্রীকে যৌন নির্যাতনের অভিযোগে ওই স্কুলের একজন শিক্ষককে গ্রেফতার করেছে পুলিশ। ভুক্তভোগীর পরিবার জানান, কয়েক মাস ধরে এই নির্যাতন চলছিল। মামলা দায়ের করা হয়েছে।',
@@ -73,7 +89,6 @@ demo_posts = [
         'location_text': 'বোয়ালিয়া, রাজশাহী',
         'date': datetime.date(2026, 6, 4),
     },
-    # চাঁদাবাজি (2)
     {
         'title': 'গাজীপুরে গার্মেন্টস মালিকদের কাছ থেকে চাঁদা আদায়ের রিং বাস্ট',
         'description': 'গাজীপুরের টঙ্গী শিল্প এলাকায় গার্মেন্টস কারখানা মালিকদের কাছ থেকে নিয়মিত চাঁদা আদায় করা একটি চক্র ভেঙে দিয়েছে পুলিশ। ৫ জনকে গ্রেফতার করা হয়েছে। তাদের কাছ থেকে ১২ লাখ টাকা নগদ এবং অস্ত্র উদ্ধার করা হয়েছে।',
@@ -90,7 +105,6 @@ demo_posts = [
         'location_text': 'রূপসা, খুলনা',
         'date': datetime.date(2026, 6, 3),
     },
-    # দুর্নীতি (2)
     {
         'title': 'সরকারি হাসপাতালে ওষুধ কেলেঙ্কারি, ৩ কর্মকর্তা বরখাস্ত',
         'description': 'বরিশাল শের-ই-বাংলা মেডিকেল কলেজ হাসপাতালে ওষুধ কেলেঙ্কারির ঘটনায় ৩ জন কর্মকর্তাকে বরখাস্ত করা হয়েছে। তদন্তে জানা যায়, রোগীদের জন্য বরাদ্দ ওষুধ বাইরে বিক্রি করা হচ্ছিল। দুদক তদন্ত শুরু করেছে।',
@@ -107,7 +121,6 @@ demo_posts = [
         'location_text': 'ত্রিশাল, ময়মনসিংহ',
         'date': datetime.date(2026, 6, 2),
     },
-    # অন্যান্য (2)
     {
         'title': 'রংপুরে ভূমিদস্যুদের দৌরাত্ম্য, কৃষক পরিবার উচ্ছেদ',
         'description': 'রংপুরের গঙ্গাচড়া উপজেলায় প্রভাবশালী ভূমিদস্যুদের হুমকিতে একটি কৃষক পরিবার তাদের বসতভিটা থেকে উচ্ছেদ হয়েছে। স্থানীয় প্রশাসনে অভিযোগ করেও কোনো ফল না পাওয়ায় তারা রাস্তায় অবস্থান নিয়েছেন।',
@@ -126,7 +139,6 @@ demo_posts = [
     },
 ]
 
-# Clear existing demo posts (if any) to avoid duplicates
 existing_count = Post.objects.count()
 if existing_count == 0:
     for p in demo_posts:
@@ -138,17 +150,17 @@ if existing_count == 0:
             location_text=p['location_text'],
             date=p['date'],
         )
-    print(f"\n10 demo posts created!")
+    print("\n10 demo posts created!")
+    
+    # Log the seeding
+    ActivityLog.objects.create(
+        user=user,
+        action='post_created',
+        target_label='System Seed',
+        details='10 demo posts seeded across all 5 categories',
+    )
 else:
     print(f"\nSkipping demo posts ({existing_count} posts already exist).")
-
-# Log the seeding
-ActivityLog.objects.create(
-    user=user,
-    action='post_created',
-    target_label='System Seed',
-    details='10 demo posts seeded across all 5 categories',
-)
 
 print(f"\nTotal posts: {Post.objects.count()}")
 print(f"Total categories: {Category.objects.count()}")
