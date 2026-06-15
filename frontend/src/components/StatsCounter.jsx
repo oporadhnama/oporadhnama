@@ -1,52 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldAlert, AlertOctagon, HandCoins, Gavel, LayoutList } from 'lucide-react';
+import CountUp from 'react-countup';
 import { fetchPublicStats, fetchCategories } from '../api';
-
-function StatCard({ stat, value, categoryId }) {
-  const IconComponent = stat.icon;
-  // এখান থেকে সাইজের ক্লাসগুলো মুছে ফেলা হয়েছে, যাতে বাইরের বক্স কন্ট্রোল করতে পারে
-  return (
-    <div className="w-full h-full">
-      {categoryId ? (
-        <Link to={`/all-news?category=${categoryId}`} className="block h-full">
-          <StatContent IconComponent={IconComponent} stat={stat} value={value} />
-        </Link>
-      ) : (
-        <StatContent IconComponent={IconComponent} stat={stat} value={value} />
-      )}
-    </div>
-  );
-}
-
-function StatContent({ IconComponent, stat, value }) {
-  return (
-    <div className="h-full border border-[#E50914]/40 bg-neutral-950/50 rounded-xl flex flex-col items-center justify-center p-6 transition-all duration-300 hover:bg-[#E50914] hover:shadow-[0_0_20px_rgba(229,9,20,0.12)] hover:border-[#E50914] group backdrop-blur-sm active:bg-[#E50914] active:shadow-[0_0_20px_rgba(229,9,20,0.12)] active:border-[#E50914]">
-      <IconComponent
-        className="w-8 h-8 text-[#E50914] mb-3 group-hover:text-white group-active:text-white transition-all duration-300"
-        strokeWidth={1.8}
-      />
-      <span className="text-3xl font-extrabold text-white tracking-wide tabular-nums">
-        {value}
-      </span>
-      <span className="text-neutral-400 text-xs mt-2 font-medium tracking-wide">
-        {stat.label}
-      </span>
-    </div>
-  );
-}
 
 export default function StatsCounter() {
   const [counts, setCounts] = useState({});
   const [categoryMap, setCategoryMap] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // শুধুমাত্র আপনার রিকোয়ারমেন্ট অনুযায়ী তিনটি স্ট্যাটস
   const statsList = [
-    { key: 'খুন',       label: 'খুন',       icon: ShieldAlert },
-    { key: 'ধর্ষণ',     label: 'ধর্ষণ',     icon: AlertOctagon },
-    { key: 'চাঁদাবাজি',  label: 'চাঁদাবাজি',  icon: HandCoins },
-    { key: 'দুর্নীতি',   label: 'দুর্নীতি',   icon: Gavel },
-    { key: 'অন্যান্য',   label: 'অন্যান্য',   icon: LayoutList },
+    { key: 'খুন', label: 'খুন' },
+    { key: 'ধর্ষণ', label: 'ধর্ষণ' },
   ];
 
   useEffect(() => {
@@ -78,32 +43,77 @@ export default function StatsCounter() {
     );
   }
 
-  return (
-    <div className="w-full max-w-6xl mx-auto mt-4 md:mt-8 px-4">
-      {/* একদম ফ্রেশ এবং ক্লিন স্ক্রল কন্টেইনার */}
-      <div 
-        className="flex w-full overflow-x-auto gap-4 pb-4 pt-2"
-        style={{
-          WebkitOverflowScrolling: 'touch',
-          touchAction: 'pan-x', /* এটি ব্রাউজারকে সোয়াইপ করতে বাধ্য করবে */
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
-        }}
-      >
-        <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+  // মোট সংবাদ হিসাব করা (যদি API থেকে 'total' না আসে, তবে সব ভ্যালুর যোগফল)
+  // এখানে শুধু খুন ও ধর্ষণ না, সব ক্যাটাগরির যোগফলই হবে মোট সংবাদ
+  const totalNews = counts.total || Object.values(counts).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
 
-        {statsList.map((stat, index) => (
-          <div 
-            key={index} 
-            className="shrink-0 w-[140px] md:w-[calc(20%-13px)]" /* ডেস্কটপে অটোমেটিক ৫টা গ্রিড হয়ে যাবে */
-          >
-            <StatCard
-              stat={stat}
-              value={counts[stat.key] || 0}
-              categoryId={categoryMap[stat.key]}
-            />
-          </div>
-        ))}
+  return (
+    <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
+      
+      {/* প্রধান কন্টেইনার: 
+        flex-col (ফোনে ভার্টিক্যাল) 
+        md:flex-row (পিসিতে হরিজন্টাল) 
+      */}
+      <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 bg-black text-white px-10 py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
+        
+        {/* ১. খুন (ফিল্টারের সাথে কানেক্টেড) */}
+        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-6 md:pb-0 md:pr-10">
+          {categoryMap['খুন'] ? (
+            <Link to={`/all-news?category=${categoryMap['খুন']}`} className="block cursor-pointer group">
+              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
+                <CountUp start={0} end={counts['খুন'] || 0} duration={2.5} separator="," />+
+              </h3>
+              <p className="text-[#E50914] mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
+                খুন
+              </p>
+            </Link>
+          ) : (
+             <div className="block">
+              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white">
+                <CountUp start={0} end={counts['খুন'] || 0} duration={2.5} separator="," />+
+              </h3>
+              <p className="text-[#E50914] mt-2 text-xl font-semibold">
+                খুন
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ২. ধর্ষণ (ফিল্টারের সাথে কানেক্টেড) */}
+        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-6 md:pb-0 md:pr-10">
+          {categoryMap['ধর্ষণ'] ? (
+            <Link to={`/all-news?category=${categoryMap['ধর্ষণ']}`} className="block cursor-pointer group">
+              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
+                <CountUp start={0} end={counts['ধর্ষণ'] || 0} duration={2.5} separator="," />+
+              </h3>
+              <p className="text-[#E50914] mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
+                ধর্ষণ
+              </p>
+            </Link>
+          ) : (
+             <div className="block">
+              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white">
+                <CountUp start={0} end={counts['ধর্ষণ'] || 0} duration={2.5} separator="," />+
+              </h3>
+              <p className="text-[#E50914] mt-2 text-xl font-semibold">
+                ধর্ষণ
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ৩. মোট সংবাদ আর্কাইভ (লিংক করা) */}
+        <div className="text-center w-full md:w-auto">
+          <Link to="/all-news" className="block cursor-pointer group">
+            <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
+              <CountUp start={0} end={totalNews} duration={2.5} separator="," />+
+            </h3>
+            <p className="text-neutral-300 mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
+              সংবাদ আর্কাইভ
+            </p>
+          </Link>
+        </div>
+
       </div>
     </div>
   );
