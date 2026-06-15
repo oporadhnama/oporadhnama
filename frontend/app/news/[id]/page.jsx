@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { API_BASE, fetchPostById } from '../../../lib/api';
 
+// ভিডিও এমবেড ইউআরএল জেনারেটর
 function getEmbedUrl(url) {
   if (!url) return null;
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -11,48 +12,77 @@ function getEmbedUrl(url) {
   return null;
 }
 
+// ইমেজ ইউআরএল জেনারেটর
 function resolveImageUrl(image) {
   if (!image) return null;
   return image.startsWith('http') ? image : `${API_BASE}${image}`;
 }
 
-export async function generateMetadata({ params }) {
+// 🛡️ অ্যাডভান্সড ফলব্যাক ফেচিং লজিক (যেটি ক্লড মিস করেছিল)
+async function getPostResiliently(id) {
   try {
-    const post = await fetchPostById(params.id);
-    const imageUrl = resolveImageUrl(post.image);
-    const description = post.description?.slice(0, 160) || 'অপরাধনামার সংবাদ';
+    // প্রথম চেষ্টা: সরাসরি আইডি দিয়ে ফেচ করা
+    const post = await fetchPostById(id);
+    if (post && post.title) return post;
+  } catch (error) {
+    console.warn(`Direct fetch failed for ID ${id}, attempting fallback...`);
+  }
 
-    return {
-      title: `${post.title} | অপরাধনামা`,
-      description,
-      openGraph: {
-        title: post.title,
-        description,
-        type: 'article',
-        images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }] : [],
-      },
-      twitter: {
-        card: imageUrl ? 'summary_large_image' : 'summary',
-        title: post.title,
-        description,
-        images: imageUrl ? [imageUrl] : [],
-      },
-    };
-  } catch {
-    return {
-      title: 'সংবাদ পাওয়া যায়নি | অপরাধনামা',
-    };
+  // দ্বিতীয় চেষ্টা (Fallback): পুরো লিস্ট ফেচ করে সেখান থেকে আইডি ম্যাচ করা
+  try {
+    const listRes = await fetch('https://oporadhnama.onrender.com/api/news/', { 
+      next: { revalidate: 60 } // ক্যাশ করে রাখছি যাতে স্পিড বাড়ে
+    });
+    
+    if (!listRes.ok) return null;
+    
+    const data = await listRes.json();
+    const newsList = Array.isArray(data) ? data : (data.results || []);
+    
+    // লিস্ট থেকে স্পেসিফিক আইডিটি খুঁজে বের করা
+    const post = newsList.find(item => String(item.id) === String(id));
+    return post || null;
+  } catch (fallbackError) {
+    console.error('Fallback fetch also failed:', fallbackError);
+    return null;
   }
 }
 
-export default async function NewsDetailPage({ params }) {
-  let post;
-  try {
-    post = await fetchPostById(params.id);
-  } catch {
-    notFound();
+// SEO মেটাডেটা জেনারেটর
+export async function generateMetadata({ params }) {
+  const post = await getPostResiliently(params.id);
+  
+  if (!post) {
+    return { title: 'সংবাদ পাওয়া যায়নি | অপরাধনামা' };
   }
 
+  const imageUrl = resolveImageUrl(post.image);
+  const description = post.description?.slice(0, 160) || 'অপরাধনামার সংবাদ';
+
+  return {
+    title: `${post.title} | অপরাধনামা`,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }] : [],
+    },
+    twitter: {
+      card: imageUrl ? 'summary_large_image' : 'summary',
+      title: post.title,
+      description,
+      images: imageUrl ? [imageUrl] : [],
+    },
+  };
+}
+
+// মূল পেজ কম্পোনেন্ট
+export default async function NewsDetailPage({ params }) {
+  // নতুন রেজিলিয়েন্ট ফাংশন দিয়ে ডেটা কল করা হচ্ছে
+  const post = await getPostResiliently(params.id);
+
+  // যদি প্রথম ফেচ এবং ফলব্যাক—দুটোই ফেইল করে, শুধুমাত্র তখনই 404 দেখাবে
   if (!post) {
     notFound();
   }
