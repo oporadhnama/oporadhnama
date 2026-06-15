@@ -1,120 +1,281 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import CountUp from 'react-countup';
+import { useCountUp } from 'react-countup';
 import { fetchPublicStats, fetchCategories } from '../api';
 
-export default function StatsCounter() {
+function toSafeNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) && num >= 0 ? num : 0;
+}
+
+function normalizeStats(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [key, toSafeNumber(value)])
+  );
+}
+
+function buildCategoryMap(categories) {
+  if (!Array.isArray(categories)) {
+    return {};
+  }
+
+  return categories.reduce((acc, category) => {
+    if (!category || typeof category !== 'object') {
+      return acc;
+    }
+
+    const name = typeof category.name === 'string' ? category.name.trim() : '';
+    const id = category.id;
+
+    if (name && (typeof id === 'string' || typeof id === 'number')) {
+      acc[name] = id;
+    }
+
+    return acc;
+  }, {});
+}
+
+function AnimatedCount({ value, className }) {
+  const mounted = typeof window !== 'undefined';
+  const spanRef = useRef(null);
+  const hasStartedRef = useRef(false);
+  const safeValue = toSafeNumber(value);
+
+  const { start, update, reset } = useCountUp({
+    ref: spanRef,
+    start: 0,
+    end: safeValue,
+    duration: 2.5,
+    separator: ',',
+    startOnMount: false,
+    enableReinitialize: false,
+    useEasing: true,
+    useGrouping: true,
+  });
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    if (!hasStartedRef.current) {
+      hasStartedRef.current = true;
+      start();
+      return;
+    }
+
+    update(safeValue);
+  }, [mounted, safeValue, start, update]);
+
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
+
+  return (
+    <span ref={spanRef} className={className} suppressHydrationWarning>
+      {safeValue.toLocaleString('en-US')}
+    </span>
+  );
+}
+
+function StatCard({ label, value, linkTo, hasLink }) {
+  const content = (
+    <>
+      <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
+        <AnimatedCount
+          value={value}
+          className="inline-block tabular-nums min-w-[2ch]"
+        />
+        +
+      </h3>
+      <p className="text-[#E50914] mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
+        {label}
+      </p>
+    </>
+  );
+
+  if (hasLink && linkTo) {
+    return (
+      <Link to={linkTo} className="block cursor-pointer group">
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className="block">{content}</div>;
+}
+
+function StatsCounterContent() {
   const [counts, setCounts] = useState({});
   const [categoryMap, setCategoryMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const mounted = typeof window !== 'undefined';
 
   useEffect(() => {
-    // Promise.all ব্যবহার করে দুটি API-এর ডেটা একসাথে লোড করা হচ্ছে
-    Promise.all([
-      fetchPublicStats(),
-      fetchCategories()
-    ])
-    .then(([statsData, categoriesData]) => {
-      // স্ট্যাটস সেট করা
-      setCounts(statsData || {});
+    let active = true;
 
-      // ক্যাটাগরি ম্যাপ সেট করা
-      const map = {};
-      // categoriesData যদি Array হয়, তবেই লুপ চলবে (এরর এড়ানোর জন্য)
-      if (Array.isArray(categoriesData)) {
-        categoriesData.forEach(category => {
-          if (category && category.name) {
-            map[category.name] = category.id;
-          }
-        });
+    const load = async () => {
+      const [statsResult, categoriesResult] = await Promise.allSettled([
+        fetchPublicStats(),
+        fetchCategories(),
+      ]);
+
+      if (!active) {
+        return;
       }
-      setCategoryMap(map);
-    })
-    .catch((error) => {
-      console.error("Error fetching stats:", error);
-    })
-    .finally(() => {
-      // দুটি API কল সম্পূর্ণ শেষ হওয়ার পরেই লোডিং ফলস হবে
+
+      if (statsResult.status === 'fulfilled') {
+        setCounts(normalizeStats(statsResult.value));
+      } else {
+        setCounts({});
+        console.error('Error fetching public stats:', statsResult.reason);
+      }
+
+      if (categoriesResult.status === 'fulfilled') {
+        setCategoryMap(buildCategoryMap(categoriesResult.value));
+      } else {
+        setCategoryMap({});
+        console.error('Error fetching categories:', categoriesResult.reason);
+      }
+
+      if (statsResult.status === 'rejected' || categoriesResult.status === 'rejected') {
+        setErrorMessage('Statistics are temporarily unavailable.');
+      } else {
+        setErrorMessage('');
+      }
+
+      setLoading(false);
+    };
+
+    load().catch((err) => {
+      if (!active) {
+        return;
+      }
+
+      console.error('Unexpected StatsCounter failure:', err);
+      setCounts({});
+      setCategoryMap({});
+      setErrorMessage('Statistics are temporarily unavailable.');
       setLoading(false);
     });
+
+    return () => {
+      active = false;
+    };
   }, []);
+
+  const totalNews = useMemo(() => {
+    if (Object.prototype.hasOwnProperty.call(counts, 'total')) {
+      return toSafeNumber(counts.total);
+    }
+
+    return Object.values(counts).reduce((sum, value) => sum + toSafeNumber(value), 0);
+  }, [counts]);
+
+  const murderCount = useMemo(() => toSafeNumber(counts['খুন']), [counts]);
+  const rapeCount = useMemo(() => toSafeNumber(counts['ধর্ষণ']), [counts]);
 
   if (loading) {
     return (
       <div className="flex justify-center py-10">
-        <div className="w-10 h-10 border-4 border-neutral-700 border-t-[#E50914] rounded-full animate-spin"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-700 border-t-[#E50914]" />
       </div>
     );
   }
 
-  // স্ট্রিং বা অন্য কোনো ডেটা টাইপ আসলে যেন ক্র্যাশ না করে সেজন্য Number() ব্যবহার করা হয়েছে
-  const totalNews = Number(counts.total) || Object.values(counts).reduce((a, b) => a + (Number(b) || 0), 0);
-  const murderCount = Number(counts['খুন']) || 0;
-  const rapeCount = Number(counts['ধর্ষণ']) || 0;
-
   return (
     <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
       <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 bg-black text-white px-10 py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
-        
-        {/* ১. খুন */}
         <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-6 md:pb-0 md:pr-10">
-          {categoryMap['খুন'] ? (
-            <Link to={`/all-news?category=${categoryMap['খুন']}`} className="block cursor-pointer group">
-              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
-                <CountUp start={0} end={murderCount} duration={2.5} separator="," />+
-              </h3>
-              <p className="text-[#E50914] mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
-                খুন
-              </p>
-            </Link>
-          ) : (
-             <div className="block">
-              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white">
-                <CountUp start={0} end={murderCount} duration={2.5} separator="," />+
-              </h3>
-              <p className="text-[#E50914] mt-2 text-xl font-semibold">
-                খুন
-              </p>
-            </div>
-          )}
+          <StatCard
+            label="খুন"
+            value={murderCount}
+            linkTo={categoryMap['খুন'] ? `/all-news?category=${categoryMap['খুন']}` : ''}
+            hasLink={Boolean(categoryMap['খুন']) && mounted}
+          />
         </div>
 
-        {/* ২. ধর্ষণ */}
         <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-6 md:pb-0 md:pr-10">
-          {categoryMap['ধর্ষণ'] ? (
-            <Link to={`/all-news?category=${categoryMap['ধর্ষণ']}`} className="block cursor-pointer group">
-              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
-                <CountUp start={0} end={rapeCount} duration={2.5} separator="," />+
-              </h3>
-              <p className="text-[#E50914] mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
-                ধর্ষণ
-              </p>
-            </Link>
-          ) : (
-             <div className="block">
-              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white">
-                <CountUp start={0} end={rapeCount} duration={2.5} separator="," />+
-              </h3>
-              <p className="text-[#E50914] mt-2 text-xl font-semibold">
-                ধর্ষণ
-              </p>
-            </div>
-          )}
+          <StatCard
+            label="ধর্ষণ"
+            value={rapeCount}
+            linkTo={categoryMap['ধর্ষণ'] ? `/all-news?category=${categoryMap['ধর্ষণ']}` : ''}
+            hasLink={Boolean(categoryMap['ধর্ষণ']) && mounted}
+          />
         </div>
 
-        {/* ৩. মোট সংবাদ আর্কাইভ */}
         <div className="text-center w-full md:w-auto">
           <Link to="/all-news" className="block cursor-pointer group">
             <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
-              <CountUp start={0} end={totalNews} duration={2.5} separator="," />+
+              <AnimatedCount
+                value={totalNews}
+                className="inline-block tabular-nums min-w-[2ch]"
+              />
+              +
             </h3>
             <p className="text-neutral-300 mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
               সংবাদ আর্কাইভ
             </p>
           </Link>
         </div>
-
       </div>
+
+      {errorMessage ? (
+        <span className="sr-only" aria-live="polite">
+          {errorMessage}
+        </span>
+      ) : null}
     </div>
+  );
+}
+
+class StatsCounterBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, info) {
+    console.error('StatsCounter boundary caught an error:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 bg-black text-white px-10 py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
+            <div className="text-center w-full">
+              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white">
+                0+
+              </h3>
+              <p className="text-neutral-300 mt-2 text-xl font-semibold">
+                Statistics unavailable
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export default function StatsCounter() {
+  return (
+    <StatsCounterBoundary>
+      <StatsCounterContent />
+    </StatsCounterBoundary>
   );
 }
