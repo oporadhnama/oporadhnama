@@ -16,6 +16,9 @@
   "/contact/page": "/contact",
   "/graphs/page": "/graphs",
   "/news/[id]/page": "/news/[id]",
+  "/news/page": "/news",
   "/page": "/",
+  "/robots.txt/route": "/robots.txt",
+  "/sitemap.xml/route": "/sitemap.xml",
   "/submit/page": "/submit"
 }

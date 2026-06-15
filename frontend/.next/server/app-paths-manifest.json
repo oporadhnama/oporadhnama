@@ -16,6 +16,9 @@
   "/contact/page": "app/contact/page.js",
   "/graphs/page": "app/graphs/page.js",
   "/news/[id]/page": "app/news/[id]/page.js",
+  "/news/page": "app/news/page.js",
   "/page": "app/page.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
   "/submit/page": "app/submit/page.js"
 }
