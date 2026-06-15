@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { API_BASE, fetchJson } from '../../../lib/api';
+import { API_BASE, fetchPostById } from '../../../lib/api';
 
 function getEmbedUrl(url) {
   if (!url) return null;
@@ -16,55 +16,42 @@ function resolveImageUrl(image) {
   return image.startsWith('http') ? image : `${API_BASE}${image}`;
 }
 
-async function fetchPostWithFallback(id) {
-  try {
-    // Primary attempt: fetch specific post
-    return await fetchJson(`/api/posts/${id}/`);
-  } catch (primaryError) {
-    try {
-      // Fallback: fetch all posts and find the matching one
-      const allPosts = await fetchJson('/api/posts/');
-      return Array.isArray(allPosts)
-        ? allPosts.find(post => post.id == id)
-        : null;
-    } catch (fallbackError) {
-      return null;
-    }
-  }
-}
-
 export async function generateMetadata({ params }) {
-  const post = await fetchPostWithFallback(params.id);
+  try {
+    const post = await fetchPostById(params.id);
+    const imageUrl = resolveImageUrl(post.image);
+    const description = post.description?.slice(0, 160) || 'অপরাধনামার সংবাদ';
 
-  if (!post) {
+    return {
+      title: `${post.title} | অপরাধনামা`,
+      description,
+      openGraph: {
+        title: post.title,
+        description,
+        type: 'article',
+        images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }] : [],
+      },
+      twitter: {
+        card: imageUrl ? 'summary_large_image' : 'summary',
+        title: post.title,
+        description,
+        images: imageUrl ? [imageUrl] : [],
+      },
+    };
+  } catch {
     return {
       title: 'সংবাদ পাওয়া যায়নি | অপরাধনামা',
     };
   }
-
-  const imageUrl = resolveImageUrl(post.image);
-  const description = post.description?.slice(0, 160) || 'অপরাধনামার সংবাদ';
-
-  return {
-    title: `${post.title} | অপরাধনামা`,
-    description,
-    openGraph: {
-      title: post.title,
-      description,
-      type: 'article',
-      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }] : [],
-    },
-    twitter: {
-      card: imageUrl ? 'summary_large_image' : 'summary',
-      title: post.title,
-      description,
-      images: imageUrl ? [imageUrl] : [],
-    },
-  };
 }
 
 export default async function NewsDetailPage({ params }) {
-  const post = await fetchPostWithFallback(params.id);
+  let post;
+  try {
+    post = await fetchPostById(params.id);
+  } catch {
+    notFound();
+  }
 
   if (!post) {
     notFound();
