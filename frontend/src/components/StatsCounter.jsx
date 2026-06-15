@@ -87,14 +87,14 @@ function AnimatedCount({ value, className }) {
 function StatCard({ label, value, linkTo, hasLink }) {
   const content = (
     <>
-      <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
+      <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300 leading-none">
         <AnimatedCount
           value={value}
           className="inline-block tabular-nums min-w-[2ch]"
         />
         +
       </h3>
-      <p className="text-[#E50914] mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
+      <p className="text-[#E50914] mt-1 text-sm sm:text-base md:text-xl font-semibold group-hover:text-white transition-colors duration-300">
         {label}
       </p>
     </>
@@ -184,16 +184,16 @@ function StatsCounterContent() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-10">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-700 border-t-[#E50914]" />
+      <div className="flex justify-center py-6 md:py-10">
+        <div className="h-8 w-8 md:h-10 md:w-10 animate-spin rounded-full border-4 border-neutral-700 border-t-[#E50914]" />
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
-      <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 bg-black text-white px-10 py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
-        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-6 md:pb-0 md:pr-10">
+    <div className="w-full max-w-4xl mx-auto mt-3 md:mt-10 px-3 md:px-4 flex justify-center">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-16 bg-black text-white px-4 py-4 md:px-10 md:py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
+        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-3 md:pb-0 md:pr-10">
           <StatCard
             label="খুন"
             value={murderCount}
@@ -202,7 +202,7 @@ function StatsCounterContent() {
           />
         </div>
 
-        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-6 md:pb-0 md:pr-10">
+        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-3 md:pb-0 md:pr-10">
           <StatCard
             label="ধর্ষণ"
             value={rapeCount}
@@ -213,14 +213,14 @@ function StatsCounterContent() {
 
         <div className="text-center w-full md:w-auto">
           <Link to="/all-news" className="block cursor-pointer group">
-            <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300">
+            <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300 leading-none">
               <AnimatedCount
                 value={totalNews}
                 className="inline-block tabular-nums min-w-[2ch]"
               />
               +
             </h3>
-            <p className="text-neutral-300 mt-2 text-xl font-semibold group-hover:text-white transition-colors duration-300">
+            <p className="text-neutral-300 mt-1 text-sm sm:text-base md:text-xl font-semibold group-hover:text-white transition-colors duration-300">
               সংবাদ আর্কাইভ
             </p>
           </Link>
@@ -253,13 +253,13 @@ class StatsCounterBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 bg-black text-white px-10 py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
+        <div className="w-full max-w-4xl mx-auto mt-3 md:mt-10 px-3 md:px-4 flex justify-center">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-16 bg-black text-white px-4 py-4 md:px-10 md:py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
             <div className="text-center w-full">
-              <h3 className="text-5xl md:text-6xl font-bold font-sans tracking-tight text-white">
+              <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-sans tracking-tight text-white leading-none">
                 0+
               </h3>
-              <p className="text-neutral-300 mt-2 text-xl font-semibold">
+              <p className="text-neutral-300 mt-1 text-sm sm:text-base md:text-xl font-semibold">
                 Statistics unavailable
               </p>
             </div>
