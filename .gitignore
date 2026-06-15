@@ -5,8 +5,6 @@ backend/.env.*
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
-.env
-.env*.local
 
 # Python artifacts
 __pycache__/
@@ -18,17 +16,6 @@ backend/db.sqlite3
 backend/staticfiles/
 backend/media/
 
-# Frontend/Next.js build/runtime files
+# Frontend build/runtime files
 frontend/node_modules/
 frontend/dist/
-.next/
-out/
-build/
-
-# IDE files
-.vscode/
-.idea/
-
-# System files
-.DS_Store
-Thumbs.db
