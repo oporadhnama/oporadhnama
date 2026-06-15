@@ -1,7 +1,10 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ExternalLink, ChevronRight, Trash2 } from 'lucide-react';
 import { fetchUserReports, deleteUserReport } from '../api';
+import { readStoredJSON } from '../storage';
 
 export default function UserReports() {
   const [reports, setReports] = useState([]);
@@ -9,8 +12,8 @@ export default function UserReports() {
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
-  const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const router = useRouter();
+  const user = readStoredJSON('user', {});
   const isSuperAdmin = user.is_superuser;
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function UserReports() {
   }, []);
 
   const openReport = (reportId) => {
-    navigate(`/admin/dashboard/user-reports/${reportId}`);
+    router.push(`/admin/dashboard/user-reports/${reportId}`);
   };
 
   const handleDelete = async () => {

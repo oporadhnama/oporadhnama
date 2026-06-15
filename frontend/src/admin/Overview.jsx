@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Newspaper, FolderOpen, Users, TrendingUp } from 'lucide-react';
 import { fetchDashboardStats, fetchPosts } from '../api';

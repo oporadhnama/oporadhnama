@@ -1,19 +1,23 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, ExternalLink, Trash2 } from 'lucide-react';
 import { fetchUserReportById, deleteUserReport } from '../api';
 import AddNews from './AddNews';
+import { readStoredJSON } from '../storage';
 
 export default function UserReportDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id;
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSplitScreen, setShowSplitScreen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = readStoredJSON('user', {});
   const isSuperAdmin = user.is_superuser;
 
   useEffect(() => {
@@ -34,7 +38,7 @@ export default function UserReportDetail() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <button
-            onClick={() => navigate('/admin/dashboard/user-reports')}
+            onClick={() => router.push('/admin/dashboard/user-reports')}
             className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4" strokeWidth={2} />
@@ -188,7 +192,7 @@ export default function UserReportDetail() {
                   setDeleting(true);
                   try {
                     await deleteUserReport(id);
-                    navigate('/admin/dashboard/user-reports');
+                    router.push('/admin/dashboard/user-reports');
                   } catch (err) {
                     setError(err.message || 'রিপোর্ট মুছতে সমস্যা হয়েছে');
                   } finally {

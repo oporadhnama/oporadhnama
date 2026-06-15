@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Newspaper,
@@ -13,17 +16,21 @@ import {
   Activity,
   FolderOpen,
 } from 'lucide-react';
+import { readStoredJSON } from '../storage';
 
-export default function AdminLayout() {
-  const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+export default function AdminLayout({ children }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const user = readStoredJSON('user', {});
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user');
-    navigate('/admin/login');
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('access_token');
+      window.localStorage.removeItem('refresh_token');
+      window.localStorage.removeItem('user');
+    }
+    router.push('/admin/login');
   };
 
   const navItems = [
@@ -41,9 +48,9 @@ export default function AdminLayout() {
 
   navItems.push({ label: 'সেটিংস', path: '/admin/dashboard/settings', icon: Settings });
 
-  const linkClass = ({ isActive }) =>
+  const linkClass = (path) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-      isActive
+      pathname === path
         ? 'bg-[#E50914]/15 text-[#E50914] border border-[#E50914]/30 shadow-[0_0_12px_rgba(229,9,20,0.08)]'
         : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
     }`;
@@ -73,16 +80,15 @@ export default function AdminLayout() {
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
-            <NavLink
+            <Link
               key={item.path}
-              to={item.path}
-              end={item.path === '/admin/dashboard'}
-              className={linkClass}
+              href={item.path}
+              className={linkClass(item.path)}
               onClick={() => setSidebarOpen(false)}
             >
               <Icon className="w-[18px] h-[18px]" strokeWidth={1.8} />
               <span>{item.label}</span>
-            </NavLink>
+            </Link>
           );
         })}
       </nav>
@@ -138,7 +144,7 @@ export default function AdminLayout() {
 
       {/* Main Content Area */}
       <main className="lg:ml-64 flex-grow p-6 lg:p-8 min-h-screen pt-16 lg:pt-8">
-        <Outlet />
+        {children}
       </main>
     </div>
   );

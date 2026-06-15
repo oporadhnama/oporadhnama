@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+'use client';
 
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { fetchPosts, fetchCategories } from '../api';
 
@@ -22,9 +24,9 @@ export default function AllNews() {
 
   const [loadingMore, setLoadingMore] = useState(false);
 
-
-
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const division = searchParams.get('division') || '';
 
@@ -57,15 +59,11 @@ export default function AllNews() {
 
 
   const updateSearchParam = (key, value) => {
-
-    const params = new URLSearchParams(searchParams);
-
+    const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
-
     else params.delete(key);
-
-    setSearchParams(params);
-
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
   };
 
 
@@ -88,7 +86,7 @@ export default function AllNews() {
 
 
 
-      let params = new URLSearchParams(searchParams);
+      let params = new URLSearchParams(searchParams.toString());
 
       params.set('limit', limit);
 
@@ -248,7 +246,7 @@ export default function AllNews() {
 
           <button
 
-            onClick={() => setSearchParams(new URLSearchParams())}
+            onClick={() => router.push(pathname)}
 
             className="mt-auto bg-[#E50914]/10 text-[#E50914] border border-[#E50914]/30 rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#E50914]/20 transition-colors"
 
@@ -304,7 +302,7 @@ export default function AllNews() {
 
                  key={post.id}
 
-                 to={`/news/${post.id}`}
+                 href={`/news/${post.id}`}
 
                  className="bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
 
@@ -389,4 +387,3 @@ export default function AllNews() {
   );
 
 } 
-

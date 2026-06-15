@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { fetchCategories } from '../api';
 
 const DIVISIONS = [
@@ -8,7 +10,7 @@ const DIVISIONS = [
 ];
 
 export default function SearchBar() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [keyword, setKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedDivision, setSelectedDivision] = useState('');
@@ -27,8 +29,8 @@ export default function SearchBar() {
     if (selectedDivision) params.set('division', selectedDivision);
 
     const qs = params.toString();
-    navigate(qs ? `/all-news?${qs}` : '/all-news');
-  }, [keyword, selectedCategory, selectedDivision, navigate]);
+    router.push(qs ? `/all-news?${qs}` : '/all-news');
+  }, [keyword, selectedCategory, selectedDivision, router]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch();
@@ -98,4 +100,3 @@ export default function SearchBar() {
     </div>
   );
 }
-

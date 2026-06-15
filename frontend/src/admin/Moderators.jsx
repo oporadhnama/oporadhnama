@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Trash2, AlertTriangle, UserPlus, Shield, Clock } from 'lucide-react';
 import { fetchModerators, registerModerator, deleteModerator } from '../api';

@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { fetchPosts, fetchCategories } from '../api';
 
 export default function NewsArchive() {
@@ -11,7 +14,9 @@ export default function NewsArchive() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const division = searchParams.get('division') || '';
   const date = searchParams.get('date') || '';
   const categoryId = searchParams.get('category') || '';
@@ -28,10 +33,11 @@ export default function NewsArchive() {
   }, []);
 
   const updateSearchParam = (key, value) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
     else params.delete(key);
-    setSearchParams(params);
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
   };
 
   const handleLoadMore = async () => {
@@ -43,7 +49,7 @@ export default function NewsArchive() {
       const offset = (nextPage - 1) * 100;
       const limit = 100;
 
-      let params = new URLSearchParams(searchParams);
+      let params = new URLSearchParams(searchParams.toString());
       params.set('limit', limit);
       params.set('offset', offset);
 
@@ -124,7 +130,7 @@ export default function NewsArchive() {
 
         {(categoryId || division || date) && (
           <button
-            onClick={() => setSearchParams(new URLSearchParams())}
+            onClick={() => router.push(pathname)}
             className="mt-auto bg-[#E50914]/10 text-[#E50914] border border-[#E50914]/30 rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#E50914]/20 transition-colors"
           >
             ফিল্টার মুছুন
@@ -150,7 +156,7 @@ export default function NewsArchive() {
              {posts.map(post => (
                <Link
                  key={post.id}
-                 to={`/news/${post.id}`}
+                 href={`/news/${post.id}`}
                  className="bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
                >
                  <span className="self-start text-[10px] font-bold uppercase tracking-wider text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded mb-3">

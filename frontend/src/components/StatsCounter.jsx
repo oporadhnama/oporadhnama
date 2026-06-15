@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useCountUp } from 'react-countup';
 import { fetchPublicStats, fetchCategories } from '../api';
 
@@ -102,7 +104,7 @@ function StatCard({ label, value, linkTo, hasLink }) {
 
   if (hasLink && linkTo) {
     return (
-      <Link to={linkTo} className="block cursor-pointer group">
+      <Link href={linkTo} className="block cursor-pointer group">
         {content}
       </Link>
     );
@@ -111,14 +113,22 @@ function StatCard({ label, value, linkTo, hasLink }) {
   return <div className="block">{content}</div>;
 }
 
-function StatsCounterContent() {
-  const [counts, setCounts] = useState({});
-  const [categoryMap, setCategoryMap] = useState({});
-  const [loading, setLoading] = useState(true);
+function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
+  const [counts, setCounts] = useState(initialCounts);
+  const [categoryMap, setCategoryMap] = useState(buildCategoryMap(initialCategories));
+  const hasInitialData =
+    (initialCounts && Object.keys(initialCounts).length > 0) ||
+    (Array.isArray(initialCategories) && initialCategories.length > 0);
+  const [loading, setLoading] = useState(!hasInitialData);
   const [errorMessage, setErrorMessage] = useState('');
   const mounted = typeof window !== 'undefined';
 
   useEffect(() => {
+    if (hasInitialData) {
+      setLoading(false);
+      return;
+    }
+
     let active = true;
 
     const load = async () => {
@@ -169,7 +179,7 @@ function StatsCounterContent() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [hasInitialData, initialCounts, initialCategories]);
 
   const totalNews = useMemo(() => {
     if (Object.prototype.hasOwnProperty.call(counts, 'total')) {
@@ -212,7 +222,7 @@ function StatsCounterContent() {
         </div>
 
         <div className="text-center w-full md:w-auto">
-          <Link to="/all-news" className="block cursor-pointer group">
+      <Link href="/all-news" className="block cursor-pointer group">
             <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300 leading-none">
               <AnimatedCount
                 value={totalNews}
@@ -272,10 +282,10 @@ class StatsCounterBoundary extends React.Component {
   }
 }
 
-export default function StatsCounter() {
+export default function StatsCounter(props = {}) {
   return (
     <StatsCounterBoundary>
-      <StatsCounterContent />
+      <StatsCounterContent {...props} />
     </StatsCounterBoundary>
   );
 }

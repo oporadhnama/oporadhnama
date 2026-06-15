@@ -1,9 +1,12 @@
+'use client';
+
 import React from 'react';
 import { User, Shield, Clock, Globe } from 'lucide-react';
 import API_BASE from '../api';
+import { hasStoredToken, readStoredJSON } from '../storage';
 
 export default function AdminSettings() {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = readStoredJSON('user', {});
 
   const infoItems = [
     { label: 'ইউজারনেম', value: user.username || '—', icon: User },
@@ -64,8 +67,8 @@ export default function AdminSettings() {
           </div>
           <div className="flex justify-between py-2">
             <span className="text-neutral-500">JWT Status</span>
-            <span className={`font-medium ${localStorage.getItem('access_token') ? 'text-green-400' : 'text-red-400'}`}>
-              {localStorage.getItem('access_token') ? '● সক্রিয়' : '● নিষ্ক্রিয়'}
+            <span className={`font-medium ${hasStoredToken() ? 'text-green-400' : 'text-red-400'}`}>
+              {hasStoredToken() ? '● সক্রিয়' : '● নিষ্ক্রিয়'}
             </span>
           </div>
         </div>

@@ -1,14 +1,17 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Trash2, ExternalLink, AlertTriangle } from 'lucide-react';
 import { fetchPosts, deletePost } from '../api';
+import { readStoredJSON } from '../storage';
 
 export default function ManageNews() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = readStoredJSON('user', {});
   const isSuperAdmin = user.is_superuser;
 
   const loadPosts = () => {
@@ -44,7 +47,7 @@ export default function ManageNews() {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-white">সংবাদ ব্যবস্থাপনা</h1>
         <Link
-          to="/admin/dashboard/add-news"
+          href="/admin/dashboard/add-news"
           className="bg-[#E50914] hover:bg-[#c40812] text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-all"
         >
           + নতুন সংবাদ
@@ -85,7 +88,7 @@ export default function ManageNews() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <Link
-                        to={`/news/${post.id}`}
+                        href={`/news/${post.id}`}
                         target="_blank"
                         className="text-blue-400 hover:text-blue-300 transition-colors"
                         title="দেখুন"

@@ -1,10 +1,12 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { fetchPosts } from '../api';
 
-export default function NewsMarquee() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function NewsMarquee({ initialPosts = [] }) {
+  const [posts, setPosts] = useState(initialPosts);
+  const [loading, setLoading] = useState(initialPosts.length === 0);
   
   const containerRef = useRef(null);
   const isPaused = useRef(false);
@@ -15,18 +17,23 @@ export default function NewsMarquee() {
   const scrollLeft = useRef(0);
 
   useEffect(() => {
+    if (initialPosts.length > 0) {
+      setPosts(initialPosts);
+      setLoading(false);
+      return;
+    }
+
     fetchPosts()
       .then(items => {
         const postsResult = Array.isArray(items) ? items : items.results || [];
-        // Sort by date (newest first) and take 10 most recent
-        const sortedPosts = postsResult.sort((a, b) => 
+        const sortedPosts = postsResult.sort((a, b) =>
           new Date(b.created_at) - new Date(a.created_at)
         ).slice(0, 10);
         setPosts(sortedPosts);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [initialPosts]);
 
   // 🚨 ফিক্স: অ্যানিমেশনের useEffect-টি অবশ্যই early return-এর ওপরে থাকতে হবে!
   useEffect(() => {
@@ -142,7 +149,7 @@ export default function NewsMarquee() {
             {scrollPosts.map((post, index) => (
               <Link
                 key={`marquee-${index}`}
-                to={`/news/${post.id}`}
+                href={`/news/${post.id}`}
                 className="inline-block w-72 flex-shrink-0 bg-white rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300"
               >
                 {/* Title */}

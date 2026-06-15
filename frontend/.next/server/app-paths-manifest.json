@@ -1,0 +1,21 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/about/page": "app/about/page.js",
+  "/admin/dashboard/activity-logs/page": "app/admin/dashboard/activity-logs/page.js",
+  "/admin/dashboard/add-news/page": "app/admin/dashboard/add-news/page.js",
+  "/admin/dashboard/manage-news/page": "app/admin/dashboard/manage-news/page.js",
+  "/admin/dashboard/moderators/page": "app/admin/dashboard/moderators/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/dashboard/settings/page": "app/admin/dashboard/settings/page.js",
+  "/admin/dashboard/user-reports/[id]/page": "app/admin/dashboard/user-reports/[id]/page.js",
+  "/admin/dashboard/user-reports/page": "app/admin/dashboard/user-reports/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/all-news/page": "app/all-news/page.js",
+  "/archive/page": "app/archive/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/graphs/page": "app/graphs/page.js",
+  "/news/[id]/page": "app/news/[id]/page.js",
+  "/page": "app/page.js",
+  "/submit/page": "app/submit/page.js"
+}

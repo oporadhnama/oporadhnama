@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +34,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-black/80 backdrop-blur-md border-b border-neutral-900">
       {/* Logo */}
-       <Link to="/" className="text-2xl md:text-3xl font-extrabold md:font-black tracking-wider select-none">
+       <Link href="/" className="text-2xl md:text-3xl font-extrabold md:font-black tracking-wider select-none">
         <span className="text-white">অপরাধ</span>
         <span className="text-[#E50914]">নামা</span>
       </Link>
@@ -42,7 +44,7 @@ export default function Navbar() {
         {links.map((link, idx) => (
           <li key={idx}>
             <Link
-              to={link.path}
+              href={link.path}
               className="text-gray-100 hover:text-[#E50914] font-semibold transition-colors duration-200 text-lg cursor-pointer px-4 py-2"
             >
               {link.label}
@@ -74,7 +76,7 @@ export default function Navbar() {
             {links.map((link, idx) => (
               <li key={idx}>
                 <Link
-                  to={link.path}
+                  href={link.path}
                   className="text-gray-300 hover:text-[#E50914] font-medium transition-colors duration-200 text-sm cursor-pointer px-4 py-2"
                   onClick={() => setIsOpen(false)}
                 >

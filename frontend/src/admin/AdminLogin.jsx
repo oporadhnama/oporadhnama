@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { loginAdmin } from '../api';
 
 export default function AdminLogin() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,10 +18,12 @@ export default function AdminLogin() {
 
     try {
       const data = await loginAdmin(username, password);
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/admin/dashboard');
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('access_token', data.access);
+        window.localStorage.setItem('refresh_token', data.refresh);
+        window.localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      router.push('/admin/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

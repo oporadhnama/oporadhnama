@@ -1,14 +1,26 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 /**
  * Wraps admin routes. Redirects to /admin/login if no valid token exists.
  */
 export default function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('access_token');
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
 
-  if (!token) {
-    return <Navigate to="/admin/login" replace />;
+  useEffect(() => {
+    const token = typeof window === 'undefined' ? '' : window.localStorage.getItem('access_token');
+    if (!token) {
+      router.replace('/admin/login');
+      return;
+    }
+    setReady(true);
+  }, [router]);
+
+  if (!ready) {
+    return null;
   }
 
   return children;

@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/dashboard/layout,_N_T_/admin/dashboard/add-news/layout,_N_T_/admin/dashboard/add-news/page,_N_T_/admin/dashboard/add-news"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/admin/dashboard/add-news/__PAGE__",
+    "/admin/dashboard/add-news",
+    "/admin/dashboard",
+    "/admin",
+    "/_index",
+    "/_head"
+  ]
+}

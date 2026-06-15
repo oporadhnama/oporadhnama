@@ -1,13 +1,14 @@
 // Use environment variable for API base URL.
 // Accept either a bare backend URL or one that accidentally ends in /api.
-const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://oporadhnama.onrender.com';
 const API_BASE = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+const isBrowser = typeof window !== 'undefined';
 
 /**
  * Core fetch wrapper that injects JWT auth header when available.
  */
 async function apiFetch(endpoint, options = {}) {
-  const token = localStorage.getItem('access_token');
+  const token = isBrowser ? window.localStorage.getItem('access_token') : '';
 
   const headers = {
     ...(options.headers || {}),
@@ -33,8 +34,10 @@ async function apiFetch(endpoint, options = {}) {
   // --- NEW FIX: Handle Expired/Dead Tokens ---
   // যদি টোকেন এক্সপায়ার হয়ে যায় (401 Unauthorized), ব্রাউজার থেকে ডিলিট করে দাও
   if (res.status === 401) {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    if (isBrowser) {
+      window.localStorage.removeItem('access_token');
+      window.localStorage.removeItem('refresh_token');
+    }
     
     // শুধুমাত্র ডেটা দেখার (GET) রিকোয়েস্ট হলে, টোকেন ছাড়াই আবার চেষ্টা করো
     if (!options.method || options.method === 'GET') {
