@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { API_BASE, fetchPostById } from '../../../lib/api';
 
+export const dynamic = 'force-dynamic';
+
 // ভিডিও এমবেড ইউআরএল জেনারেটর
 function getEmbedUrl(url) {
   if (!url) return null;
@@ -30,15 +32,15 @@ async function getPostResiliently(id) {
 
   // দ্বিতীয় চেষ্টা (Fallback): পুরো লিস্ট ফেচ করে সেখান থেকে আইডি ম্যাচ করা
   try {
-    const listRes = await fetch('https://oporadhnama.onrender.com/api/news/', { 
+    const listRes = await fetch('https://oporadhnama.onrender.com/api/posts/', {
       next: { revalidate: 60 } // ক্যাশ করে রাখছি যাতে স্পিড বাড়ে
     });
-    
+
     if (!listRes.ok) return null;
-    
+
     const data = await listRes.json();
     const newsList = Array.isArray(data) ? data : (data.results || []);
-    
+
     // লিস্ট থেকে স্পেসিফিক আইডিটি খুঁজে বের করা
     const post = newsList.find(item => String(item.id) === String(id));
     return post || null;
@@ -50,8 +52,9 @@ async function getPostResiliently(id) {
 
 // SEO মেটাডেটা জেনারেটর
 export async function generateMetadata({ params }) {
-  const post = await getPostResiliently(params.id);
-  
+  const { id } = await params;
+  const post = await getPostResiliently(id);
+
   if (!post) {
     return { title: 'সংবাদ পাওয়া যায়নি | অপরাধনামা' };
   }
@@ -79,8 +82,9 @@ export async function generateMetadata({ params }) {
 
 // মূল পেজ কম্পোনেন্ট
 export default async function NewsDetailPage({ params }) {
+  const { id } = await params;
   // নতুন রেজিলিয়েন্ট ফাংশন দিয়ে ডেটা কল করা হচ্ছে
-  const post = await getPostResiliently(params.id);
+  const post = await getPostResiliently(id);
 
   // যদি প্রথম ফেচ এবং ফলব্যাক—দুটোই ফেইল করে, শুধুমাত্র তখনই 404 দেখাবে
   if (!post) {
@@ -145,3 +149,5 @@ export default async function NewsDetailPage({ params }) {
     </div>
   );
 }
+
+

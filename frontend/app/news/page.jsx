@@ -2,9 +2,9 @@ import { redirect, notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default function NewsEntryPage({ searchParams }) {
-  const id = searchParams?.id;
-  const slug = searchParams?.slug;
+export default async function NewsEntryPage({ searchParams }) {
+  const { id, slug } = await searchParams;
+
 
   if (id) {
     redirect(`/news/${id}`);
@@ -16,3 +16,4 @@ export default function NewsEntryPage({ searchParams }) {
 
   notFound();
 }
+
