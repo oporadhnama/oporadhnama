@@ -48,10 +48,16 @@ export default function AddNews() {
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('description', form.description);
-    formData.append('category', form.category);
+    if (form.category) {
+      formData.append('category', form.category);
+    }
     formData.append('location_text', form.location_text);
-    formData.append('date', form.date);
-    formData.append('division', form.division);
+    if (form.date) {
+      formData.append('date', form.date);
+    }
+    if (form.division) {
+      formData.append('division', form.division);
+    }
     formData.append('source_link', form.source_link);
     formData.append('video_url', form.video_url);
     formData.append('show_video', form.show_video);
@@ -108,8 +114,8 @@ export default function AddNews() {
         {/* Category + Division row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-neutral-400 text-xs font-medium mb-2">ক্যাটেগরি *</label>
-            <select name="category" value={form.category} onChange={handleChange} required className={inputClass + ' cursor-pointer'}>
+            <label className="block text-neutral-400 text-xs font-medium mb-2">ক্যাটেগরি</label>
+            <select name="category" value={form.category} onChange={handleChange} className={inputClass + ' cursor-pointer'}>
               <option value="">ক্যাটেগরি নির্বাচন করুন</option>
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -117,8 +123,8 @@ export default function AddNews() {
             </select>
           </div>
           <div>
-            <label className="block text-neutral-400 text-xs font-medium mb-2">বিভাগ *</label>
-            <select name="division" value={form.division} onChange={handleChange} required className={inputClass + ' cursor-pointer'}>
+            <label className="block text-neutral-400 text-xs font-medium mb-2">বিভাগ</label>
+            <select name="division" value={form.division} onChange={handleChange} className={inputClass + ' cursor-pointer'}>
               <option value="">বিভাগ নির্বাচন করুন</option>
               {divisions.map(d => (
                 <option key={d} value={d}>{d}</option>
@@ -130,8 +136,8 @@ export default function AddNews() {
         {/* Date + Location row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-neutral-400 text-xs font-medium mb-2">তারিখ *</label>
-            <input type="date" name="date" value={form.date} onChange={handleChange} required className={inputClass + ' cursor-pointer'} />
+            <label className="block text-neutral-400 text-xs font-medium mb-2">তারিখ</label>
+            <input type="date" name="date" value={form.date} onChange={handleChange} className={inputClass + ' cursor-pointer'} />
           </div>
           <div>
             <label className="block text-neutral-400 text-xs font-medium mb-2">স্থান</label>

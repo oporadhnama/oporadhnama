@@ -111,6 +111,12 @@ export default async function NewsDetailPage({ params }) {
         {post.location_text ? <span>🏷️ {post.location_text}</span> : null}
       </div>
 
+      {imageUrl ? (
+        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
+          <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
+        </div>
+      ) : null}
+
       {embedUrl ? (
         <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
@@ -129,12 +135,6 @@ export default async function NewsDetailPage({ params }) {
       <div className="text-neutral-300 text-base leading-relaxed whitespace-pre-line mb-8">
         {post.description}
       </div>
-
-      {imageUrl ? (
-        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
-          <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
-        </div>
-      ) : null}
 
       {post.source_link ? (
         <a
