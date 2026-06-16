@@ -1,8 +1,8 @@
 # Migration: add_post_slug
-# Uses a 3-step approach:
+# Uses a 3‑step approach:
 #   1. Add slug column WITHOUT unique constraint (allows blank for existing rows)
 #   2. Backfill slugs for every existing Post via a data migration
-#   3. Add the unique constraint
+#   3. Add the unique constraint + indexes safely using IF NOT EXISTS
 
 from django.db import migrations, models
 
@@ -24,12 +24,12 @@ def backfill_slugs(apps, schema_editor):
     """Populate slug for every existing Post that has no slug yet."""
     Post = apps.get_model('archive', 'Post')
     for post in Post.objects.filter(slug=''):
-        div = DIVISION_SLUG_MAP.get(post.division, post.division.lower().replace(' ', '-') or 'bd')
-        # Keep only ASCII-safe chars; strip leading/trailing hyphens
+        div = DIVISION_SLUG_MAP.get(post.division,
+                                    post.division.lower().replace(' ', '-') or 'bd')
+        # keep only ASCII‑safe chars
         import re
         div = re.sub(r'[^a-z0-9\-]', '', div).strip('-') or 'bd'
-        date_str = str(post.date)
-        post.slug = f"{post.pk}-{div}-{date_str}"
+        post.slug = f"{post.pk}-{div}-{post.date}"
         post.save(update_fields=['slug'])
 
 
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Step 1 — Add slug field WITHOUT unique=True so existing blank rows are fine
+        # 1️⃣ Add slug column (no unique constraint yet)
         migrations.AddField(
             model_name='post',
             name='slug',
@@ -57,18 +57,32 @@ class Migration(migrations.Migration):
             ),
         ),
 
-        # Step 2 — Data migration: fill slugs for all existing posts
+        # 2️⃣ Back‑fill slugs for existing rows
         migrations.RunPython(backfill_slugs, reverse_backfill),
 
-        # Step 3 — Now that every row has a unique value, add the unique constraint
-        migrations.AlterField(
-            model_name='post',
-            name='slug',
-            field=models.SlugField(
-                blank=True,
-                help_text='Auto-generated SEO-friendly URL segment. Format: {id}-{division}-{date}',
-                max_length=300,
-                unique=True,
-            ),
+        # 3️⃣ Add unique constraint + safe indexes (IF NOT EXISTS)
+        migrations.RunSQL(
+            sql=[
+                # unique index (covers unique=True)
+                "CREATE UNIQUE INDEX IF NOT EXISTS archive_post_slug_key ON archive_post (slug);",
+                # the LIKE index Django normally creates for varchar fields
+                "CREATE INDEX IF NOT EXISTS archive_post_slug_7abefc9f_like ON archive_post (slug varchar_pattern_ops);",
+            ],
+            reverse_sql=[
+                "DROP INDEX IF EXISTS archive_post_slug_7abefc9f_like;",
+                "DROP INDEX IF EXISTS archive_post_slug_key;",
+            ],
+            state_operations=[
+                migrations.AlterField(
+                    model_name='post',
+                    name='slug',
+                    field=models.SlugField(
+                        blank=True,
+                        help_text='Auto-generated SEO-friendly URL segment. Format: {id}-{division}-{date}',
+                        max_length=300,
+                        unique=True,
+                    ),
+                ),
+            ],
         ),
     ]
