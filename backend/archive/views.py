@@ -307,3 +307,13 @@ class ActivityLogView(generics.ListAPIView):
     def get_queryset(self):
         return ActivityLog.objects.select_related('user').order_by('-created_at')
 
+    def delete(self, request, *args, **kwargs):
+        """DELETE /api/activity-logs/ — clears all activity logs (superuser only)."""
+        if not request.user.is_superuser:
+            return Response(
+                {"detail": "শুধুমাত্র সুপার এডমিন অ্যাক্টিভিটি লগ মুছতে পারবেন।"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        ActivityLog.objects.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

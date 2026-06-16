@@ -191,6 +191,7 @@ export default function ActivityLogs() {
                     setLogs([]);
                     setPendingClear(false);
                   } catch (err) {
+                    alert(err.message);
                     console.error(err);
                   } finally {
                     setClearing(false);
