@@ -2,7 +2,7 @@
 # Uses a 3-step approach:
 #   1. Add slug column WITHOUT unique constraint (allows blank for existing rows)
 #   2. Backfill slugs for every existing Post via a data migration
-#   3. Add the unique constraint + index safely using IF NOT EXISTS
+#   3. Add the unique constraint
 
 from django.db import migrations, models
 
@@ -60,30 +60,15 @@ class Migration(migrations.Migration):
         # Step 2 — Data migration: fill slugs for all existing posts
         migrations.RunPython(backfill_slugs, reverse_backfill),
 
-        # Step 3 — Add unique constraint via RunSQL using IF NOT EXISTS
-        # to safely handle re-deploys where index may already exist.
-        migrations.RunSQL(
-            sql=[
-                # Add unique index (handles the unique=True constraint)
-                "CREATE UNIQUE INDEX IF NOT EXISTS archive_post_slug_key ON archive_post (slug);",
-                # Add the like index Django creates for varchar fields with db_index
-                "CREATE INDEX IF NOT EXISTS archive_post_slug_7abefc9f_like ON archive_post (slug varchar_pattern_ops);",
-            ],
-            reverse_sql=[
-                "DROP INDEX IF EXISTS archive_post_slug_7abefc9f_like;",
-                "DROP INDEX IF EXISTS archive_post_slug_key;",
-            ],
-            state_operations=[
-                migrations.AlterField(
-                    model_name='post',
-                    name='slug',
-                    field=models.SlugField(
-                        blank=True,
-                        help_text='Auto-generated SEO-friendly URL segment. Format: {id}-{division}-{date}',
-                        max_length=300,
-                        unique=True,
-                    ),
-                ),
-            ],
+        # Step 3 — Now that every row has a unique value, add the unique constraint
+        migrations.AlterField(
+            model_name='post',
+            name='slug',
+            field=models.SlugField(
+                blank=True,
+                help_text='Auto-generated SEO-friendly URL segment. Format: {id}-{division}-{date}',
+                max_length=300,
+                unique=True,
+            ),
         ),
     ]
