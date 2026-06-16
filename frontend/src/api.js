@@ -90,6 +90,18 @@ export async function fetchCategories() {
   return [];
 }
 
+export async function createCategory(name) {
+  const res = await apiFetch('/api/categories/', {
+    method: 'POST',
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail || data.name?.[0] || 'ক্যাটেগরি তৈরি করতে সমস্যা হয়েছে');
+  }
+  return res.json();
+}
+
 export async function submitPublicTip(formData) {
   const res = await apiFetch('/api/submit/', {
     method: 'POST',

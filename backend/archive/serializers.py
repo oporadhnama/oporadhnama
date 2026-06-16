@@ -13,7 +13,6 @@ class CategorySerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), required=False, allow_null=True)
-    division = serializers.CharField(required=False, allow_blank=True, default='অজানা')
     date = serializers.DateField(required=False, default=datetime.date.today)
 
     class Meta:
@@ -39,10 +38,6 @@ class PostSerializer(serializers.ModelSerializer):
         if not category:
             category, _ = Category.objects.get_or_create(name='অন্যান্য')
             validated_data['category'] = category
-        
-        division = validated_data.get('division')
-        if not division or division.strip() == '':
-            validated_data['division'] = 'অজানা'
             
         date = validated_data.get('date')
         if not date:
@@ -54,10 +49,6 @@ class PostSerializer(serializers.ModelSerializer):
         if 'category' in validated_data and not validated_data['category']:
             category, _ = Category.objects.get_or_create(name='অন্যান্য')
             validated_data['category'] = category
-            
-        division = validated_data.get('division')
-        if 'division' in validated_data and (not division or division.strip() == ''):
-            validated_data['division'] = 'অজানা'
             
         date = validated_data.get('date')
         if 'date' in validated_data and not date:

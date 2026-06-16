@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { fetchCategories, createPost } from '../api';
+import { fetchCategories, createPost, createCategory } from '../api';
 
 export default function AddNews() {
   const [categories, setCategories] = useState([]);
@@ -21,6 +21,7 @@ export default function AddNews() {
     show_video: true,
   });
   const [imageFile, setImageFile] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const divisions = [
     'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা',
@@ -45,11 +46,31 @@ export default function AddNews() {
     setError('');
     setSuccess('');
 
+    let finalCategoryId = form.category;
+
+    if (form.category === 'new_custom') {
+      const trimmedName = newCategoryName.trim();
+      if (!trimmedName) {
+        setError('নতুন ক্যাটেগরির নাম লিখুন।');
+        setLoading(false);
+        return;
+      }
+      try {
+        const newCat = await createCategory(trimmedName);
+        finalCategoryId = newCat.id;
+        setCategories(prev => [...prev, newCat]);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+        return;
+      }
+    }
+
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('description', form.description);
-    if (form.category) {
-      formData.append('category', form.category);
+    if (finalCategoryId && finalCategoryId !== 'new_custom') {
+      formData.append('category', finalCategoryId);
     }
     formData.append('location_text', form.location_text);
     if (form.date) {
@@ -74,6 +95,7 @@ export default function AddNews() {
         source_link: '', video_url: '', show_video: true,
       });
       setImageFile(null);
+      setNewCategoryName('');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -120,11 +142,23 @@ export default function AddNews() {
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
+              <option value="new_custom">+ নতুন ক্যাটেগরি যোগ করুন</option>
             </select>
+            {form.category === 'new_custom' && (
+              <div className="mt-2.5">
+                <input
+                  type="text"
+                  placeholder="নতুন ক্যাটেগরির নাম লিখুন"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            )}
           </div>
           <div>
-            <label className="block text-neutral-400 text-xs font-medium mb-2">বিভাগ</label>
-            <select name="division" value={form.division} onChange={handleChange} className={inputClass + ' cursor-pointer'}>
+            <label className="block text-neutral-400 text-xs font-medium mb-2">বিভাগ *</label>
+            <select name="division" value={form.division} onChange={handleChange} required className={inputClass + ' cursor-pointer'}>
               <option value="">বিভাগ নির্বাচন করুন</option>
               {divisions.map(d => (
                 <option key={d} value={d}>{d}</option>
