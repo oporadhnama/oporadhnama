@@ -3,4 +3,5 @@ set -o errexit
 pip install -r requirements.txt
 python cleanup_db.py
 python manage.py migrate
+python setup_admin.py
 python manage.py collectstatic --no-input
