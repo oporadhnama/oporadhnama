@@ -90,12 +90,12 @@
   },
   {
     "route": "/admin/dashboard/manage-news",
-    "firstLoadUncompressedJsBytes": 544874,
+    "firstLoadUncompressedJsBytes": 544884,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\0_qlhy_o9ht8v.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
       ".next\\static\\chunks\\2yzla2f76ym1m.js",
-      ".next\\static\\chunks\\29em-ehilio0s.js",
+      ".next\\static\\chunks\\0ncf_64uu628p.js",
       ".next\\static\\chunks\\3xeqwqrl2--e9.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\2nykiepra7i1k.js",

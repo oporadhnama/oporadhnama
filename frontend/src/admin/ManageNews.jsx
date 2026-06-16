@@ -74,9 +74,9 @@ export default function ManageNews() {
               </tr>
             </thead>
             <tbody>
-              {posts.map(post => (
+              {posts.map((post, index) => (
                 <tr key={post.id} className="border-b border-neutral-800/50 hover:bg-neutral-800/30 transition-colors">
-                  <td className="px-6 py-4 text-neutral-500">{post.id}</td>
+                  <td className="px-6 py-4 text-neutral-500">{posts.length - index}</td>
                   <td className="px-6 py-4 text-white font-medium max-w-xs truncate">{post.title}</td>
                   <td className="px-6 py-4">
                     <span className="text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded text-[10px] font-bold">
