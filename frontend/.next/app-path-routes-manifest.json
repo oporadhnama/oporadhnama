@@ -15,7 +15,7 @@
   "/archive/page": "/archive",
   "/contact/page": "/contact",
   "/graphs/page": "/graphs",
-  "/news/[id]/page": "/news/[id]",
+  "/news/[slug]/page": "/news/[slug]",
   "/news/page": "/news",
   "/page": "/",
   "/robots.txt/route": "/robots.txt",

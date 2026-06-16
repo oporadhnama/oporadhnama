@@ -1,0 +1,218 @@
+import { notFound } from 'next/navigation';
+import { API_BASE } from '../../../lib/api';
+
+const SITE_URL = 'https://oporadhnama.vercel.app';
+
+// ভিডিও এমবেড ইউআরএল জেনারেটর
+function getEmbedUrl(url) {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+  if (url.includes('facebook.com') || url.includes('fb.watch')) {
+    return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
+  }
+  return null;
+}
+
+// ইমেজ ইউআরএল জেনারেটর
+function resolveImageUrl(image) {
+  if (!image) return null;
+  return image.startsWith('http') ? image : `${API_BASE}${image}`;
+}
+
+/**
+ * Resilient fetch: tries by slug first, falls back to numeric ID if slug is all-digits.
+ * This ensures backward-compatibility with old /news/42 links.
+ */
+async function getPost(slug) {
+  const API = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, '').replace(/\/$/, '')
+    || 'https://oporadhnama.onrender.com';
+
+  // Try slug-based endpoint first
+  try {
+    const res = await fetch(`${API}/api/posts/${slug}/`, { cache: 'no-store' });
+    if (res.ok) {
+      const post = await res.json();
+      if (post && post.title) return post;
+    }
+  } catch (_) {
+    // fall through
+  }
+
+  // Fallback: if slug looks like a numeric ID, try /api/posts/{id}/
+  if (/^\d+$/.test(slug)) {
+    try {
+      const res = await fetch(`${API}/api/posts/${slug}/`, { cache: 'no-store' });
+      if (res.ok) {
+        const post = await res.json();
+        if (post && post.title) return post;
+      }
+    } catch (_) {
+      // fall through
+    }
+  }
+
+  // Last resort: scan the list
+  try {
+    const listRes = await fetch(`${API}/api/posts/`, { next: { revalidate: 60 } });
+    if (listRes.ok) {
+      const data = await listRes.json();
+      const list = Array.isArray(data) ? data : (data.results || []);
+      return list.find(
+        (item) => item.slug === slug || String(item.id) === String(slug)
+      ) || null;
+    }
+  } catch (_) {
+    // all attempts failed
+  }
+
+  return null;
+}
+
+// ────────────────────────────────────────────────
+// SEO metadata — dynamic per article
+// ────────────────────────────────────────────────
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const post = await getPost(slug);
+
+  if (!post) {
+    return { title: 'সংবাদ পাওয়া যায়নি | অপরাধনামা' };
+  }
+
+  const imageUrl = resolveImageUrl(post.image);
+  // Rich description: first 155 chars + ellipsis
+  const rawDesc = (post.description || '').trim();
+  const description = rawDesc.length > 155 ? rawDesc.slice(0, 155) + '…' : rawDesc || 'অপরাধনামার সংবাদ';
+  const canonicalSlug = post.slug || slug;
+  const canonicalUrl = `${SITE_URL}/news/${canonicalSlug}`;
+
+  return {
+    title: `${post.title} | অপরাধনামা`,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      url: canonicalUrl,
+      siteName: 'অপরাধনামা',
+      locale: 'bn_BD',
+      publishedTime: post.created_at || post.date,
+      section: post.category_name || 'সংবাদ',
+      images: imageUrl
+        ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }]
+        : [{ url: `${SITE_URL}/og-image.jpg`, width: 1200, height: 630, alt: 'অপরাধনামা' }],
+    },
+    twitter: {
+      card: imageUrl ? 'summary_large_image' : 'summary',
+      title: post.title,
+      description,
+      images: imageUrl ? [imageUrl] : [`${SITE_URL}/og-image.jpg`],
+    },
+  };
+}
+
+// ────────────────────────────────────────────────
+// Page component
+// ────────────────────────────────────────────────
+export default async function NewsDetailPage({ params }) {
+  const { slug } = await params;
+  const post = await getPost(slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  const embedUrl = post.show_video !== false ? getEmbedUrl(post.video_url) : null;
+  const imageUrl = resolveImageUrl(post.image);
+
+  return (
+    <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-4xl mx-auto pb-16">
+      {/* Back link */}
+      <a href="/all-news" className="text-neutral-500 hover:text-[#E50914] text-sm mb-6 inline-block transition-colors">
+        ← সকল সংবাদে ফিরে যান
+      </a>
+
+      {/* Article heading */}
+      <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4">
+        {post.title}
+      </h1>
+
+      {/* Meta row */}
+      <div className="flex flex-wrap gap-4 text-sm text-neutral-500 mb-8 pb-6 border-b border-neutral-800">
+        <span>📅 {post.date}</span>
+        <span>📂 {post.category_name}</span>
+        <span>📍 {post.division}</span>
+        {post.location_text ? <span>🏷️ {post.location_text}</span> : null}
+      </div>
+
+      {/* Featured image */}
+      {imageUrl ? (
+        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
+          <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
+        </div>
+      ) : null}
+
+      {/* Embedded video */}
+      {embedUrl ? (
+        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
+          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              src={embedUrl}
+              title={`ভিডিও: ${post.title}`}
+              className="absolute inset-0 w-full h-full"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {/* Article body */}
+      <div className="text-neutral-300 text-base leading-relaxed whitespace-pre-line mb-8">
+        {post.description}
+      </div>
+
+      {/* Source link */}
+      {post.source_link ? (
+        <a
+          href={post.source_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block text-[#E50914] text-sm font-medium hover:underline"
+        >
+          সোর্স লিংক দেখুন →
+        </a>
+      ) : null}
+
+      {/* JSON-LD structured data for Google News */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'NewsArticle',
+            headline: post.title,
+            description: (post.description || '').slice(0, 155),
+            datePublished: post.created_at || post.date,
+            dateModified: post.created_at || post.date,
+            url: `${SITE_URL}/news/${post.slug || slug}`,
+            image: imageUrl ? [imageUrl] : [],
+            author: { '@type': 'Organization', name: 'অপরাধনামা' },
+            publisher: {
+              '@type': 'Organization',
+              name: 'অপরাধনামা',
+              url: SITE_URL,
+            },
+            articleSection: post.category_name || 'সংবাদ',
+            inLanguage: 'bn',
+          }),
+        }}
+      />
+    </div>
+  );
+}

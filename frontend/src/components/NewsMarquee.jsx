@@ -7,12 +7,10 @@ import { fetchPosts } from '../api';
 export default function NewsMarquee({ initialPosts = [] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(initialPosts.length === 0);
-  
+
   const containerRef = useRef(null);
   const isPaused = useRef(false);
   const isWheelScrolling = useRef(false);
-  
-  // আগের কোডে এই দুটি লাইন মিসিং ছিল, যা আমি যোগ করে দিয়েছি
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
@@ -35,14 +33,13 @@ export default function NewsMarquee({ initialPosts = [] }) {
       .catch(() => setLoading(false));
   }, [initialPosts]);
 
-  // 🚨 ফিক্স: অ্যানিমেশনের useEffect-টি অবশ্যই early return-এর ওপরে থাকতে হবে!
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     let animationId;
     let lastTime = 0;
-    const scrollSpeed = 1; // pixels per frame
+    const scrollSpeed = 1;
 
     const animate = (time) => {
       if (isPaused.current || isWheelScrolling.current) {
@@ -68,19 +65,15 @@ export default function NewsMarquee({ initialPosts = [] }) {
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [loading, posts.length]); // ডিপেন্ডেন্সি যোগ করা হয়েছে
+  }, [loading, posts.length]);
 
-  // React-এর নিয়ম অনুযায়ী সব Hook শেষে এটি থাকবে
   if (!loading && posts.length === 0) return null;
 
-  // Duplicate once for seamless infinite loop
   const scrollPosts = [...posts, ...posts];
 
-  // Hover pause functionality
   const handleMouseEnter = () => { isPaused.current = true; };
   const handleMouseLeave = () => { isPaused.current = false; };
 
-  // Mouse wheel scrolling
   const handleWheel = (e) => {
     if (!containerRef.current) return;
     isWheelScrolling.current = true;
@@ -92,7 +85,6 @@ export default function NewsMarquee({ initialPosts = [] }) {
     setTimeout(() => { isWheelScrolling.current = false; }, 100);
   };
 
-  // Touch event handlers
   const handleTouchStart = (e) => {
     if (!containerRef.current) return;
     isPaused.current = true;
@@ -114,62 +106,79 @@ export default function NewsMarquee({ initialPosts = [] }) {
   return (
     <section className="mt-6 md:mt-16 w-full relative z-10">
       {/* ── Section Title Bar ── */}
-      <div className="bg-white py-3 px-8 flex items-center gap-3 border-y border-neutral-200">
-        <span className="text-[#E50914] font-extrabold text-lg">●</span>
-        <h2 className="text-black font-bold text-xl tracking-wide">
+      <div className="bg-neutral-950 py-3 px-8 flex items-center gap-3 border-y border-neutral-800">
+        <span className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse inline-block" />
+          <span className="text-[#E50914] font-extrabold text-xs uppercase tracking-widest">সরাসরি</span>
+        </span>
+        <h2 className="text-white font-bold text-xl tracking-wide">
           সাম্প্রতিক <span className="text-[#E50914]">খবর</span>
         </h2>
       </div>
 
       {/* ── Marquee Track ── */}
-      <div
-        className="overflow-x-auto whitespace-nowrap bg-neutral-950/50 border-b border-neutral-800 py-5"
-        ref={containerRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onWheel={handleWheel}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{ 
-          scrollbarWidth: 'none', 
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-          touchAction: 'pan-y pinch-zoom' // মোবাইলে ভার্টিকাল স্ক্রল যেন ব্লক না হয়
-        }}
-      >
-        <style>{`div::-webkit-scrollbar { display: none; }`}</style>
-        
-        {loading ? (
-          <div className="flex justify-center py-4">
-            <div className="w-6 h-6 border-2 border-neutral-700 border-t-[#E50914] rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="gap-6 flex px-4">
-            {scrollPosts.map((post, index) => (
-              <Link
-                key={`marquee-${index}`}
-                href={`/news/${post.id}`}
-                className="inline-block w-72 flex-shrink-0 bg-white rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300"
-              >
-                {/* Title */}
-                <h3 className="text-lg font-bold text-black mb-2 whitespace-normal leading-snug line-clamp-2">
-                  {post.title || ''}
-                </h3>
+      <div className="relative">
+        {/* Left fade edge */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none" />
+        {/* Right fade edge */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none" />
 
-                {/* Description */}
-                <p className="text-sm text-gray-600 line-clamp-2 mb-3 whitespace-normal leading-relaxed">
-                  {post.description || ''}
-                </p>
+        <div
+          className="overflow-x-auto whitespace-nowrap bg-neutral-950/50 border-b border-neutral-800 py-5 scrollbar-hide"
+          ref={containerRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-y pinch-zoom'
+          }}
+        >
+          {loading ? (
+            <div className="flex justify-center py-4" role="status" aria-label="লোড হচ্ছে...">
+              <div className="w-6 h-6 border-2 border-neutral-700 border-t-[#E50914] rounded-full animate-spin" />
+              <span className="sr-only">লোড হচ্ছে...</span>
+            </div>
+          ) : (
+            <div className="gap-5 flex px-8">
+              {scrollPosts.map((post, index) => (
+                <Link
+                  key={`marquee-${index}`}
+                  href={`/news/${post.slug || post.id}`}
+                  className="inline-block w-72 flex-shrink-0 bg-neutral-900 border border-neutral-800 hover:border-[#E50914]/40 rounded-lg p-5 shadow-md hover:shadow-xl hover:shadow-black/40 transition-all duration-300"
+                  aria-label={`সংবাদ পড়ুন: ${post.title || ''}`}
+                >
+                  {/* Category badge */}
+                  {post.category_name && (
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded mb-3">
+                      {post.category_name}
+                    </span>
+                  )}
 
-                {/* Action Link */}
-                <span className="text-red-600 font-semibold text-sm hover:underline transition-all duration-200 inline-block">
-                  বিস্তারিত পড়ুন →
-                </span>
-              </Link>
-            ))}
-          </div>
-        )}
+                  {/* Title */}
+                  <h3 className="text-base font-bold text-white mb-2 whitespace-normal leading-snug line-clamp-2">
+                    {post.title || ''}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-sm text-neutral-400 line-clamp-2 mb-3 whitespace-normal leading-relaxed">
+                    {post.description || ''}
+                  </p>
+
+                  {/* Action Link */}
+                  <span className="text-[#E50914] font-semibold text-sm hover:underline transition-all duration-200 inline-block">
+                    বিস্তারিত পড়ুন →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

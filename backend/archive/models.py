@@ -1,4 +1,26 @@
 from django.db import models
+from django.utils.text import slugify
+
+
+# Static map: Bengali division names → ASCII slug segments
+DIVISION_SLUG_MAP = {
+    'ঢাকা': 'dhaka',
+    'চট্টগ্রাম': 'chittagong',
+    'রাজশাহী': 'rajshahi',
+    'খুলনা': 'khulna',
+    'বরিশাল': 'barisal',
+    'সিলেট': 'sylhet',
+    'রংপুর': 'rangpur',
+    'ময়মনসিংহ': 'mymensingh',
+    'অজানা': 'unknown',
+}
+
+
+def generate_post_slug(post_id, division, date):
+    """Build a URL-safe slug: {id}-{division_ascii}-{YYYY-MM-DD}"""
+    div_ascii = DIVISION_SLUG_MAP.get(division, slugify(division) or 'bd')
+    date_str = str(date)  # already YYYY-MM-DD
+    return f"{post_id}-{div_ascii}-{date_str}"
 
 
 class Category(models.Model):
@@ -24,12 +46,32 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_user_report = models.BooleanField(default=False, help_text='Mark as a raw user submission from the public report form')
     created_at = models.DateTimeField(auto_now_add=True)
+    # SEO slug — auto-populated on first save; unique across all posts
+    slug = models.SlugField(
+        max_length=300,
+        unique=True,
+        blank=True,
+        allow_unicode=False,
+        help_text="Auto-generated SEO-friendly URL segment. Format: {id}-{division}-{date}",
+    )
 
     class Meta:
         ordering = ['-date', '-created_at']
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # First save: get the PK by saving without slug, then set slug and save again
+        if not self.pk:
+            super().save(*args, **kwargs)
+            self.slug = generate_post_slug(self.pk, self.division, self.date)
+            # Use update_fields to avoid recursion
+            Post.objects.filter(pk=self.pk).update(slug=self.slug)
+        else:
+            if not self.slug:
+                self.slug = generate_post_slug(self.pk, self.division, self.date)
+            super().save(*args, **kwargs)
 
 
 class ActivityLog(models.Model):

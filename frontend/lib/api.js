@@ -42,6 +42,10 @@ export async function fetchPosts(params = '') {
   return { results: [], count: 0, next: null, previous: null };
 }
 
-export async function fetchPostById(id) {
-  return fetchJson(`/api/posts/${id}/`);
+export async function fetchPostBySlug(slug) {
+  return fetchJson(`/api/posts/${slug}/`);
 }
+
+// Backward-compatible alias
+export const fetchPostById = fetchPostBySlug;
+

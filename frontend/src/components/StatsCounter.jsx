@@ -156,7 +156,7 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
       }
 
       if (statsResult.status === 'rejected' || categoriesResult.status === 'rejected') {
-        setErrorMessage('Statistics are temporarily unavailable.');
+        setErrorMessage('পরিসংখ্যান সাময়িক অনুপলব্ধ।');
       } else {
         setErrorMessage('');
       }
@@ -172,7 +172,7 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
       console.error('Unexpected StatsCounter failure:', err);
       setCounts({});
       setCategoryMap({});
-      setErrorMessage('Statistics are temporarily unavailable.');
+      setErrorMessage('পরিসংখ্যান সাময়িক অনুপলব্ধ।');
       setLoading(false);
     });
 
@@ -279,7 +279,7 @@ class StatsCounterBoundary extends React.Component {
                 0+
               </h3>
               <p className="text-neutral-300 mt-1 text-sm sm:text-base md:text-xl font-semibold">
-                Statistics unavailable
+                পরিসংখ্যান সাময়িক অনুপলব্ধ
               </p>
             </div>
           </div>

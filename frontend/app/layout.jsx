@@ -2,19 +2,49 @@ import './globals.css';
 import SiteShell from '../components/SiteShell';
 
 export const metadata = {
-  title: 'অপরাধনামা',
-  description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ ও বিশ্লেষণ প্ল্যাটফর্ম',
+  // metadataBase is required so Next.js can resolve relative OG image URLs
+  metadataBase: new URL('https://oporadhnama.vercel.app'),
+  title: {
+    default: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+    template: '%s | অপরাধনামা',
+  },
+  description:
+    'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+  keywords: [
+    'অপরাধনামা',
+    'বাংলাদেশ অপরাধ সংবাদ',
+    'crime news bangladesh',
+    'bangla crime news',
+    'অপরাধ বার্তা',
+    'বাংলাদেশ সংবাদ',
+    'dhaka crime',
+  ],
+  authors: [{ name: 'অপরাধনামা', url: 'https://oporadhnama.vercel.app' }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://oporadhnama.vercel.app',
+  },
   openGraph: {
-    title: 'অপরাধনামা',
-    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ ও বিশ্লেষণ প্ল্যাটফর্ম',
+    title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+    description:
+      'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
     url: 'https://oporadhnama.vercel.app',
-    siteName: 'Oporadhnama',
+    siteName: 'অপরাধনামা',
     images: [
       {
-        url: 'https://oporadhnama.vercel.app/og-image.jpg',
+        url: '/og-image.jpg',   // resolved relative to metadataBase
         width: 1200,
         height: 630,
-        alt: 'Oporadhnama - বাংলাদেশের অপরাধভিত্তিক সংবাদ',
+        alt: 'অপরাধনামা - বাংলাদেশের অপরাধভিত্তিক সংবাদ',
       },
     ],
     locale: 'bn_BD',
@@ -22,9 +52,10 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'অপরাধনামা',
-    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ ও বিশ্লেষণ প্ল্যাটফর্ম',
-    images: ['https://oporadhnama.vercel.app/twitter-image.jpg'],
+    title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+    description:
+      'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    images: ['/og-image.jpg'],
   },
 };
 

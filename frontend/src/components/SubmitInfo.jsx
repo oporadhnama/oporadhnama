@@ -65,9 +65,22 @@ export default function SubmitInfo() {
       <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center">
         তথ্য <span className="text-[#E50914]">দিন</span>
       </h1>
-      <p className="text-neutral-400 text-center mb-10 text-sm">
+      <p className="text-neutral-400 text-center mb-6 text-sm">
         আপনার চারপাশে ঘটে যাওয়া অপরাধমূলক কর্মকাণ্ডের তথ্য নির্দ্বিধায় আমাদের পাঠান।
       </p>
+
+      {/* Privacy Notice */}
+      <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-4 mb-8 flex gap-3 items-start">
+        <span className="text-[#E50914] text-xl leading-none mt-0.5" aria-hidden="true">🔒</span>
+        <div>
+          <p className="text-neutral-300 text-sm font-medium mb-0.5">
+            আপনার পরিচয় সম্পূর্ণ গোপন রাখা হবে।
+          </p>
+          <p className="text-neutral-500 text-xs leading-relaxed">
+            আমরা কোনো ব্যক্তিগত তথ্য সংগ্রহ করি না। প্রতিটি তথ্য সম্পূর্ণ নিরাপদ ও গোপনীয়ভাবে প্রক্রিয়া করা হয়।
+          </p>
+        </div>
+      </div>
 
       {success && (
         <div className="bg-green-900/30 border border-green-700 text-green-400 rounded-xl p-4 mb-6 text-center text-sm">

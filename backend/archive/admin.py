@@ -10,9 +10,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'category', 'division', 'date', 'created_at')
+    list_display = ('id', 'slug', 'title', 'category', 'division', 'date', 'created_at')
     list_filter = ('category', 'division', 'date')
-    search_fields = ('title', 'description', 'location_text')
+    search_fields = ('title', 'description', 'location_text', 'slug')
     list_per_page = 25
     date_hierarchy = 'date'
     ordering = ('-date', '-created_at')
+    readonly_fields = ('slug',)

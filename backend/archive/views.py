@@ -61,6 +61,8 @@ class PostViewSet(viewsets.ModelViewSet):
     """
     Public read access. Authenticated staff/admin write access.
     Logs create/delete/update actions to ActivityLog.
+    Supports lookup by slug (e.g. /api/posts/42-dhaka-2026-06-15/) or by
+    numeric ID for backward compatibility (e.g. /api/posts/42/).
     """
     queryset = Post.objects.select_related('category').filter(is_user_report=False).order_by('-created_at')
     serializer_class = PostSerializer
@@ -68,6 +70,21 @@ class PostViewSet(viewsets.ModelViewSet):
     filterset_class = PostFilter
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticatedOrReadOnly]
+    lookup_field = 'slug'
+
+    def get_object(self):
+        """Support both slug and numeric-ID lookups for backward compatibility."""
+        lookup_value = self.kwargs.get(self.lookup_field, '')
+        # If the lookup value is purely numeric, treat it as a PK fallback
+        if lookup_value.isdigit():
+            from django.shortcuts import get_object_or_404
+            obj = get_object_or_404(
+                self.get_queryset(),
+                pk=int(lookup_value),
+            )
+            self.check_object_permissions(self.request, obj)
+            return obj
+        return super().get_object()
 
     def perform_create(self, serializer):
         post = serializer.save()
@@ -94,6 +111,7 @@ class PostViewSet(viewsets.ModelViewSet):
             action='post_updated',
             target_label=post.title,
         )
+
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

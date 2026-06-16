@@ -31,12 +31,12 @@
       "namedRegex": "^/admin/dashboard/user\\-reports/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
-      "page": "/news/[id]",
+      "page": "/news/[slug]",
       "regex": "^/news/([^/]+?)(?:/)?$",
       "routeKeys": {
-        "nxtPid": "nxtPid"
+        "nxtPslug": "nxtPslug"
       },
-      "namedRegex": "^/news/(?<nxtPid>[^/]+?)(?:/)?$"
+      "namedRegex": "^/news/(?<nxtPslug>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [

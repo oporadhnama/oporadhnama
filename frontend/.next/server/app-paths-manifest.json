@@ -15,7 +15,7 @@
   "/archive/page": "app/archive/page.js",
   "/contact/page": "app/contact/page.js",
   "/graphs/page": "app/graphs/page.js",
-  "/news/[id]/page": "app/news/[id]/page.js",
+  "/news/[slug]/page": "app/news/[slug]/page.js",
   "/news/page": "app/news/page.js",
   "/page": "app/page.js",
   "/robots.txt/route": "app/robots.txt/route.js",

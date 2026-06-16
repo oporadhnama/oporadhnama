@@ -88,7 +88,7 @@ export default function ManageNews() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <Link
-                        href={`/news/${post.id}`}
+                        href={`/news/${post.slug || post.id}`}
                         target="_blank"
                         className="text-blue-400 hover:text-blue-300 transition-colors"
                         title="দেখুন"

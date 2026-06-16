@@ -19,6 +19,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = [
             'id',
+            'slug',
             'title',
             'description',
             'source_link',
@@ -32,6 +33,8 @@ class PostSerializer(serializers.ModelSerializer):
             'category_name',
             'created_at',
         ]
+        read_only_fields = ['slug']
+
 
     def create(self, validated_data):
         category = validated_data.get('category')

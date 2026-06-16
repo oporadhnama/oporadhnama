@@ -5,6 +5,73 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { fetchPosts, fetchCategories } from '../api';
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatBengaliDate(dateStr) {
+  if (!dateStr) return '';
+  try {
+    return new Intl.DateTimeFormat('bn-BD', { dateStyle: 'long' }).format(new Date(dateStr));
+  } catch {
+    return dateStr;
+  }
+}
+
+function getBengaliError(err) {
+  const msg = typeof err === 'string' ? err : err?.message || '';
+  if (!msg || msg.toLowerCase().includes('network') || msg.toLowerCase().includes('failed to fetch')) {
+    return 'নেটওয়ার্ক সংযোগে সমস্যা। অনুগ্রহ করে আবার চেষ্টা করুন।';
+  }
+  if (msg.includes('500')) return 'সার্ভারে সমস্যা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।';
+  if (msg.includes('404')) return 'তথ্য খুঁজে পাওয়া যায়নি।';
+  if (msg.includes('403') || msg.includes('401')) return 'এই তথ্য দেখার অনুমতি নেই।';
+  return 'তথ্য আনতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
+}
+
+// ── Skeleton Card ─────────────────────────────────────────────────────────────
+
+function SkeletonCard() {
+  return (
+    <div className="animate-pulse bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 flex flex-col justify-between min-h-[200px]">
+      <div>
+        <div className="h-3 w-16 bg-neutral-800 rounded mb-3" />
+        <div className="h-5 w-full bg-neutral-800 rounded mb-2" />
+        <div className="h-4 w-4/5 bg-neutral-800 rounded mb-1" />
+        <div className="h-4 w-3/5 bg-neutral-800 rounded mb-4" />
+      </div>
+      <div className="pt-3 border-t border-neutral-800 flex justify-between items-center">
+        <div className="h-3 w-24 bg-neutral-800 rounded" />
+        <div className="h-3 w-20 bg-neutral-800 rounded" />
+      </div>
+    </div>
+  );
+}
+
+// ── Empty State ───────────────────────────────────────────────────────────────
+
+function EmptyState({ onClear, hasFilters }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <span className="text-6xl mb-4 select-none" aria-hidden="true">🔍</span>
+      <h3 className="text-lg font-semibold text-neutral-300 mb-2">কোনো সংবাদ পাওয়া যায়নি</h3>
+      <p className="text-neutral-500 text-sm max-w-sm leading-relaxed">
+        {hasFilters
+          ? 'আপনার ফিল্টার পরিবর্তন করে আবার চেষ্টা করুন, অথবা সব ফিল্টার মুছুন।'
+          : 'এই মুহূর্তে কোনো সংবাদ নেই।'}
+      </p>
+      {hasFilters && (
+        <button
+          onClick={onClear}
+          className="mt-6 text-[#E50914] text-sm font-medium hover:underline transition-all"
+        >
+          সব ফিল্টার মুছুন →
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────────
+
 export default function NewsArchive() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +87,8 @@ export default function NewsArchive() {
   const division = searchParams.get('division') || '';
   const date = searchParams.get('date') || '';
   const categoryId = searchParams.get('category') || '';
+
+  const hasFilters = !!(division || date || categoryId);
 
   const divisions = [
     'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা',
@@ -40,16 +109,18 @@ export default function NewsArchive() {
     router.push(qs ? `${pathname}?${qs}` : pathname);
   };
 
+  const clearFilters = () => router.push(pathname);
+
   const handleLoadMore = async () => {
     if (loadingMore || !hasMore) return;
 
     setLoadingMore(true);
     try {
       const nextPage = page + 1;
-      const offset = (nextPage - 1) * 100;
-      const limit = 100;
+      const offset = (nextPage - 1) * 24;
+      const limit = 24;
 
-      let params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams.toString());
       params.set('limit', limit);
       params.set('offset', offset);
 
@@ -58,7 +129,7 @@ export default function NewsArchive() {
       setHasMore(!!data.next);
       setPage(nextPage);
     } catch (err) {
-      setError(err.message);
+      setError(getBengaliError(err));
     } finally {
       setLoadingMore(false);
     }
@@ -70,17 +141,30 @@ export default function NewsArchive() {
     setPage(1);
     setHasMore(true);
 
-    fetchPosts(searchParams.toString())
+    const params = new URLSearchParams(searchParams.toString());
+    if (!params.has('limit')) params.set('limit', '24');
+
+    fetchPosts(params.toString())
       .then(data => {
         setPosts(data.results);
         setHasMore(!!data.next);
         setLoading(false);
       })
       .catch(err => {
-        setError(err.message);
+        setError(getBengaliError(err));
         setLoading(false);
       });
   }, [searchParams]);
+
+  const retryFetch = () => {
+    setError(null);
+    setLoading(true);
+    const params = new URLSearchParams(searchParams.toString());
+    if (!params.has('limit')) params.set('limit', '24');
+    fetchPosts(params.toString())
+      .then(data => { setPosts(data.results); setHasMore(!!data.next); setLoading(false); })
+      .catch(err => { setError(getBengaliError(err)); setLoading(false); });
+  };
 
   return (
     <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-6xl mx-auto">
@@ -128,9 +212,9 @@ export default function NewsArchive() {
           />
         </div>
 
-        {(categoryId || division || date) && (
+        {hasFilters && (
           <button
-            onClick={() => router.push(pathname)}
+            onClick={clearFilters}
             className="mt-auto bg-[#E50914]/10 text-[#E50914] border border-[#E50914]/30 rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#E50914]/20 transition-colors"
           >
             ফিল্টার মুছুন
@@ -138,55 +222,83 @@ export default function NewsArchive() {
         )}
       </div>
 
+      {/* Results count */}
+      {!loading && !error && posts.length > 0 && (
+        <p className="text-neutral-500 text-sm mb-6 text-center">
+          {posts.length}টি সংবাদ পাওয়া গেছে
+        </p>
+      )}
+
+      {/* Skeleton loading state */}
       {loading && (
-        <div className="flex justify-center py-20">
-          <div className="w-10 h-10 border-4 border-neutral-700 border-t-[#E50914] rounded-full animate-spin"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       )}
 
-      {error && <p className="text-center text-red-400 py-10">{error}</p>}
-
-      {!loading && !error && posts.length === 0 && (
-        <p className="text-center text-neutral-500 py-10">এই ফিল্টারে কোনো সংবাদ পাওয়া যায়নি।</p>
+      {/* Error state */}
+      {error && !loading && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <span className="text-5xl mb-4 select-none" aria-hidden="true">⚠️</span>
+          <p className="text-red-400 text-base mb-4">{error}</p>
+          <button
+            onClick={retryFetch}
+            className="bg-[#E50914]/10 text-[#E50914] border border-[#E50914]/30 rounded-lg px-5 py-2 text-sm font-medium hover:bg-[#E50914]/20 transition-colors"
+          >
+            আবার চেষ্টা করুন
+          </button>
+        </div>
       )}
 
+      {/* Empty state */}
+      {!loading && !error && posts.length === 0 && (
+        <EmptyState onClear={clearFilters} hasFilters={hasFilters} />
+      )}
+
+      {/* News grid */}
       {!loading && !error && posts.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-             {posts.map(post => (
-               <Link
-                 key={post.id}
-                 href={`/news/${post.id}`}
-                 className="bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
-               >
-                 <span className="self-start text-[10px] font-bold uppercase tracking-wider text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded mb-3">
-                   {post.category_name}
-                 </span>
-                 <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2">
-                   {post.title}
-                 </h3>
-                 <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-grow">
-                   {post.description}
-                 </p>
-                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
-                   <div className="flex flex-col">
-                     <span className="text-neutral-500 text-xs">{post.date}</span>
-                     <span className="text-neutral-600 text-[10px]">{post.division}</span>
-                   </div>
-                   <span className="text-[#E50914] text-xs font-bold hover:underline">
-                     বিস্তারিত পড়ুন →
-                   </span>
-                 </div>
-               </Link>
-             ))}
+            {posts.map(post => (
+              <Link
+                key={post.id}
+                href={`/news/${post.slug || post.id}`}
+                className="bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
+                aria-label={`সংবাদ পড়ুন: ${post.title}`}
+              >
+                <span className="self-start text-[10px] font-bold uppercase tracking-wider text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded mb-3">
+                  {post.category_name}
+                </span>
+                <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2">
+                  {post.title}
+                </h3>
+                <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-grow">
+                  {post.description}
+                </p>
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
+                  <div className="flex flex-col">
+                    <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
+                    <span className="text-neutral-600 text-[10px]">{post.division}</span>
+                  </div>
+                  <span className="text-[#E50914] text-xs font-bold hover:underline">
+                    বিস্তারিত পড়ুন →
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
 
+          {/* Load more spinner */}
           {loadingMore && (
-            <div className="flex justify-center py-8 mt-8">
-              <div className="w-8 h-8 border-4 border-neutral-700 border-t-[#E50914] rounded-full animate-spin"></div>
+            <div className="flex justify-center py-8 mt-8" role="status" aria-label="লোড হচ্ছে...">
+              <div className="w-8 h-8 border-4 border-neutral-700 border-t-[#E50914] rounded-full animate-spin" />
+              <span className="sr-only">লোড হচ্ছে...</span>
             </div>
           )}
 
+          {/* Load more button */}
           {hasMore && !loadingMore && (
             <div className="flex justify-center py-8 mt-8">
               <button
