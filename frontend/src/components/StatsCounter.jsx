@@ -182,11 +182,20 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
   }, [hasInitialData, initialCounts, initialCategories]);
 
   const totalNews = useMemo(() => {
+    if (Object.prototype.hasOwnProperty.call(counts, 'total_posts')) {
+      return toSafeNumber(counts.total_posts);
+    }
     if (Object.prototype.hasOwnProperty.call(counts, 'total')) {
       return toSafeNumber(counts.total);
     }
 
-    return Object.values(counts).reduce((sum, value) => sum + toSafeNumber(value), 0);
+    // Fallback: sum up only category counts, excluding metadata keys
+    return Object.entries(counts).reduce((sum, [key, value]) => {
+      if (['total_posts', 'total_categories', 'total', 'counts'].includes(key)) {
+        return sum;
+      }
+      return sum + toSafeNumber(value);
+    }, 0);
   }, [counts]);
 
   const murderCount = useMemo(() => toSafeNumber(counts['খুন']), [counts]);
