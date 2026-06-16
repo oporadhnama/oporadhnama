@@ -10,62 +10,71 @@ export default function NewsMarquee({ initialPosts = [] }) {
 
   const containerRef = useRef(null);
   const isPaused = useRef(false);
-  const isWheelScrolling = useRef(false);
   const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const scrollLeftRef = useRef(0);
 
+  // ── Fetch posts ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (initialPosts.length > 0) {
       setPosts(initialPosts);
       setLoading(false);
       return;
     }
-
     fetchPosts()
       .then(items => {
         const postsResult = Array.isArray(items) ? items : items.results || [];
-        const sortedPosts = postsResult.sort((a, b) =>
-          new Date(b.created_at) - new Date(a.created_at)
-        ).slice(0, 10);
-        setPosts(sortedPosts);
+        const sorted = postsResult
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 10);
+        setPosts(sorted);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [initialPosts]);
 
+  // ── Auto-scroll animation ────────────────────────────────────────────────
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     let animationId;
     let lastTime = 0;
-    const scrollSpeed = 1;
 
     const animate = (time) => {
-      if (isPaused.current || isWheelScrolling.current) {
-        animationId = requestAnimationFrame(animate);
-        return;
+      if (!isPaused.current) {
+        if (!lastTime) lastTime = time;
+        const delta = time - lastTime;
+        container.scrollLeft += 0.06 * delta;
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        }
       }
-
-      if (!lastTime) lastTime = time;
-      const deltaTime = time - lastTime;
       lastTime = time;
-
-      container.scrollLeft += scrollSpeed * deltaTime * 0.06;
-
-      if (container.scrollLeft >= container.scrollWidth / 2) {
-        container.scrollLeft = 0;
-      }
-
       animationId = requestAnimationFrame(animate);
     };
 
     animationId = requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
+    return () => cancelAnimationFrame(animationId);
   }, [loading, posts.length]);
+
+  // ── Wheel: non-passive listener so preventDefault() actually works ───────
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onWheel = (e) => {
+      // Capture the scroll — prevent the page from scrolling at all
+      e.preventDefault();
+      e.stopPropagation();
+      // Use deltaY for vertical wheel, deltaX for horizontal (trackpad)
+      container.scrollLeft += e.deltaY || e.deltaX;
+    };
+
+    // { passive: false } is essential — React synthetic events are passive by
+    // default, which means e.preventDefault() is silently ignored there.
+    container.addEventListener('wheel', onWheel, { passive: false });
+    return () => container.removeEventListener('wheel', onWheel);
+  }, [loading]);
 
   if (!loading && posts.length === 0) return null;
 
@@ -74,34 +83,24 @@ export default function NewsMarquee({ initialPosts = [] }) {
   const handleMouseEnter = () => { isPaused.current = true; };
   const handleMouseLeave = () => { isPaused.current = false; };
 
-  const handleWheel = (e) => {
-    if (!containerRef.current) return;
-    isWheelScrolling.current = true;
-    e.preventDefault();
-    containerRef.current.scrollLeft += e.deltaY;
-    if (e.deltaX) {
-      containerRef.current.scrollLeft += e.deltaX;
-    }
-    setTimeout(() => { isWheelScrolling.current = false; }, 100);
-  };
-
+  // ── Touch handlers ───────────────────────────────────────────────────────
   const handleTouchStart = (e) => {
     if (!containerRef.current) return;
     isPaused.current = true;
     startX.current = e.touches[0].pageX - containerRef.current.offsetLeft;
-    scrollLeft.current = containerRef.current.scrollLeft;
+    scrollLeftRef.current = containerRef.current.scrollLeft;
   };
 
   const handleTouchMove = (e) => {
     if (!containerRef.current) return;
+    // Prevent vertical page scroll while dragging the marquee horizontally
+    e.preventDefault();
     const x = e.touches[0].pageX - containerRef.current.offsetLeft;
     const walk = (x - startX.current) * 2;
-    containerRef.current.scrollLeft = scrollLeft.current - walk;
+    containerRef.current.scrollLeft = scrollLeftRef.current - walk;
   };
 
-  const handleTouchEnd = () => {
-    isPaused.current = false;
-  };
+  const handleTouchEnd = () => { isPaused.current = false; };
 
   return (
     <section className="mt-6 md:mt-16 w-full relative z-10">
@@ -121,11 +120,10 @@ export default function NewsMarquee({ initialPosts = [] }) {
         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none" />
 
         <div
-          className="overflow-x-auto whitespace-nowrap bg-neutral-950/50 border-b border-neutral-800 py-5 scrollbar-hide"
           ref={containerRef}
+          className="overflow-x-auto whitespace-nowrap bg-neutral-950/50 border-b border-neutral-800 py-5"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          onWheel={handleWheel}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -133,7 +131,9 @@ export default function NewsMarquee({ initialPosts = [] }) {
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             WebkitOverflowScrolling: 'touch',
-            touchAction: 'pan-y pinch-zoom'
+            // Allow only horizontal touch-drag on this element;
+            // vertical panning is handled by the touch handlers above.
+            touchAction: 'pan-x',
           }}
         >
           {loading ? (
