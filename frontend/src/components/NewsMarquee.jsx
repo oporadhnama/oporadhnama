@@ -106,14 +106,10 @@ export default function NewsMarquee({ initialPosts = [] }) {
   return (
     <section className="mt-6 md:mt-16 w-full relative z-10">
       {/* ── Section Title Bar ── */}
-      <div className="bg-gradient-to-r from-[#E50914] via-[#b00710] to-neutral-900 py-3 px-8 flex items-center gap-3 border-y border-[#E50914]/40 shadow-lg shadow-[#E50914]/10">
-        <span className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse inline-block shadow-sm shadow-white/50" />
-          <span className="text-white/90 font-extrabold text-xs uppercase tracking-widest drop-shadow">সরাসরি</span>
-        </span>
-        <div className="w-px h-5 bg-white/30 mx-1" />
-        <h2 className="text-white font-bold text-xl tracking-wide drop-shadow">
-          লাইভ <span className="text-yellow-300 font-extrabold">সাম্প্রতিক খবর</span>
+      <div className="bg-white/95 py-3 px-8 flex items-center gap-3 border-y-2 border-[#E50914]/30 shadow-sm">
+        <span className="w-2.5 h-2.5 rounded-full bg-[#E50914] animate-pulse inline-block shadow-sm shadow-[#E50914]/50 flex-shrink-0" />
+        <h2 className="font-bold text-xl tracking-wide">
+          <span className="text-neutral-900">সাম্প্রতিক </span><span className="text-[#E50914]">খবর</span>
         </h2>
       </div>
 
