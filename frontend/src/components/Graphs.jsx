@@ -299,12 +299,29 @@ export default function Graphs() {
   const axFs = isMobile ? 10 : 12;
   const dotR = isMobile ? 3 : 4;
 
+  const getMobileMinWidth = () => {
+    if (!isMobile) return '100%';
+    if (chartType === 'bar') {
+      // 25px per bar, plus some padding
+      return Math.max(window.innerWidth - 40, selMonths.size * activeCats.length * 25 + 60);
+    }
+    // For line/area charts, base width on number of months
+    return Math.max(window.innerWidth - 40, selMonths.size * 80);
+  };
+
+  const getSingleMonthHeight = () => {
+    if (!isMobile) return CH;
+    // Dynamic height: 40px per bar, plus padding
+    return Math.max(260, activeCats.length * 40 + 40);
+  };
+
   const renderMobileScrollWrapper = (children) => {
     if (!isMobile) return children;
+    const minW = getMobileMinWidth();
     return (
       <div className="gr-scroll" style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         {/* Height must be explicitly 100% so it wraps the ResponsiveContainer tightly */}
-        <div style={{ minWidth: 600, height: '100%', paddingBottom: 10 }}>
+        <div style={{ minWidth: minW, height: '100%', paddingBottom: 10 }}>
           {children}
         </div>
       </div>
@@ -413,8 +430,7 @@ export default function Graphs() {
     if (selectedMonth !== 'all' && chartType === 'bar') {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
-          {/* Use aspect ratio for scaling instead of fixed height on mobile */}
-          <ResponsiveContainer width="100%" height={isMobile ? 320 : CH}>
+          <ResponsiveContainer width="100%" height={getSingleMonthHeight()}>
             <BarChart layout="vertical" data={singleMonthData} margin={{ top: 5, right: 20, left: isMobile ? 5 : 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} horizontal={false} />
               <XAxis type="number" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
