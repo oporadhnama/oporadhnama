@@ -303,7 +303,8 @@ export default function Graphs() {
     if (!isMobile) return children;
     return (
       <div className="gr-scroll" style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <div style={{ minWidth: 600, height: '100%' }}>
+        {/* Height must be explicitly 100% so it wraps the ResponsiveContainer tightly */}
+        <div style={{ minWidth: 600, height: '100%', paddingBottom: 10 }}>
           {children}
         </div>
       </div>
@@ -413,14 +414,14 @@ export default function Graphs() {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           {/* Use aspect ratio for scaling instead of fixed height on mobile */}
-          <ResponsiveContainer width="100%" aspect={isMobile ? 1.0 : undefined} height={isMobile ? undefined : CH}>
+          <ResponsiveContainer width="100%" height={isMobile ? 320 : CH}>
             <BarChart layout="vertical" data={singleMonthData} margin={{ top: 5, right: 20, left: isMobile ? 5 : 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} horizontal={false} />
               <XAxis type="number" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
               {/* Increased YAxis width to ensure Bengali labels do not truncate */}
               <YAxis type="category" dataKey="name" tick={{ fill: '#ccc', fontSize: isMobile ? 10 : 10 }} axisLine={false} tickLine={false} width={isMobile ? 110 : 110} />
               {!isMobile && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />}
-              <Bar dataKey="value" fill="#E50914" maxBarSize={isMobile ? 25 : 40} radius={[0, 4, 4, 0]}>
+              <Bar dataKey="value" fill="#E50914" maxBarSize={isMobile ? 20 : 40} radius={[0, 4, 4, 0]}>
                 {singleMonthData.map((e, i) => (
                   <Cell key={i} fill={e.color} />
                 ))}
@@ -437,7 +438,7 @@ export default function Graphs() {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           {renderMobileScrollWrapper(
-            <ResponsiveContainer width="100%" aspect={isMobile ? 1.5 : undefined} height={isMobile ? undefined : CH}>
+            <ResponsiveContainer width="100%" height={isMobile ? 260 : CH}>
               <LineChart {...common} onClick={(e) => { if (isMobile && e?.activePayload) setActiveMobileData(e.activePayload[0].payload); }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={G} />
                 <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs, angle: isMobile ? -45 : 0 }} textAnchor={isMobile ? 'end' : 'middle'} axisLine={false} tickLine={false} padding={{ left: 10, right: 10 }} height={isMobile ? 40 : 30} />
@@ -460,7 +461,7 @@ export default function Graphs() {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           {renderMobileScrollWrapper(
-            <ResponsiveContainer width="100%" aspect={isMobile ? 1.5 : undefined} height={isMobile ? undefined : CH}>
+            <ResponsiveContainer width="100%" height={isMobile ? 260 : CH}>
               <AreaChart {...common} onClick={(e) => { if (isMobile && e?.activePayload) setActiveMobileData(e.activePayload[0].payload); }}>
                 <defs>
                   {activeCats.map(c => (
@@ -492,7 +493,7 @@ export default function Graphs() {
     return (
       <div style={{ width: '100%', overflow: 'hidden' }}>
         {renderMobileScrollWrapper(
-          <ResponsiveContainer width="100%" aspect={isMobile ? 1.5 : undefined} height={isMobile ? undefined : CH}>
+          <ResponsiveContainer width="100%" height={isMobile ? 260 : CH}>
             <BarChart {...common} barCategoryGap={isMobile ? "10%" : "18%"} onClick={(e) => { if (isMobile && e?.activePayload) setActiveMobileData(e.activePayload[0].payload); }}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
               <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs, angle: isMobile ? -45 : 0 }} textAnchor={isMobile ? 'end' : 'middle'} axisLine={false} tickLine={false} height={isMobile ? 40 : 30} />
