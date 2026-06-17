@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   PieChart, Pie, Cell, Tooltip, XAxis, YAxis, CartesianGrid,
-  Legend, ResponsiveContainer,
+  ResponsiveContainer,
 } from 'recharts';
 
 /* ─── Raw Data ────────────────────────────────────────────────────────────── */
@@ -21,37 +21,37 @@ const MONTH_FULL = { 'ফেব্র': 'ফেব্রুয়ারি', '�
 
 /* ─── Categories ─────────────────────────────────────────────────────────── */
 const CATEGORIES = [
-  { key: 'dacoity',                       label: 'ডাকাতি',           color: '#E50914' },
-  { key: 'robbery',                       label: 'রাহাজানি',         color: '#ff6b6b' },
-  { key: 'murder',                        label: 'খুন',               color: '#ff4500' },
-  { key: 'speedy_trial',                  label: 'দ্রুত বিচার',      color: '#ff8c00' },
-  { key: 'rape',                          label: 'ধর্ষণ',            color: '#ffa500' },
+  { key: 'dacoity', label: 'ডাকাতি', color: '#E50914' },
+  { key: 'robbery', label: 'রাহাজানি', color: '#ff6b6b' },
+  { key: 'murder', label: 'খুন', color: '#ff4500' },
+  { key: 'speedy_trial', label: 'দ্রুত বিচার', color: '#ff8c00' },
+  { key: 'rape', label: 'ধর্ষণ', color: '#ffa500' },
   { key: 'other_violence_women_children', label: 'নারী-শিশু নির্যাতন', color: '#ffd700' },
-  { key: 'kidnapping',                    label: 'অপহরণ',             color: '#9370db' },
-  { key: 'burglary',                      label: 'সিঁদেল চুরি',      color: '#7b68ee' },
-  { key: 'vehicle_theft',                 label: 'গাড়ি চুরি',        color: '#4169e1' },
-  { key: 'other_theft',                   label: 'অন্য চুরি',         color: '#00bcd4' },
-  { key: 'road_accident',                 label: 'সড়ক দুর্ঘটনা',    color: '#26c6da' },
-  { key: 'arms_act',                      label: 'অস্ত্র আইন',       color: '#66bb6a' },
-  { key: 'explosives',                    label: 'বিস্ফোরক',         color: '#ffee58' },
-  { key: 'smuggling',                     label: 'চোরাচালান',        color: '#ef9a9a' },
-  { key: 'narcotics',                     label: 'মাদক',              color: '#ab47bc' },
-  { key: 'other_cases',                   label: 'অন্যান্য',          color: '#78909c' },
+  { key: 'kidnapping', label: 'অপহরণ', color: '#9370db' },
+  { key: 'burglary', label: 'সিঁদেল চুরি', color: '#7b68ee' },
+  { key: 'vehicle_theft', label: 'গাড়ি চুরি', color: '#4169e1' },
+  { key: 'other_theft', label: 'অন্য চুরি', color: '#00bcd4' },
+  { key: 'road_accident', label: 'সড়ক দুর্ঘটনা', color: '#26c6da' },
+  { key: 'arms_act', label: 'অস্ত্র আইন', color: '#66bb6a' },
+  { key: 'explosives', label: 'বিস্ফোরক', color: '#ffee58' },
+  { key: 'smuggling', label: 'চোরাচালান', color: '#ef9a9a' },
+  { key: 'narcotics', label: 'মাদক', color: '#ab47bc' },
+  { key: 'other_cases', label: 'অন্যান্য', color: '#78909c' },
 ];
 
 const MONTH_ORDER = RAW_DATA.map(d => d.month);
 
 const CHART_TYPES = [
-  { id: 'bar',   label: 'বার',   icon: '▌▌' },
-  { id: 'line',  label: 'লাইন',  icon: '〜' },
-  { id: 'area',  label: 'এরিয়া', icon: '◿' },
+  { id: 'bar', label: 'বার', icon: '▌▌' },
+  { id: 'line', label: 'লাইন', icon: '〜' },
+  { id: 'area', label: 'এরিয়া', icon: '◿' },
   { id: 'radar', label: 'রেডার', icon: '⬡' },
-  { id: 'pie',   label: 'পাই',   icon: '◔' },
+  { id: 'pie', label: 'পাই', icon: '◔' },
 ];
 
 /* ─── useIsMobile: SSR-safe, avoids hydration mismatch ───────────────────── */
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false); // default FALSE — SSR safe
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
@@ -65,14 +65,17 @@ function useIsMobile() {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(10,10,10,0.98)', border: '1px solid rgba(229,9,20,0.4)', borderRadius: 10, padding: '8px 12px', maxWidth: 200, fontSize: 12 }}>
+    <div style={{ background: 'rgba(10,10,10,0.98)', border: '1px solid rgba(229,9,20,0.4)', borderRadius: 10, padding: '8px 12px', maxWidth: 180, fontSize: 11 }}>
       <p style={{ color: '#E50914', fontWeight: 700, marginBottom: 4 }}>{label}</p>
       {payload.slice(0, 6).map((p, i) => (
         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 2 }}>
-          <span style={{ color: p.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 110 }}>{p.name}</span>
+          <span style={{ color: p.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 100 }}>{p.name}</span>
           <span style={{ color: '#fff', fontWeight: 600, flexShrink: 0 }}>{p.value?.toLocaleString()}</span>
         </div>
       ))}
+      {payload.length > 6 && (
+        <p style={{ color: '#888', fontSize: 10, marginTop: 4, textAlign: 'center' }}>+ আরও {payload.length - 6}</p>
+      )}
     </div>
   );
 };
@@ -81,7 +84,7 @@ const PieTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const { name, value, payload: p } = payload[0];
   return (
-    <div style={{ background: 'rgba(10,10,10,0.98)', border: '1px solid rgba(229,9,20,0.4)', borderRadius: 10, padding: '8px 12px', fontSize: 12 }}>
+    <div style={{ background: 'rgba(10,10,10,0.98)', border: '1px solid rgba(229,9,20,0.4)', borderRadius: 10, padding: '8px 12px', fontSize: 11 }}>
       <p style={{ color: payload[0].fill, fontWeight: 700, marginBottom: 3 }}>{name}</p>
       <p style={{ color: '#fff' }}>মামলা: <b>{value}</b></p>
       <p style={{ color: '#aaa' }}>মোট: {((value / p.total) * 100).toFixed(1)}%</p>
@@ -197,12 +200,18 @@ const scrollRow = {
 /* ═══ Main Component ════════════════════════════════════════════════════════ */
 export default function Graphs() {
   const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState('bar');
   const [selCats, setSelCats] = useState(
     new Set(['murder', 'rape', 'narcotics', 'other_cases', 'other_violence_women_children'])
   );
   const [selectedMonth, setSelectedMonth] = useState('all');
-  const [hl, setHl] = useState(null); // highlight key
+  const [hl, setHl] = useState(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   const toggleCat = useCallback((key) => {
     setSelCats(prev => {
@@ -254,12 +263,12 @@ export default function Graphs() {
     const last = months[months.length - 1];
     const prev = months.length > 1 ? months[months.length - 2] : null;
     return [
-      { label: 'মোট মামলা',     color: '#E50914', value: months.reduce((s, d) => s + d.total, 0),                       delta: prev ? last.total - prev.total : undefined },
-      { label: 'মাদক',          color: '#ab47bc', value: months.reduce((s, d) => s + d.narcotics, 0),                   delta: prev ? last.narcotics - prev.narcotics : undefined },
-      { label: 'খুন',           color: '#ff4500', value: months.reduce((s, d) => s + d.murder, 0),                      delta: prev ? last.murder - prev.murder : undefined },
-      { label: 'ধর্ষণ',        color: '#ffa500', value: months.reduce((s, d) => s + d.rape, 0),                        delta: prev ? last.rape - prev.rape : undefined },
-      { label: 'নারী-শিশু',    color: '#ffd700', value: months.reduce((s, d) => s + d.other_violence_women_children, 0), delta: prev ? last.other_violence_women_children - prev.other_violence_women_children : undefined },
-      { label: 'অপহরণ',        color: '#9370db', value: months.reduce((s, d) => s + d.kidnapping, 0),                  delta: prev ? last.kidnapping - prev.kidnapping : undefined },
+      { label: 'মোট মামলা', color: '#E50914', value: months.reduce((s, d) => s + d.total, 0), delta: prev ? last.total - prev.total : undefined },
+      { label: 'মাদক', color: '#ab47bc', value: months.reduce((s, d) => s + d.narcotics, 0), delta: prev ? last.narcotics - prev.narcotics : undefined },
+      { label: 'খুন', color: '#ff4500', value: months.reduce((s, d) => s + d.murder, 0), delta: prev ? last.murder - prev.murder : undefined },
+      { label: 'ধর্ষণ', color: '#ffa500', value: months.reduce((s, d) => s + d.rape, 0), delta: prev ? last.rape - prev.rape : undefined },
+      { label: 'নারী-শিশু', color: '#ffd700', value: months.reduce((s, d) => s + d.other_violence_women_children, 0), delta: prev ? last.other_violence_women_children - prev.other_violence_women_children : undefined },
+      { label: 'অপহরণ', color: '#9370db', value: months.reduce((s, d) => s + d.kidnapping, 0), delta: prev ? last.kidnapping - prev.kidnapping : undefined },
     ];
   }, [selMonths]);
 
@@ -273,17 +282,20 @@ export default function Graphs() {
     })).sort((a, b) => b.value - a.value);
   }, [selectedMonth, selCats]);
 
-  /* chart rendering */
+  /* chart rendering constants */
   const G = 'rgba(255,255,255,0.05)';
   const AX = '#555';
-  const CH = isMobile ? 220 : 340;
+  const CH = isMobile ? 240 : 340;
+  // Adjusted margins to prevent right-edge clipping
   const margin = isMobile
-    ? { top: 6, right: 6, left: -28, bottom: 0 }
+    ? { top: 15, right: 15, left: -25, bottom: 5 }
     : { top: 10, right: 20, left: 0, bottom: 5 };
   const axFs = isMobile ? 10 : 12;
   const dotR = isMobile ? 3 : 4;
 
   const renderChart = () => {
+    if (!mounted) return <div style={{ height: CH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: '#333' }}>লোড হচ্ছে...</span></div>;
+
     if (chartType === 'pie') {
       const oR = isMobile ? 80 : 130;
       const iR = isMobile ? 38 : 60;
@@ -341,12 +353,14 @@ export default function Graphs() {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           <ResponsiveContainer width="100%" height={CH}>
-            <BarChart layout="vertical" data={singleMonthData} margin={{ top: 5, right: 15, left: isMobile ? -15 : 0, bottom: 5 }}>
+            {/* Expanded margin-left for mobile so text isn't cut off completely */}
+            <BarChart layout="vertical" data={singleMonthData} margin={{ top: 5, right: 20, left: isMobile ? -5 : 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} horizontal={false} />
               <XAxis type="number" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fill: '#ccc', fontSize: isMobile ? 8 : 10 }} axisLine={false} tickLine={false} width={isMobile ? 80 : 110} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" fill="#E50914" radius={isMobile ? [0, 2, 2, 0] : [0, 4, 4, 0]}>
+              <YAxis type="category" dataKey="name" tick={{ fill: '#ccc', fontSize: isMobile ? 9 : 10 }} axisLine={false} tickLine={false} width={isMobile ? 85 : 110} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+              {/* Added maxBarSize to fix thickness issues */}
+              <Bar dataKey="value" fill="#E50914" maxBarSize={isMobile ? 25 : 40} radius={isMobile ? [0, 2, 2, 0] : [0, 4, 4, 0]}>
                 {singleMonthData.map((e, i) => (
                   <Cell key={i} fill={e.color} />
                 ))}
@@ -365,7 +379,7 @@ export default function Graphs() {
           <ResponsiveContainer width="100%" height={CH}>
             <LineChart {...common}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} />
-              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 10, right: 10 }} />
               <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
               <Tooltip content={<CustomTooltip />} />
               {activeCats.map(c => (
@@ -394,7 +408,7 @@ export default function Graphs() {
                 ))}
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={G} />
-              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 10, right: 10 }} />
               <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
               <Tooltip content={<CustomTooltip />} />
               {activeCats.map(c => (
@@ -414,17 +428,24 @@ export default function Graphs() {
     return (
       <div style={{ width: '100%', overflow: 'hidden' }}>
         <ResponsiveContainer width="100%" height={CH}>
-          <BarChart {...common} barCategoryGap={isMobile ? "20%" : "18%"}>
+          <BarChart {...common} barCategoryGap={isMobile ? "10%" : "18%"}>
             <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
             <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+            {/* Added maxBarSize here to fix massive overlapping bars */}
             {activeCats.map(c => (
-              <Bar key={c.key} dataKey={c.label} fill={c.color}
+              <Bar
+                key={c.key}
+                dataKey={c.label}
+                fill={c.color}
                 stackId={isMobile ? "a" : undefined}
+                maxBarSize={isMobile ? 35 : 55}
                 radius={isMobile ? undefined : [3, 3, 0, 0]}
                 opacity={hl === null || hl === c.key ? 1 : 0.15}
-                onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
+                onMouseEnter={() => setHl(c.key)}
+                onMouseLeave={() => setHl(null)}
+              />
             ))}
           </BarChart>
         </ResponsiveContainer>
@@ -474,7 +495,7 @@ export default function Graphs() {
           </p>
         </div>
 
-        {/* ── KPI Grid: 2×3 on mobile, 6×1 on desktop ── */}
+        {/* ── KPI Grid ── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)',
@@ -484,7 +505,7 @@ export default function Graphs() {
           {kpis.map((k, i) => <KpiCard key={i} {...k} />)}
         </div>
 
-        {/* ── Month filter (Dropdown on mobile, tab list on desktop) ── */}
+        {/* ── Month filter ── */}
         <div style={{ marginBottom: isMobile ? 12 : 22 }}>
           <p style={{ color: '#555', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>মাস ফিল্টার:</p>
           {isMobile ? (
@@ -631,21 +652,25 @@ export default function Graphs() {
           <Card>
             <p style={{ color: '#bbb', fontSize: 12, fontWeight: 700, marginBottom: 10 }}>মাসিক মোট মামলার প্রবণতা</p>
             <div style={{ width: '100%', overflow: 'hidden' }}>
-              <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
-                <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 4, right: 6, left: isMobile ? -28 : 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#E50914" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#E50914" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis dataKey="month" tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 40} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="total" name="মোট" stroke="#E50914" fill="url(#tg)" strokeWidth={2} dot={{ fill: '#E50914', r: dotR }} />
-                </AreaChart>
-              </ResponsiveContainer>
+              {mounted ? (
+                <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
+                  <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 4, right: 15, left: isMobile ? -25 : 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#E50914" stopOpacity={0.35} />
+                        <stop offset="95%" stopColor="#E50914" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <XAxis dataKey="month" tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 10, right: 10 }} />
+                    <YAxis tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 40} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area type="monotone" dataKey="total" name="মোট" stroke="#E50914" fill="url(#tg)" strokeWidth={2} dot={{ fill: '#E50914', r: dotR }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: isMobile ? 160 : 200 }} />
+              )}
             </div>
           </Card>
 
@@ -653,21 +678,25 @@ export default function Graphs() {
           <Card>
             <p style={{ color: '#bbb', fontSize: 12, fontWeight: 700, marginBottom: 10 }}>অপরাধ বিভাজন</p>
             <div style={{ width: '100%', overflow: 'hidden' }}>
-              <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
-                <PieChart>
-                  <Pie data={pieData.slice(0, 7)} dataKey="value" nameKey="name"
-                    cx="50%" cy="50%"
-                    outerRadius={isMobile ? 60 : 75}
-                    innerRadius={isMobile ? 28 : 38}
-                    paddingAngle={3} stroke="none">
-                    {pieData.slice(0, 7).map((e, i) => (
-                      <Cell key={i} fill={e.color}
-                        onMouseEnter={() => setHl(e.name)} onMouseLeave={() => setHl(null)} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<PieTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
+              {mounted ? (
+                <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
+                  <PieChart>
+                    <Pie data={pieData.slice(0, 7)} dataKey="value" nameKey="name"
+                      cx="50%" cy="50%"
+                      outerRadius={isMobile ? 60 : 75}
+                      innerRadius={isMobile ? 28 : 38}
+                      paddingAngle={3} stroke="none">
+                      {pieData.slice(0, 7).map((e, i) => (
+                        <Cell key={i} fill={e.color}
+                          onMouseEnter={() => setHl(e.name)} onMouseLeave={() => setHl(null)} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: isMobile ? 160 : 200 }} />
+              )}
             </div>
             {/* compact legend */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
