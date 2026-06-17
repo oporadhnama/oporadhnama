@@ -75,12 +75,13 @@ function EmptyState({ onClear, hasFilters }) {
 
 export default function AllNews() {
   const [posts, setPosts] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [limit, setLimit] = useState(20); // Default to desktop limit
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -97,11 +98,45 @@ export default function AllNews() {
     'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ',
   ];
 
+  // Detect device size on mount
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    setLimit(isMobile ? 12 : 20);
+  }, []);
+
+  // Fetch categories on mount
   useEffect(() => {
     fetchCategories()
       .then(setCategories)
       .catch(() => setCategories([]));
   }, []);
+
+  // Reset page to 1 when filters (searchParams) change
+  useEffect(() => {
+    setPage(1);
+  }, [searchParams]);
+
+  // Fetch posts when searchParams, page, limit, or refreshTrigger changes
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    const params = new URLSearchParams(searchParams.toString());
+    const offset = (page - 1) * limit;
+    params.set('limit', limit);
+    params.set('offset', offset);
+
+    fetchPosts(params.toString())
+      .then(data => {
+        setPosts(data.results || []);
+        setTotalCount(data.count || 0);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(getBengaliError(err));
+        setLoading(false);
+      });
+  }, [searchParams, page, limit, refreshTrigger]);
 
   const updateSearchParam = (key, value) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -113,50 +148,45 @@ export default function AllNews() {
 
   const clearFilters = () => router.push(pathname);
 
-  const handleLoadMore = async () => {
-    if (loadingMore || !hasMore) return;
+  const totalPages = Math.ceil(totalCount / limit) || 1;
 
-    setLoadingMore(true);
-    try {
-      const nextPage = page + 1;
-      const offset = (nextPage - 1) * 24;
-      const limit = 24;
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('limit', limit);
-      params.set('offset', offset);
-
-      const data = await fetchPosts(params.toString());
-      setPosts(prev => [...prev, ...data.results]);
-      setHasMore(!!data.next);
-      setPage(nextPage);
-    } catch (err) {
-      setError(getBengaliError(err));
-    } finally {
-      setLoadingMore(false);
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      // Always show first
+      pages.push(1);
+      
+      let start = Math.max(2, page - 1);
+      let end = Math.min(totalPages - 1, page + 1);
+      
+      if (page <= 3) {
+        end = 4;
+      }
+      if (page >= totalPages - 2) {
+        start = totalPages - 3;
+      }
+      
+      if (start > 2) {
+        pages.push('...');
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (end < totalPages - 1) {
+        pages.push('...');
+      }
+      
+      // Always show last
+      pages.push(totalPages);
     }
+    return pages;
   };
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    setPage(1);
-    setHasMore(true);
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (!params.has('limit')) params.set('limit', '24');
-
-    fetchPosts(params.toString())
-      .then(data => {
-        setPosts(data.results);
-        setHasMore(!!data.next);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(getBengaliError(err));
-        setLoading(false);
-      });
-  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-6xl mx-auto">
@@ -217,7 +247,7 @@ export default function AllNews() {
       {/* Results count */}
       {!loading && !error && posts.length > 0 && (
         <p className="text-neutral-500 text-sm mb-6 text-center">
-          {posts.length}টি সংবাদ পাওয়া গেছে
+          {totalCount.toLocaleString('bn-BD')}টি সংবাদ পাওয়া গেছে
         </p>
       )}
 
@@ -236,15 +266,7 @@ export default function AllNews() {
           <span className="text-5xl mb-4 select-none" aria-hidden="true">⚠️</span>
           <p className="text-red-400 text-base mb-4">{error}</p>
           <button
-            onClick={() => {
-              setError(null);
-              setLoading(true);
-              const params = new URLSearchParams(searchParams.toString());
-              if (!params.has('limit')) params.set('limit', '24');
-              fetchPosts(params.toString())
-                .then(data => { setPosts(data.results); setHasMore(!!data.next); setLoading(false); })
-                .catch(err => { setError(getBengaliError(err)); setLoading(false); });
-            }}
+            onClick={() => setRefreshTrigger(prev => prev + 1)}
             className="bg-[#E50914]/10 text-[#E50914] border border-[#E50914]/30 rounded-lg px-5 py-2 text-sm font-medium hover:bg-[#E50914]/20 transition-colors"
           >
             আবার চেষ্টা করুন
@@ -290,25 +312,47 @@ export default function AllNews() {
             ))}
           </div>
 
-          {/* Load more spinner */}
-          {loadingMore && (
-            <div className="flex justify-center py-8 mt-8" role="status" aria-label="লোড হচ্ছে...">
-              <div className="w-8 h-8 border-4 border-neutral-700 border-t-[#E50914] rounded-full animate-spin" />
-              <span className="sr-only">লোড হচ্ছে...</span>
-            </div>
-          )}
+          {/* Pagination Controls */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mt-12 py-8 select-none">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-600 disabled:opacity-40 disabled:hover:border-neutral-800 disabled:cursor-not-allowed text-neutral-300 hover:text-white transition-all duration-200"
+            >
+              ← পূর্ববর্তী
+            </button>
 
-          {/* Load more button */}
-          {hasMore && !loadingMore && (
-            <div className="flex justify-center py-8 mt-8">
-              <button
-                onClick={handleLoadMore}
-                className="bg-[#E50914] text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                আরও দেখুন
-              </button>
-            </div>
-          )}
+            {getPageNumbers().map((pageNum, idx) => {
+              if (pageNum === '...') {
+                return (
+                  <span key={`ellipse-${idx}`} className="px-3 py-2 text-neutral-500 select-none">
+                    ...
+                  </span>
+                );
+              }
+              return (
+                <button
+                  key={`page-${pageNum}`}
+                  onClick={() => setPage(pageNum)}
+                  className={`w-10 h-10 text-sm font-bold rounded-lg transition-all duration-200 ${
+                    page === pageNum
+                      ? 'bg-[#E50914] text-white shadow-lg shadow-[#E50914]/25'
+                      : 'bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600'
+                  }`}
+                >
+                  {pageNum.toLocaleString('bn-BD', { useGrouping: false })}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-600 disabled:opacity-40 disabled:hover:border-neutral-800 disabled:cursor-not-allowed text-neutral-300 hover:text-white transition-all duration-200"
+            >
+              পরবর্তী →
+            </button>
+          </div>
         </>
       )}
     </div>

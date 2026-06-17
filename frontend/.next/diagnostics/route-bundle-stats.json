@@ -1,11 +1,11 @@
 [
   {
     "route": "/",
-    "firstLoadUncompressedJsBytes": 556835,
+    "firstLoadUncompressedJsBytes": 556755,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\3-go_mkgn9mgw.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
-      ".next\\static\\chunks\\0_7lpd2za3maa.js",
+      ".next\\static\\chunks\\42tvbwe-ikr6u.js",
       ".next\\static\\chunks\\3xeqwqrl2--e9.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\2nykiepra7i1k.js",
@@ -135,11 +135,11 @@
   },
   {
     "route": "/archive",
-    "firstLoadUncompressedJsBytes": 539176,
+    "firstLoadUncompressedJsBytes": 539894,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\3-go_mkgn9mgw.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
-      ".next\\static\\chunks\\3gsy7thhde0wm.js",
+      ".next\\static\\chunks\\0e38eomv-5dpd.js",
       ".next\\static\\chunks\\3xeqwqrl2--e9.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\2nykiepra7i1k.js",
@@ -149,11 +149,11 @@
   },
   {
     "route": "/all-news",
-    "firstLoadUncompressedJsBytes": 539026,
+    "firstLoadUncompressedJsBytes": 539742,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\3-go_mkgn9mgw.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
-      ".next\\static\\chunks\\04th-aqn4c6k2.js",
+      ".next\\static\\chunks\\3zz375b3a-_9d.js",
       ".next\\static\\chunks\\3xeqwqrl2--e9.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\2nykiepra7i1k.js",

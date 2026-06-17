@@ -19,7 +19,7 @@ export default async function HomePage() {
   const [statsResult, categoriesResult, postsResult] = await Promise.allSettled([
     fetchPublicStats(),
     fetchCategories(),
-    fetchPosts('limit=10'),
+    fetchPosts('limit=12'),
   ]);
 
   const initialStats = statsResult.status === 'fulfilled' ? normalizeStats(statsResult.value) : {};

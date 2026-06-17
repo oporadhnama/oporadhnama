@@ -16,16 +16,16 @@ export default function NewsMarquee({ initialPosts = [] }) {
   // ── Fetch posts ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (initialPosts.length > 0) {
-      setPosts(initialPosts);
+      setPosts(initialPosts.slice(0, 12));
       setLoading(false);
       return;
     }
-    fetchPosts()
+    fetchPosts('limit=12')
       .then(items => {
         const postsResult = Array.isArray(items) ? items : items.results || [];
         const sorted = postsResult
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 10);
+          .slice(0, 12);
         setPosts(sorted);
         setLoading(false);
       })

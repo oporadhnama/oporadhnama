@@ -55,6 +55,12 @@ class PostFilter(filters.FilterSet):
         ).distinct()
 
 
+from rest_framework.pagination import LimitOffsetPagination
+
+class PostLimitOffsetPagination(LimitOffsetPagination):
+    default_limit = 24
+    max_limit = 100
+
 # ─── ViewSets ────────────────────────────────────────────────────────────────
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -64,6 +70,7 @@ class PostViewSet(viewsets.ModelViewSet):
     Supports lookup by slug (e.g. /api/posts/42-dhaka-2026-06-15/) or by
     numeric ID for backward compatibility (e.g. /api/posts/42/).
     """
+    pagination_class = PostLimitOffsetPagination
     queryset = Post.objects.select_related('category').filter(is_user_report=False).order_by('-created_at')
     serializer_class = PostSerializer
     filter_backends = (filters.DjangoFilterBackend,)
