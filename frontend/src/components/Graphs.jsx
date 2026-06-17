@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -18,33 +18,44 @@ const RAW_DATA = [
 
 // ── Category Definitions ────────────────────────────────────────────────────
 const CATEGORIES = [
-  { key: 'dacoity',                     label: 'ডাকাতি',                color: '#E50914' },
-  { key: 'robbery',                     label: 'রাহাজানি',              color: '#ff6b6b' },
-  { key: 'murder',                      label: 'খুন',                    color: '#ff4500' },
-  { key: 'speedy_trial',                label: 'দ্রুত বিচার',           color: '#ff8c00' },
-  { key: 'rape',                        label: 'ধর্ষণ',                 color: '#ffa500' },
+  { key: 'dacoity',                       label: 'ডাকাতি',                color: '#E50914' },
+  { key: 'robbery',                       label: 'রাহাজানি',              color: '#ff6b6b' },
+  { key: 'murder',                        label: 'খুন',                    color: '#ff4500' },
+  { key: 'speedy_trial',                  label: 'দ্রুত বিচার',           color: '#ff8c00' },
+  { key: 'rape',                          label: 'ধর্ষণ',                 color: '#ffa500' },
   { key: 'other_violence_women_children', label: 'নারী ও শিশু নির্যাতন', color: '#ffd700' },
-  { key: 'kidnapping',                  label: 'অপহরণ',                 color: '#9370db' },
-  { key: 'burglary',                    label: 'সিঁদেল চুরি',           color: '#7b68ee' },
-  { key: 'vehicle_theft',               label: 'গাড়ি চুরি',             color: '#4169e1' },
-  { key: 'other_theft',                 label: 'অন্যান্য চুরি',         color: '#00bcd4' },
-  { key: 'road_accident',               label: 'সড়ক দুর্ঘটনা',         color: '#26c6da' },
-  { key: 'arms_act',                    label: 'অস্ত্র আইন',            color: '#66bb6a' },
-  { key: 'explosives',                  label: 'বিস্ফোরক',              color: '#ffee58' },
-  { key: 'smuggling',                   label: 'চোরাচালান',             color: '#ef9a9a' },
-  { key: 'narcotics',                   label: 'মাদক',                  color: '#ab47bc' },
-  { key: 'other_cases',                 label: 'অন্যান্য',              color: '#78909c' },
+  { key: 'kidnapping',                    label: 'অপহরণ',                 color: '#9370db' },
+  { key: 'burglary',                      label: 'সিঁদেল চুরি',           color: '#7b68ee' },
+  { key: 'vehicle_theft',                 label: 'গাড়ি চুরি',             color: '#4169e1' },
+  { key: 'other_theft',                   label: 'অন্যান্য চুরি',         color: '#00bcd4' },
+  { key: 'road_accident',                 label: 'সড়ক দুর্ঘটনা',         color: '#26c6da' },
+  { key: 'arms_act',                      label: 'অস্ত্র আইন',            color: '#66bb6a' },
+  { key: 'explosives',                    label: 'বিস্ফোরক',              color: '#ffee58' },
+  { key: 'smuggling',                     label: 'চোরাচালান',             color: '#ef9a9a' },
+  { key: 'narcotics',                     label: 'মাদক',                  color: '#ab47bc' },
+  { key: 'other_cases',                   label: 'অন্যান্য',              color: '#78909c' },
 ];
 
 const MONTH_ORDER = ['ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে'];
 
 const CHART_TYPES = [
-  { id: 'bar',    label: 'বার চার্ট',   icon: '▌▌▌' },
-  { id: 'line',   label: 'লাইন চার্ট',  icon: '〜' },
-  { id: 'area',   label: 'এরিয়া চার্ট', icon: '◿' },
-  { id: 'radar',  label: 'রেডার চার্ট', icon: '⬡' },
-  { id: 'pie',    label: 'পাই চার্ট',   icon: '◔' },
+  { id: 'bar',   label: 'বার',    icon: '▌▌▌' },
+  { id: 'line',  label: 'লাইন',   icon: '〜' },
+  { id: 'area',  label: 'এরিয়া',  icon: '◿' },
+  { id: 'radar', label: 'রেডার',  icon: '⬡' },
+  { id: 'pie',   label: 'পাই',    icon: '◔' },
 ];
+
+// ── Custom hook: track viewport width ────────────────────────────────────────
+function useWindowWidth() {
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768);
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return width;
+}
 
 // ── Custom Tooltip ───────────────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label }) => {
@@ -54,16 +65,17 @@ const CustomTooltip = ({ active, payload, label }) => {
       background: 'rgba(10,10,10,0.97)',
       border: '1px solid rgba(229,9,20,0.4)',
       borderRadius: '12px',
-      padding: '12px 16px',
+      padding: '10px 14px',
       boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
       backdropFilter: 'blur(12px)',
-      maxWidth: '260px',
+      maxWidth: '220px',
+      fontSize: 12,
     }}>
-      <p style={{ color: '#E50914', fontWeight: 700, marginBottom: 8, fontSize: 14 }}>{label}</p>
+      <p style={{ color: '#E50914', fontWeight: 700, marginBottom: 6 }}>{label}</p>
       {payload.map((p, i) => (
-        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}>
-          <span style={{ color: p.color, fontSize: 13 }}>{p.name}</span>
-          <span style={{ color: '#fff', fontWeight: 600, fontSize: 13 }}>{p.value?.toLocaleString()}</span>
+        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 3 }}>
+          <span style={{ color: p.color }}>{p.name}</span>
+          <span style={{ color: '#fff', fontWeight: 600 }}>{p.value?.toLocaleString()}</span>
         </div>
       ))}
     </div>
@@ -80,39 +92,39 @@ const PieTooltip = ({ active, payload }) => {
       background: 'rgba(10,10,10,0.97)',
       border: '1px solid rgba(229,9,20,0.4)',
       borderRadius: '12px',
-      padding: '12px 16px',
+      padding: '10px 14px',
       boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
+      fontSize: 12,
     }}>
-      <p style={{ color: payload[0].fill, fontWeight: 700, marginBottom: 4, fontSize: 14 }}>{name}</p>
-      <p style={{ color: '#fff', fontSize: 13 }}>মামলা: <b>{value}</b></p>
-      <p style={{ color: '#aaa', fontSize: 12 }}>মোটের {((value / total) * 100).toFixed(1)}%</p>
+      <p style={{ color: payload[0].fill, fontWeight: 700, marginBottom: 4 }}>{name}</p>
+      <p style={{ color: '#fff' }}>মামলা: <b>{value}</b></p>
+      <p style={{ color: '#aaa' }}>মোটের {((value / total) * 100).toFixed(1)}%</p>
     </div>
   );
 };
 
-// ── Summary KPI Card ─────────────────────────────────────────────────────────
-function KpiCard({ label, value, delta, color }) {
+// ── KPI Card ─────────────────────────────────────────────────────────────────
+function KpiCard({ label, value, delta, color, compact }) {
   const isPositive = delta > 0;
   return (
     <div style={{
       background: 'linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(15,15,15,0.95) 100%)',
       border: `1px solid ${color}33`,
-      borderRadius: 16,
-      padding: '18px 22px',
+      borderRadius: compact ? 12 : 16,
+      padding: compact ? '12px 14px' : '18px 22px',
       position: 'relative',
       overflow: 'hidden',
       transition: 'transform 0.2s, box-shadow 0.2s',
     }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 12px 40px ${color}22`; }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 30px ${color}22`; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
-      {/* Glow accent top line */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
-      <p style={{ color: '#888', fontSize: 12, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</p>
-      <p style={{ color: '#fff', fontSize: 28, fontWeight: 800, lineHeight: 1, marginBottom: 8 }}>{value?.toLocaleString()}</p>
+      <p style={{ color: '#888', fontSize: compact ? 10 : 12, marginBottom: compact ? 4 : 6, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.3 }}>{label}</p>
+      <p style={{ color: '#fff', fontSize: compact ? 22 : 28, fontWeight: 800, lineHeight: 1, marginBottom: compact ? 4 : 8 }}>{value?.toLocaleString()}</p>
       {delta !== undefined && (
-        <p style={{ color: isPositive ? '#ef5350' : '#66bb6a', fontSize: 12, fontWeight: 600 }}>
-          {isPositive ? '▲' : '▼'} {Math.abs(delta).toLocaleString()} আগের মাস থেকে
+        <p style={{ color: isPositive ? '#ef5350' : '#66bb6a', fontSize: 11, fontWeight: 600 }}>
+          {isPositive ? '▲' : '▼'} {Math.abs(delta).toLocaleString()} আগের মাস
         </p>
       )}
     </div>
@@ -125,48 +137,53 @@ function CategoryChip({ cat, selected, onToggle }) {
     <button
       onClick={() => onToggle(cat.key)}
       style={{
-        padding: '5px 12px',
+        padding: '5px 10px',
         borderRadius: 20,
         border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.1)'}`,
         background: selected ? `${cat.color}22` : 'transparent',
         color: selected ? cat.color : '#666',
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: 600,
         cursor: 'pointer',
         transition: 'all 0.2s',
         whiteSpace: 'nowrap',
         fontFamily: 'inherit',
+        WebkitTapHighlightColor: 'transparent',
+        touchAction: 'manipulation',
       }}
     >
-      <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: selected ? cat.color : '#444', marginRight: 6 }} />
+      <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: selected ? cat.color : '#444', marginRight: 5 }} />
       {cat.label}
     </button>
   );
 }
 
 // ── Chart Tab Button ─────────────────────────────────────────────────────────
-function ChartTabBtn({ type, active, onClick }) {
+function ChartTabBtn({ type, active, onClick, compact }) {
   return (
     <button
       onClick={onClick}
       style={{
-        padding: '8px 16px',
+        padding: compact ? '7px 11px' : '8px 16px',
         borderRadius: 10,
         border: 'none',
         background: active ? '#E50914' : 'rgba(255,255,255,0.05)',
         color: active ? '#fff' : '#888',
-        fontSize: 13,
+        fontSize: compact ? 11 : 13,
         fontWeight: 600,
         cursor: 'pointer',
         transition: 'all 0.2s',
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: compact ? 4 : 6,
         fontFamily: 'inherit',
+        WebkitTapHighlightColor: 'transparent',
+        touchAction: 'manipulation',
+        whiteSpace: 'nowrap',
       }}
     >
-      <span style={{ fontSize: 11 }}>{type.icon}</span>
-      <span className="hidden sm:inline">{type.label}</span>
+      <span style={{ fontSize: compact ? 10 : 11 }}>{type.icon}</span>
+      <span>{type.label}</span>
     </button>
   );
 }
@@ -179,6 +196,10 @@ export default function Graphs() {
   );
   const [selectedMonths, setSelectedMonths] = useState(new Set(MONTH_ORDER));
   const [highlightKey, setHighlightKey] = useState(null);
+  const windowWidth = useWindowWidth();
+
+  const isMobile = windowWidth < 640;
+  const isTablet = windowWidth < 1024;
 
   const toggleCategory = useCallback((key) => {
     setSelectedCategories(prev => {
@@ -198,7 +219,6 @@ export default function Graphs() {
     });
   }, []);
 
-  // Filtered chart data
   const chartData = useMemo(() =>
     RAW_DATA
       .filter(d => selectedMonths.has(d.month))
@@ -211,7 +231,6 @@ export default function Graphs() {
     [selectedCategories, selectedMonths]
   );
 
-  // Radar data (average across filtered months)
   const radarData = useMemo(() => {
     const filtered = RAW_DATA.filter(d => selectedMonths.has(d.month));
     return CATEGORIES
@@ -223,7 +242,6 @@ export default function Graphs() {
       }));
   }, [selectedCategories, selectedMonths]);
 
-  // Pie data (sum across filtered months)
   const pieData = useMemo(() => {
     const filtered = RAW_DATA.filter(d => selectedMonths.has(d.month));
     const total = filtered.reduce((sum, d) => sum + d.total, 0);
@@ -238,37 +256,48 @@ export default function Graphs() {
       .sort((a, b) => b.value - a.value);
   }, [selectedCategories, selectedMonths]);
 
-  // KPI summary
   const kpis = useMemo(() => {
     const months = RAW_DATA.filter(d => selectedMonths.has(d.month));
     const last = months[months.length - 1];
     const prev = months.length > 1 ? months[months.length - 2] : null;
     return [
       { label: 'মোট মামলা', value: months.reduce((s, d) => s + d.total, 0), delta: prev ? last.total - prev.total : undefined, color: '#E50914' },
-      { label: 'মাদক মামলা', value: months.reduce((s, d) => s + d.narcotics, 0), delta: prev ? last.narcotics - prev.narcotics : undefined, color: '#ab47bc' },
+      { label: 'মাদক', value: months.reduce((s, d) => s + d.narcotics, 0), delta: prev ? last.narcotics - prev.narcotics : undefined, color: '#ab47bc' },
       { label: 'খুন', value: months.reduce((s, d) => s + d.murder, 0), delta: prev ? last.murder - prev.murder : undefined, color: '#ff4500' },
       { label: 'ধর্ষণ', value: months.reduce((s, d) => s + d.rape, 0), delta: prev ? last.rape - prev.rape : undefined, color: '#ffa500' },
-      { label: 'নারী ও শিশু নির্যাতন', value: months.reduce((s, d) => s + d.other_violence_women_children, 0), delta: prev ? last.other_violence_women_children - prev.other_violence_women_children : undefined, color: '#ffd700' },
+      { label: 'নারী ও শিশু', value: months.reduce((s, d) => s + d.other_violence_women_children, 0), delta: prev ? last.other_violence_women_children - prev.other_violence_women_children : undefined, color: '#ffd700' },
       { label: 'অপহরণ', value: months.reduce((s, d) => s + d.kidnapping, 0), delta: prev ? last.kidnapping - prev.kidnapping : undefined, color: '#9370db' },
     ];
   }, [selectedMonths]);
 
   const activeCats = CATEGORIES.filter(c => selectedCategories.has(c.key));
 
+  // Responsive chart heights
+  const chartHeight = isMobile ? 260 : isTablet ? 320 : 380;
+  const smallChartHeight = isMobile ? 200 : 220;
+
+  // Responsive radar outer radius
+  const radarOuterRadius = isMobile ? 80 : isTablet ? 110 : 140;
+  const pieOuterRadius = isMobile ? 90 : isTablet ? 120 : 150;
+  const pieInnerRadius = isMobile ? 45 : isTablet ? 60 : 80;
+
   const renderChart = () => {
     const gridColor = 'rgba(255,255,255,0.05)';
     const axisColor = '#555';
+    const axisFontSize = isMobile ? 11 : 13;
     const commonProps = {
       data: chartData,
-      margin: { top: 10, right: 20, left: 0, bottom: 5 },
+      margin: isMobile
+        ? { top: 8, right: 8, left: -20, bottom: 5 }
+        : { top: 10, right: 20, left: 0, bottom: 5 },
     };
 
     if (chartType === 'pie') {
       return (
-        <ResponsiveContainer width="100%" height={380}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <PieChart>
             <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%"
-              innerRadius={80} outerRadius={150} paddingAngle={3} stroke="none">
+              innerRadius={pieInnerRadius} outerRadius={pieOuterRadius} paddingAngle={3} stroke="none">
               {pieData.map((entry, i) => (
                 <Cell key={i} fill={entry.color}
                   opacity={highlightKey === null || highlightKey === entry.name ? 1 : 0.25}
@@ -279,9 +308,11 @@ export default function Graphs() {
               ))}
             </Pie>
             <Tooltip content={<PieTooltip />} />
-            <Legend
-              formatter={(value) => <span style={{ color: '#ccc', fontSize: 12 }}>{value}</span>}
-            />
+            {!isMobile && (
+              <Legend
+                formatter={(value) => <span style={{ color: '#ccc', fontSize: 11 }}>{value}</span>}
+              />
+            )}
           </PieChart>
         </ResponsiveContainer>
       );
@@ -289,12 +320,12 @@ export default function Graphs() {
 
     if (chartType === 'radar') {
       return (
-        <ResponsiveContainer width="100%" height={380}>
-          <RadarChart data={radarData} cx="50%" cy="50%" outerRadius={140}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <RadarChart data={radarData} cx="50%" cy="50%" outerRadius={radarOuterRadius}>
             <PolarGrid stroke={gridColor} />
-            <PolarAngleAxis dataKey="category" tick={{ fill: '#aaa', fontSize: 11 }} />
-            <PolarRadiusAxis tick={{ fill: '#555', fontSize: 10 }} />
-            <Radar dataKey="value" stroke="#E50914" fill="#E50914" fillOpacity={0.25} dot={{ fill: '#E50914', r: 4 }} />
+            <PolarAngleAxis dataKey="category" tick={{ fill: '#aaa', fontSize: isMobile ? 9 : 11 }} />
+            <PolarRadiusAxis tick={{ fill: '#555', fontSize: isMobile ? 8 : 10 }} />
+            <Radar dataKey="value" stroke="#E50914" fill="#E50914" fillOpacity={0.25} dot={{ fill: '#E50914', r: isMobile ? 3 : 4 }} />
             <Tooltip content={<CustomTooltip />} />
           </RadarChart>
         </ResponsiveContainer>
@@ -303,17 +334,17 @@ export default function Graphs() {
 
     if (chartType === 'line') {
       return (
-        <ResponsiveContainer width="100%" height={380}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <LineChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: 13 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: axisColor, fontSize: 12 }} axisLine={false} tickLine={false} width={40} />
+            <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: axisFontSize }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: axisColor, fontSize: isMobile ? 10 : 12 }} axisLine={false} tickLine={false} width={isMobile ? 30 : 40} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend formatter={v => <span style={{ color: '#ccc', fontSize: 12 }}>{v}</span>} />
+            {!isMobile && <Legend formatter={v => <span style={{ color: '#ccc', fontSize: 11 }}>{v}</span>} />}
             {activeCats.map(c => (
               <Line key={c.key} type="monotone" dataKey={c.label} stroke={c.color}
                 strokeWidth={highlightKey === c.key ? 3 : 2}
-                dot={{ fill: c.color, r: 4 }}
+                dot={{ fill: c.color, r: isMobile ? 3 : 4 }}
                 opacity={highlightKey === null || highlightKey === c.key ? 1 : 0.2}
                 onMouseEnter={() => setHighlightKey(c.key)}
                 onMouseLeave={() => setHighlightKey(null)}
@@ -326,7 +357,7 @@ export default function Graphs() {
 
     if (chartType === 'area') {
       return (
-        <ResponsiveContainer width="100%" height={380}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <AreaChart {...commonProps}>
             <defs>
               {activeCats.map(c => (
@@ -337,10 +368,10 @@ export default function Graphs() {
               ))}
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: 13 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: axisColor, fontSize: 12 }} axisLine={false} tickLine={false} width={40} />
+            <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: axisFontSize }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: axisColor, fontSize: isMobile ? 10 : 12 }} axisLine={false} tickLine={false} width={isMobile ? 30 : 40} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend formatter={v => <span style={{ color: '#ccc', fontSize: 12 }}>{v}</span>} />
+            {!isMobile && <Legend formatter={v => <span style={{ color: '#ccc', fontSize: 11 }}>{v}</span>} />}
             {activeCats.map(c => (
               <Area key={c.key} type="monotone" dataKey={c.label}
                 stroke={c.color} fill={`url(#grad-${c.key})`}
@@ -357,13 +388,13 @@ export default function Graphs() {
 
     // default: bar
     return (
-      <ResponsiveContainer width="100%" height={380}>
-        <BarChart {...commonProps} barCategoryGap="25%">
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <BarChart {...commonProps} barCategoryGap="20%">
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-          <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: 13 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: axisColor, fontSize: 12 }} axisLine={false} tickLine={false} width={40} />
+          <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: axisFontSize }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: axisColor, fontSize: isMobile ? 10 : 12 }} axisLine={false} tickLine={false} width={isMobile ? 30 : 40} />
           <Tooltip content={<CustomTooltip />} />
-          <Legend formatter={v => <span style={{ color: '#ccc', fontSize: 12 }}>{v}</span>} />
+          {!isMobile && <Legend formatter={v => <span style={{ color: '#ccc', fontSize: 11 }}>{v}</span>} />}
           {activeCats.map(c => (
             <Bar key={c.key} dataKey={c.label} fill={c.color} radius={[4, 4, 0, 0]}
               opacity={highlightKey === null || highlightKey === c.key ? 1 : 0.2}
@@ -381,87 +412,137 @@ export default function Graphs() {
       minHeight: '100vh',
       background: '#0a0a0a',
       color: '#fff',
-      paddingTop: 100,
+      paddingTop: isMobile ? 80 : 100,
       paddingBottom: 60,
       fontFamily: "'Noto Sans Bengali', 'Inter', sans-serif",
     }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: isMobile ? '0 12px' : '0 20px' }}>
 
         {/* ── Page Header ── */}
-        <div style={{ marginBottom: 40, textAlign: 'center' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 12, padding: '6px 16px', borderRadius: 20, background: 'rgba(229,9,20,0.1)', border: '1px solid rgba(229,9,20,0.25)' }}>
-            <span style={{ color: '#E50914', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em' }}>ঢাকা মেট্রোপলিটন পুলিশ • ফেব্রুয়ারি–মে ২০২৬</span>
+        <div style={{ marginBottom: isMobile ? 24 : 40, textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: isMobile ? 8 : 12, padding: '5px 14px', borderRadius: 20, background: 'rgba(229,9,20,0.1)', border: '1px solid rgba(229,9,20,0.25)' }}>
+            <span style={{ color: '#E50914', fontSize: isMobile ? 10 : 12, fontWeight: 700, letterSpacing: '0.06em' }}>ঢাকা মেট্রোপলিটন পুলিশ • ফেব্রুয়ারি–মে ২০২৬</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(24px, 5vw, 44px)', fontWeight: 900, lineHeight: 1.15, marginBottom: 10 }}>
+          <h1 style={{ fontSize: isMobile ? '1.8rem' : 'clamp(24px, 5vw, 44px)', fontWeight: 900, lineHeight: 1.15, marginBottom: 8 }}>
             গ্রাফ ও <span style={{ color: '#E50914' }}>পরিসংখ্যান</span>
           </h1>
-          <p style={{ color: '#666', fontSize: 15, maxWidth: 540, margin: '0 auto' }}>
+          <p style={{ color: '#666', fontSize: isMobile ? 13 : 15, maxWidth: 540, margin: '0 auto', padding: isMobile ? '0 8px' : 0 }}>
             ঢাকায় নথিভুক্ত অপরাধের ইন্টারেক্টিভ বিশ্লেষণ ড্যাশবোর্ড
           </p>
         </div>
 
         {/* ── KPI Cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 14, marginBottom: 36 }}>
-          {kpis.map((k, i) => <KpiCard key={i} {...k} />)}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile
+            ? 'repeat(2, 1fr)'
+            : isTablet
+              ? 'repeat(3, 1fr)'
+              : 'repeat(6, 1fr)',
+          gap: isMobile ? 10 : 14,
+          marginBottom: isMobile ? 20 : 36,
+        }}>
+          {kpis.map((k, i) => <KpiCard key={i} {...k} compact={isMobile} />)}
         </div>
 
         {/* ── Month Filter ── */}
-        <div style={{ marginBottom: 28, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-          <span style={{ color: '#555', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', marginRight: 4 }}>মাস ফিল্টার:</span>
-          {MONTH_ORDER.map(month => (
-            <button key={month} onClick={() => toggleMonth(month)} style={{
-              padding: '6px 16px', borderRadius: 20, border: `1px solid ${selectedMonths.has(month) ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
-              background: selectedMonths.has(month) ? 'rgba(229,9,20,0.15)' : 'transparent',
-              color: selectedMonths.has(month) ? '#E50914' : '#666',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit',
-            }}>
-              {month}
-            </button>
-          ))}
+        <div style={{ marginBottom: isMobile ? 16 : 28 }}>
+          <span style={{ color: '#555', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', display: 'block', marginBottom: 8 }}>মাস ফিল্টার:</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {MONTH_ORDER.map(month => (
+              <button key={month} onClick={() => toggleMonth(month)} style={{
+                padding: isMobile ? '5px 14px' : '6px 16px',
+                borderRadius: 20,
+                border: `1px solid ${selectedMonths.has(month) ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
+                background: selectedMonths.has(month) ? 'rgba(229,9,20,0.15)' : 'transparent',
+                color: selectedMonths.has(month) ? '#E50914' : '#666',
+                fontSize: isMobile ? 12 : 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontFamily: 'inherit',
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}>
+                {month}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Main Chart Panel ── */}
         <div style={{
           background: 'linear-gradient(135deg, rgba(18,18,18,0.95) 0%, rgba(12,12,12,0.98) 100%)',
           border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20,
-          padding: '28px 24px',
-          marginBottom: 28,
+          borderRadius: isMobile ? 16 : 20,
+          padding: isMobile ? '16px 12px' : '28px 24px',
+          marginBottom: isMobile ? 16 : 28,
           position: 'relative',
           overflow: 'hidden',
         }}>
-          {/* subtle red corner accent */}
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, #E50914, transparent 60%)' }} />
 
-          {/* Chart type tabs */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+          {/* Chart type tabs — horizontal scroll on mobile */}
+          <div style={{
+            display: 'flex',
+            gap: 8,
+            marginBottom: isMobile ? 16 : 24,
+            overflowX: 'auto',
+            paddingBottom: 4,
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}>
             {CHART_TYPES.map(t => (
-              <ChartTabBtn key={t.id} type={t} active={chartType === t.id} onClick={() => setChartType(t.id)} />
+              <ChartTabBtn key={t.id} type={t} active={chartType === t.id} onClick={() => setChartType(t.id)} compact={isMobile} />
             ))}
           </div>
 
           {renderChart()}
+
+          {/* Mobile legend — shown below chart for bar/line/area */}
+          {isMobile && !['pie', 'radar'].includes(chartType) && (
+            <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {activeCats.map(c => (
+                <span key={c.key} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#aaa' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: c.color, display: 'inline-block', flexShrink: 0 }} />
+                  {c.label}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── Category Toggles ── */}
         <div style={{
-          background: 'rgba(15,15,15,0.9)', border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 16, padding: '20px 22px', marginBottom: 28,
+          background: 'rgba(15,15,15,0.9)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: isMobile ? 12 : 16,
+          padding: isMobile ? '14px 12px' : '20px 22px',
+          marginBottom: isMobile ? 16 : 28,
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <span style={{ color: '#aaa', fontSize: 13, fontWeight: 700 }}>অপরাধ বিভাগ</span>
-            <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ color: '#aaa', fontSize: isMobile ? 12 : 13, fontWeight: 700 }}>অপরাধ বিভাগ</span>
+            <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setSelectedCategories(new Set(CATEGORIES.map(c => c.key)))}
-                style={{ padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#888', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#888', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', WebkitTapHighlightColor: 'transparent' }}>
                 সব
               </button>
               <button onClick={() => setSelectedCategories(new Set(['murder']))}
-                style={{ padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(229,9,20,0.3)', background: 'transparent', color: '#E50914', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(229,9,20,0.3)', background: 'transparent', color: '#E50914', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', WebkitTapHighlightColor: 'transparent' }}>
                 রিসেট
               </button>
             </div>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {/* Horizontally scrollable chips on mobile */}
+          <div style={{
+            display: 'flex',
+            flexWrap: isMobile ? 'nowrap' : 'wrap',
+            gap: 8,
+            overflowX: isMobile ? 'auto' : 'visible',
+            paddingBottom: isMobile ? 4 : 0,
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}>
             {CATEGORIES.map(cat => (
               <CategoryChip key={cat.key} cat={cat} selected={selectedCategories.has(cat.key)} onToggle={toggleCategory} />
             ))}
@@ -469,13 +550,17 @@ export default function Graphs() {
         </div>
 
         {/* ── Two-column: Trend + Breakdown ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20, marginBottom: 28 }}>
-
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: isMobile ? 16 : 20,
+          marginBottom: isMobile ? 16 : 28,
+        }}>
           {/* Monthly Total Trend */}
-          <div style={{ background: 'rgba(15,15,15,0.9)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '22px 20px' }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#ddd', marginBottom: 18 }}>মাসিক মোট মামলার প্রবণতা</h2>
-            <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={RAW_DATA.filter(d => selectedMonths.has(d.month))} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+          <div style={{ background: 'rgba(15,15,15,0.9)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '14px 12px' : '22px 20px' }}>
+            <h2 style={{ fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#ddd', marginBottom: isMobile ? 12 : 18 }}>মাসিক মোট মামলার প্রবণতা</h2>
+            <ResponsiveContainer width="100%" height={smallChartHeight}>
+              <AreaChart data={RAW_DATA.filter(d => selectedMonths.has(d.month))} margin={{ top: 5, right: 8, left: isMobile ? -20 : 0, bottom: 5 }}>
                 <defs>
                   <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#E50914" stopOpacity={0.4} />
@@ -483,21 +568,24 @@ export default function Graphs() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                <XAxis dataKey="month" tick={{ fill: '#555', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} width={45} />
+                <XAxis dataKey="month" tick={{ fill: '#555', fontSize: isMobile ? 10 : 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#555', fontSize: isMobile ? 9 : 11 }} axisLine={false} tickLine={false} width={isMobile ? 30 : 45} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="total" name="মোট মামলা" stroke="#E50914" fill="url(#totalGrad)" strokeWidth={2.5} dot={{ fill: '#E50914', r: 5, strokeWidth: 0 }} />
+                <Area type="monotone" dataKey="total" name="মোট মামলা" stroke="#E50914" fill="url(#totalGrad)" strokeWidth={2.5} dot={{ fill: '#E50914', r: isMobile ? 3 : 5, strokeWidth: 0 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Top 5 Breakdown Pie */}
-          <div style={{ background: 'rgba(15,15,15,0.9)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '22px 20px' }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#ddd', marginBottom: 18 }}>অপরাধ বিভাজন (নির্বাচিত)</h2>
-            <ResponsiveContainer width="100%" height={220}>
+          {/* Top Breakdown Pie */}
+          <div style={{ background: 'rgba(15,15,15,0.9)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? '14px 12px' : '22px 20px' }}>
+            <h2 style={{ fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#ddd', marginBottom: isMobile ? 12 : 18 }}>অপরাধ বিভাজন (নির্বাচিত)</h2>
+            <ResponsiveContainer width="100%" height={smallChartHeight}>
               <PieChart>
-                <Pie data={pieData.slice(0, 8)} dataKey="value" nameKey="name" cx="40%" cy="50%"
-                  outerRadius={80} innerRadius={45} paddingAngle={3} stroke="none">
+                <Pie data={pieData.slice(0, 8)} dataKey="value" nameKey="name"
+                  cx={isMobile ? '50%' : '40%'} cy="50%"
+                  outerRadius={isMobile ? 70 : 80}
+                  innerRadius={isMobile ? 35 : 45}
+                  paddingAngle={3} stroke="none">
                   {pieData.slice(0, 8).map((entry, i) => (
                     <Cell key={i} fill={entry.color}
                       style={{ cursor: 'pointer', filter: highlightKey === entry.name ? `drop-shadow(0 0 6px ${entry.color})` : 'none', transition: 'all 0.2s' }}
@@ -507,80 +595,102 @@ export default function Graphs() {
                   ))}
                 </Pie>
                 <Tooltip content={<PieTooltip />} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  formatter={v => <span style={{ color: '#bbb', fontSize: 11 }}>{v}</span>}
-                />
+                {!isMobile && (
+                  <Legend layout="vertical" align="right" verticalAlign="middle"
+                    formatter={v => <span style={{ color: '#bbb', fontSize: 11 }}>{v}</span>}
+                  />
+                )}
               </PieChart>
             </ResponsiveContainer>
+            {/* Mobile pie legend */}
+            {isMobile && (
+              <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {pieData.slice(0, 8).map((entry, i) => (
+                  <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#aaa' }}>
+                    <span style={{ width: 7, height: 7, borderRadius: 2, background: entry.color, display: 'inline-block' }} />
+                    {entry.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* ── Detailed Data Table ── */}
-        <div style={{ background: 'rgba(15,15,15,0.9)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '22px 20px', overflowX: 'auto' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#ddd', marginBottom: 18 }}>বিস্তারিত তথ্য সারণি</h2>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: 'left', padding: '10px 14px', color: '#E50914', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', whiteSpace: 'nowrap' }}>অপরাধ বিভাগ</th>
-                {RAW_DATA.map(d => (
-                  <th key={d.month} style={{ textAlign: 'center', padding: '10px 14px', color: '#E50914', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', whiteSpace: 'nowrap' }}>{d.month}</th>
-                ))}
-                <th style={{ textAlign: 'center', padding: '10px 14px', color: '#aaa', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>মোট</th>
-                <th style={{ textAlign: 'center', padding: '10px 14px', color: '#aaa', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', whiteSpace: 'nowrap' }}>পরিবর্তন</th>
-              </tr>
-            </thead>
-            <tbody>
-              {CATEGORIES.map((cat, idx) => {
-                const values = RAW_DATA.map(d => d[cat.key]);
-                const total = values.reduce((s, v) => s + v, 0);
-                const lastVal = values[values.length - 1];
-                const firstVal = values[0];
-                const change = lastVal - firstVal;
-                return (
-                  <tr key={cat.key}
-                    style={{ background: idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent', transition: 'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(229,9,20,0.06)'}
-                    onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent'}
-                  >
-                    <td style={{ padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: cat.color, display: 'inline-block', flexShrink: 0 }} />
-                        <span style={{ color: '#ddd', whiteSpace: 'nowrap' }}>{cat.label}</span>
-                      </div>
-                    </td>
-                    {values.map((v, i) => (
-                      <td key={i} style={{ textAlign: 'center', padding: '10px 14px', color: '#bbb', borderBottom: '1px solid rgba(255,255,255,0.04)', fontVariantNumeric: 'tabular-nums' }}>
-                        {v}
+        <div style={{
+          background: 'rgba(15,15,15,0.9)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: isMobile ? 12 : 16,
+          padding: isMobile ? '14px 0' : '22px 20px',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+        }}>
+          <h2 style={{ fontSize: isMobile ? 13 : 15, fontWeight: 700, color: '#ddd', marginBottom: isMobile ? 12 : 18, padding: isMobile ? '0 12px' : 0 }}>বিস্তারিত তথ্য সারণি</h2>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', minWidth: isMobile ? 480 : 'auto', borderCollapse: 'collapse', fontSize: isMobile ? 12 : 13 }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: isMobile ? '8px 12px' : '10px 14px', color: '#E50914', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', whiteSpace: 'nowrap', position: 'sticky', left: 0, background: '#111', zIndex: 1 }}>অপরাধ বিভাগ</th>
+                  {RAW_DATA.map(d => (
+                    <th key={d.month} style={{ textAlign: 'center', padding: isMobile ? '8px 10px' : '10px 14px', color: '#E50914', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', whiteSpace: 'nowrap' }}>{d.month}</th>
+                  ))}
+                  <th style={{ textAlign: 'center', padding: isMobile ? '8px 10px' : '10px 14px', color: '#aaa', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>মোট</th>
+                  <th style={{ textAlign: 'center', padding: isMobile ? '8px 10px' : '10px 14px', color: '#aaa', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.08)', whiteSpace: 'nowrap' }}>পরিবর্তন</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CATEGORIES.map((cat, idx) => {
+                  const values = RAW_DATA.map(d => d[cat.key]);
+                  const total = values.reduce((s, v) => s + v, 0);
+                  const lastVal = values[values.length - 1];
+                  const firstVal = values[0];
+                  const change = lastVal - firstVal;
+                  return (
+                    <tr key={cat.key}
+                      style={{ background: idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent', transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(229,9,20,0.06)'}
+                      onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent'}
+                    >
+                      <td style={{ padding: isMobile ? '8px 12px' : '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.04)', position: 'sticky', left: 0, background: idx % 2 === 0 ? '#111' : '#0a0a0a', zIndex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, display: 'inline-block', flexShrink: 0 }} />
+                          <span style={{ color: '#ddd', whiteSpace: 'nowrap', fontSize: isMobile ? 11 : 13 }}>{cat.label}</span>
+                        </div>
                       </td>
-                    ))}
-                    <td style={{ textAlign: 'center', padding: '10px 14px', color: '#fff', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{total}</td>
-                    <td style={{ textAlign: 'center', padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <span style={{ color: change > 0 ? '#ef5350' : change < 0 ? '#66bb6a' : '#888', fontWeight: 600 }}>
-                        {change > 0 ? '+' : ''}{change}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-              {/* Total Row */}
-              <tr style={{ background: 'rgba(229,9,20,0.08)' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 700, color: '#E50914' }}>সর্বমোট</td>
-                {RAW_DATA.map(d => (
-                  <td key={d.month} style={{ textAlign: 'center', padding: '12px 14px', color: '#E50914', fontWeight: 700 }}>{d.total}</td>
-                ))}
-                <td style={{ textAlign: 'center', padding: '12px 14px', color: '#E50914', fontWeight: 800 }}>
-                  {RAW_DATA.reduce((s, d) => s + d.total, 0)}
-                </td>
-                <td style={{ textAlign: 'center', padding: '12px 14px', color: '#E50914', fontWeight: 700 }}>
-                  {RAW_DATA[RAW_DATA.length - 1].total - RAW_DATA[0].total > 0 ? '+' : ''}{RAW_DATA[RAW_DATA.length - 1].total - RAW_DATA[0].total}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      {values.map((v, i) => (
+                        <td key={i} style={{ textAlign: 'center', padding: isMobile ? '8px 10px' : '10px 14px', color: '#bbb', borderBottom: '1px solid rgba(255,255,255,0.04)', fontVariantNumeric: 'tabular-nums' }}>
+                          {v}
+                        </td>
+                      ))}
+                      <td style={{ textAlign: 'center', padding: isMobile ? '8px 10px' : '10px 14px', color: '#fff', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{total}</td>
+                      <td style={{ textAlign: 'center', padding: isMobile ? '8px 10px' : '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <span style={{ color: change > 0 ? '#ef5350' : change < 0 ? '#66bb6a' : '#888', fontWeight: 600 }}>
+                          {change > 0 ? '+' : ''}{change}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {/* Total Row */}
+                <tr style={{ background: 'rgba(229,9,20,0.08)' }}>
+                  <td style={{ padding: isMobile ? '10px 12px' : '12px 14px', fontWeight: 700, color: '#E50914', position: 'sticky', left: 0, background: 'rgba(229,9,20,0.12)', zIndex: 1, fontSize: isMobile ? 11 : 13 }}>সর্বমোট</td>
+                  {RAW_DATA.map(d => (
+                    <td key={d.month} style={{ textAlign: 'center', padding: isMobile ? '10px 10px' : '12px 14px', color: '#E50914', fontWeight: 700 }}>{d.total}</td>
+                  ))}
+                  <td style={{ textAlign: 'center', padding: isMobile ? '10px 10px' : '12px 14px', color: '#E50914', fontWeight: 800 }}>
+                    {RAW_DATA.reduce((s, d) => s + d.total, 0)}
+                  </td>
+                  <td style={{ textAlign: 'center', padding: isMobile ? '10px 10px' : '12px 14px', color: '#E50914', fontWeight: 700 }}>
+                    {RAW_DATA[RAW_DATA.length - 1].total - RAW_DATA[0].total > 0 ? '+' : ''}{RAW_DATA[RAW_DATA.length - 1].total - RAW_DATA[0].total}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* ── Footer note ── */}
-        <p style={{ textAlign: 'center', color: '#333', fontSize: 12, marginTop: 28, lineHeight: 1.7 }}>
+        <p style={{ textAlign: 'center', color: '#333', fontSize: 12, marginTop: 24, lineHeight: 1.7 }}>
           তথ্যসূত্র: ঢাকা মেট্রোপলিটন পুলিশ — ফেব্রুয়ারি থেকে মে ২০২৬<br />
           এই তথ্যগুলি সাংবাদিকতা ও জনস্বার্থ বিশ্লেষণের উদ্দেশ্যে উপস্থাপিত।
         </p>
