@@ -320,66 +320,78 @@ export default function Graphs() {
 
     if (chartType === 'line') {
       return (
-        <ResponsiveContainer width="100%" height={CH}>
-          <LineChart {...common}>
-            <CartesianGrid strokeDasharray="3 3" stroke={G} />
-            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-            <Tooltip content={<CustomTooltip />} />
-            {activeCats.map(c => (
-              <Line key={c.key} type="monotone" dataKey={c.label} stroke={c.color}
-                strokeWidth={hl === c.key ? 3 : 2} dot={{ fill: c.color, r: dotR }}
-                opacity={hl === null || hl === c.key ? 1 : 0.15}
-                onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+        <div className="gr-scroll" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+          <div style={{ minWidth: isMobile ? 600 : '100%', height: CH }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart {...common}>
+                <CartesianGrid strokeDasharray="3 3" stroke={G} />
+                <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
+                <Tooltip content={<CustomTooltip />} />
+                {activeCats.map(c => (
+                  <Line key={c.key} type="monotone" dataKey={c.label} stroke={c.color}
+                    strokeWidth={hl === c.key ? 3 : 2} dot={{ fill: c.color, r: dotR }}
+                    opacity={hl === null || hl === c.key ? 1 : 0.15}
+                    onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       );
     }
 
     if (chartType === 'area') {
       return (
-        <ResponsiveContainer width="100%" height={CH}>
-          <AreaChart {...common}>
-            <defs>
-              {activeCats.map(c => (
-                <linearGradient key={c.key} id={`ag-${c.key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={c.color} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={c.color} stopOpacity={0} />
-                </linearGradient>
-              ))}
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={G} />
-            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-            <Tooltip content={<CustomTooltip />} />
-            {activeCats.map(c => (
-              <Area key={c.key} type="monotone" dataKey={c.label}
-                stroke={c.color} fill={`url(#ag-${c.key})`}
-                strokeWidth={hl === c.key ? 3 : 2}
-                opacity={hl === null || hl === c.key ? 1 : 0.15}
-                onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
-            ))}
-          </AreaChart>
-        </ResponsiveContainer>
+        <div className="gr-scroll" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+          <div style={{ minWidth: isMobile ? 600 : '100%', height: CH }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart {...common}>
+                <defs>
+                  {activeCats.map(c => (
+                    <linearGradient key={c.key} id={`ag-${c.key}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={c.color} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={c.color} stopOpacity={0} />
+                    </linearGradient>
+                  ))}
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={G} />
+                <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
+                <Tooltip content={<CustomTooltip />} />
+                {activeCats.map(c => (
+                  <Area key={c.key} type="monotone" dataKey={c.label}
+                    stroke={c.color} fill={`url(#ag-${c.key})`}
+                    strokeWidth={hl === c.key ? 3 : 2}
+                    opacity={hl === null || hl === c.key ? 1 : 0.15}
+                    onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
+                ))}
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       );
     }
 
     // bar (default)
     return (
-      <ResponsiveContainer width="100%" height={CH}>
-        <BarChart {...common} barCategoryGap="18%">
-          <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
-          <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-          <Tooltip content={<CustomTooltip />} />
-          {activeCats.map(c => (
-            <Bar key={c.key} dataKey={c.label} fill={c.color} radius={[3, 3, 0, 0]}
-              opacity={hl === null || hl === c.key ? 1 : 0.15}
-              onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="gr-scroll" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+        <div style={{ minWidth: isMobile ? 600 : '100%', height: CH }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart {...common} barCategoryGap="18%">
+              <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
+              <Tooltip content={<CustomTooltip />} />
+              {activeCats.map(c => (
+                <Bar key={c.key} dataKey={c.label} fill={c.color} radius={[3, 3, 0, 0]}
+                  opacity={hl === null || hl === c.key ? 1 : 0.15}
+                  onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     );
   };
 
