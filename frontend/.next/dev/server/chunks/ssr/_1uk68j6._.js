@@ -156,6 +156,9 @@ async function loginAdmin(username, password) {
         headers: {
             'Content-Type': 'application/json'
         },
+        // Feature 2: credentials:'include' is required so the browser stores
+        // and forwards the HttpOnly refresh_token cookie set by the backend.
+        credentials: 'include',
         body: JSON.stringify({
             username,
             password
@@ -163,6 +166,7 @@ async function loginAdmin(username, password) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'লগইন ব্যর্থ হয়েছে');
+    // Note: data.refresh is no longer sent by the server (it's in the cookie).
     return data;
 }
 async function registerModerator(userData) {

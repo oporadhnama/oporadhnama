@@ -159,6 +159,9 @@ async function loginAdmin(username, password) {
         headers: {
             'Content-Type': 'application/json'
         },
+        // Feature 2: credentials:'include' is required so the browser stores
+        // and forwards the HttpOnly refresh_token cookie set by the backend.
+        credentials: 'include',
         body: JSON.stringify({
             username,
             password
@@ -166,6 +169,7 @@ async function loginAdmin(username, password) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'লগইন ব্যর্থ হয়েছে');
+    // Note: data.refresh is no longer sent by the server (it's in the cookie).
     return data;
 }
 async function registerModerator(userData) {
@@ -328,7 +332,8 @@ function AdminLogin() {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$api$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["loginAdmin"])(username, password);
             if ("TURBOPACK compile-time truthy", 1) {
                 window.localStorage.setItem('access_token', data.access);
-                window.localStorage.setItem('refresh_token', data.refresh);
+                // Feature 2: refresh_token is now stored in an HttpOnly cookie by the
+                // backend — do NOT store it in localStorage (XSS protection).
                 window.localStorage.setItem('user', JSON.stringify(data.user));
             }
             router.push('/admin/dashboard');
@@ -354,7 +359,7 @@ function AdminLogin() {
                                     children: "অপরাধ"
                                 }, void 0, false, {
                                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                                    lineNumber: 40,
+                                    lineNumber: 41,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -362,13 +367,13 @@ function AdminLogin() {
                                     children: "নামা"
                                 }, void 0, false, {
                                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                                    lineNumber: 41,
+                                    lineNumber: 42,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 39,
+                            lineNumber: 40,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -376,13 +381,13 @@ function AdminLogin() {
                             children: "অ্যাডমিন প্যানেল"
                         }, void 0, false, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 43,
+                            lineNumber: 44,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                    lineNumber: 38,
+                    lineNumber: 39,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -394,7 +399,7 @@ function AdminLogin() {
                             children: "লগইন করুন"
                         }, void 0, false, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 50,
+                            lineNumber: 51,
                             columnNumber: 11
                         }, this),
                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -402,7 +407,7 @@ function AdminLogin() {
                             children: error
                         }, void 0, false, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 53,
+                            lineNumber: 54,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -413,7 +418,7 @@ function AdminLogin() {
                                     children: "ইউজারনেম"
                                 }, void 0, false, {
                                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                                    lineNumber: 59,
+                                    lineNumber: 60,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -425,13 +430,13 @@ function AdminLogin() {
                                     className: "w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#E50914] transition-colors placeholder-neutral-600"
                                 }, void 0, false, {
                                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                                    lineNumber: 60,
+                                    lineNumber: 61,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 58,
+                            lineNumber: 59,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -442,7 +447,7 @@ function AdminLogin() {
                                     children: "পাসওয়ার্ড"
                                 }, void 0, false, {
                                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                                    lineNumber: 71,
+                                    lineNumber: 72,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -454,13 +459,13 @@ function AdminLogin() {
                                     className: "w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#E50914] transition-colors placeholder-neutral-600"
                                 }, void 0, false, {
                                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                                    lineNumber: 72,
+                                    lineNumber: 73,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 70,
+                            lineNumber: 71,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -470,24 +475,24 @@ function AdminLogin() {
                             children: loading ? 'প্রবেশ করা হচ্ছে...' : 'প্রবেশ করুন'
                         }, void 0, false, {
                             fileName: "[project]/src/admin/AdminLogin.jsx",
-                            lineNumber: 82,
+                            lineNumber: 83,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/admin/AdminLogin.jsx",
-                    lineNumber: 46,
+                    lineNumber: 47,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/admin/AdminLogin.jsx",
-            lineNumber: 36,
+            lineNumber: 37,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/admin/AdminLogin.jsx",
-        lineNumber: 35,
+        lineNumber: 36,
         columnNumber: 5
     }, this);
 }

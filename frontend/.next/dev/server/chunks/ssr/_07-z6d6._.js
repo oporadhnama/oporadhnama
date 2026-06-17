@@ -50,19 +50,52 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SiteShell$2e$j
 ;
 ;
 const metadata = {
-    title: 'অপরাধনামা',
-    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ ও বিশ্লেষণ প্ল্যাটফর্ম',
+    // metadataBase is required so Next.js can resolve relative OG image URLs
+    metadataBase: new URL('https://oporadhnama.vercel.app'),
+    title: {
+        default: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+        template: '%s | অপরাধনামা'
+    },
+    description: 'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    keywords: [
+        'অপরাধনামা',
+        'বাংলাদেশ অপরাধ সংবাদ',
+        'crime news bangladesh',
+        'bangla crime news',
+        'অপরাধ বার্তা',
+        'বাংলাদেশ সংবাদ',
+        'dhaka crime'
+    ],
+    authors: [
+        {
+            name: 'অপরাধনামা',
+            url: 'https://oporadhnama.vercel.app'
+        }
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-image-preview': 'large',
+            'max-snippet': -1
+        }
+    },
+    alternates: {
+        canonical: 'https://oporadhnama.vercel.app'
+    },
     openGraph: {
-        title: 'অপরাধনামা',
-        description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ ও বিশ্লেষণ প্ল্যাটফর্ম',
+        title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+        description: 'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
         url: 'https://oporadhnama.vercel.app',
-        siteName: 'Oporadhnama',
+        siteName: 'অপরাধনামা',
         images: [
             {
-                url: 'https://oporadhnama.vercel.app/og-image.jpg',
+                url: '/og-image.jpg',
                 width: 1200,
                 height: 630,
-                alt: 'Oporadhnama - বাংলাদেশের অপরাধভিত্তিক সংবাদ'
+                alt: 'অপরাধনামা - বাংলাদেশের অপরাধভিত্তিক সংবাদ'
             }
         ],
         locale: 'bn_BD',
@@ -70,10 +103,10 @@ const metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'অপরাধনামা',
-        description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ ও বিশ্লেষণ প্ল্যাটফর্ম',
+        title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+        description: 'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
         images: [
-            'https://oporadhnama.vercel.app/twitter-image.jpg'
+            '/og-image.jpg'
         ]
     }
 };
@@ -85,17 +118,17 @@ function RootLayout({ children }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/app/layout.jsx",
-                lineNumber: 35,
+                lineNumber: 66,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/layout.jsx",
-            lineNumber: 34,
+            lineNumber: 65,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/layout.jsx",
-        lineNumber: 33,
+        lineNumber: 64,
         columnNumber: 5
     }, this);
 }
