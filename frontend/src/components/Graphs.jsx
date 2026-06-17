@@ -201,7 +201,7 @@ export default function Graphs() {
   const [selCats, setSelCats] = useState(
     new Set(['murder', 'rape', 'narcotics', 'other_cases', 'other_violence_women_children'])
   );
-  const [selMonths, setSelMonths] = useState(new Set(MONTH_ORDER));
+  const [selectedMonth, setSelectedMonth] = useState('all');
   const [hl, setHl] = useState(null); // highlight key
 
   const toggleCat = useCallback((key) => {
@@ -213,14 +213,10 @@ export default function Graphs() {
     });
   }, []);
 
-  const toggleMonth = useCallback((m) => {
-    setSelMonths(prev => {
-      const n = new Set(prev);
-      if (n.has(m)) { if (n.size > 1) n.delete(m); }
-      else n.add(m);
-      return n;
-    });
-  }, []);
+  const selMonths = useMemo(() => {
+    if (selectedMonth === 'all') return new Set(MONTH_ORDER);
+    return new Set([selectedMonth]);
+  }, [selectedMonth]);
 
   /* derived data */
   const activeCats = useMemo(() => CATEGORIES.filter(c => selCats.has(c.key)), [selCats]);
@@ -267,6 +263,16 @@ export default function Graphs() {
     ];
   }, [selMonths]);
 
+  const singleMonthData = useMemo(() => {
+    if (selectedMonth === 'all') return [];
+    const row = RAW_DATA.find(d => d.month === selectedMonth);
+    return CATEGORIES.filter(c => selCats.has(c.key)).map(c => ({
+      name: c.label,
+      value: row ? row[c.key] : 0,
+      color: c.color,
+    })).sort((a, b) => b.value - a.value);
+  }, [selectedMonth, selCats]);
+
   /* chart rendering */
   const G = 'rgba(255,255,255,0.05)';
   const AX = '#555';
@@ -282,37 +288,72 @@ export default function Graphs() {
       const oR = isMobile ? 80 : 130;
       const iR = isMobile ? 38 : 60;
       return (
-        <ResponsiveContainer width="100%" height={CH}>
-          <PieChart>
-            <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%"
-              innerRadius={iR} outerRadius={oR} paddingAngle={3} stroke="none">
-              {pieData.map((e, i) => (
-                <Cell key={i} fill={e.color}
-                  opacity={hl === null || hl === e.name ? 1 : 0.2}
-                  style={{ cursor: 'pointer', transition: 'opacity 0.2s' }}
-                  onMouseEnter={() => setHl(e.name)}
-                  onMouseLeave={() => setHl(null)}
-                />
-              ))}
-            </Pie>
-            <Tooltip content={<PieTooltip />} />
-          </PieChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', overflow: 'hidden' }}>
+          <ResponsiveContainer width="100%" height={CH}>
+            <PieChart>
+              <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                innerRadius={iR} outerRadius={oR} paddingAngle={3} stroke="none">
+                {pieData.map((e, i) => (
+                  <Cell key={i} fill={e.color}
+                    opacity={hl === null || hl === e.name ? 1 : 0.2}
+                    style={{ cursor: 'pointer', transition: 'opacity 0.2s' }}
+                    onMouseEnter={() => setHl(e.name)}
+                    onMouseLeave={() => setHl(null)}
+                  />
+                ))}
+              </Pie>
+              <Tooltip content={<PieTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       );
     }
 
     if (chartType === 'radar') {
       const oR = isMobile ? 75 : 120;
       return (
-        <ResponsiveContainer width="100%" height={CH}>
-          <RadarChart data={radarData} cx="50%" cy="50%" outerRadius={oR}>
-            <PolarGrid stroke={G} />
-            <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: isMobile ? 8 : 10 }} />
-            <PolarRadiusAxis tick={{ fill: '#444', fontSize: isMobile ? 7 : 9 }} />
-            <Radar dataKey="value" stroke="#E50914" fill="#E50914" fillOpacity={0.2} dot={{ fill: '#E50914', r: dotR }} />
-            <Tooltip content={<CustomTooltip />} />
-          </RadarChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', overflow: 'hidden' }}>
+          <ResponsiveContainer width="100%" height={CH}>
+            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius={oR}>
+              <PolarGrid stroke={G} />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: isMobile ? 8 : 10 }} />
+              <PolarRadiusAxis tick={{ fill: '#444', fontSize: isMobile ? 7 : 9 }} />
+              <Radar dataKey="value" stroke="#E50914" fill="#E50914" fillOpacity={0.2} dot={{ fill: '#E50914', r: dotR }} />
+              <Tooltip content={<CustomTooltip />} />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+
+    if (selectedMonth !== 'all' && ['line', 'area'].includes(chartType)) {
+      return (
+        <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: 13, gap: 10, textAlign: 'center', padding: '0 20px' }}>
+          <span>📊 এই মাসের ট্রেন্ড দেখার জন্য অনুগ্রহ করে "সব মাস" নির্বাচন করুন।</span>
+          <button onClick={() => setSelectedMonth('all')} style={{ padding: '6px 14px', borderRadius: 8, background: '#E50914', color: '#fff', border: 'none', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+            সব মাস দেখুন
+          </button>
+        </div>
+      );
+    }
+
+    if (selectedMonth !== 'all' && chartType === 'bar') {
+      return (
+        <div style={{ width: '100%', overflow: 'hidden' }}>
+          <ResponsiveContainer width="100%" height={CH}>
+            <BarChart layout="vertical" data={singleMonthData} margin={{ top: 5, right: 15, left: isMobile ? -15 : 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={G} horizontal={false} />
+              <XAxis type="number" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fill: '#ccc', fontSize: isMobile ? 8 : 10 }} axisLine={false} tickLine={false} width={isMobile ? 80 : 110} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#E50914" radius={isMobile ? [0, 2, 2, 0] : [0, 4, 4, 0]}>
+                {singleMonthData.map((e, i) => (
+                  <Cell key={i} fill={e.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       );
     }
 
@@ -320,68 +361,74 @@ export default function Graphs() {
 
     if (chartType === 'line') {
       return (
-        <ResponsiveContainer width="100%" height={CH}>
-          <LineChart {...common}>
-            <CartesianGrid strokeDasharray="3 3" stroke={G} />
-            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-            <Tooltip content={<CustomTooltip />} />
-            {activeCats.map(c => (
-              <Line key={c.key} type="monotone" dataKey={c.label} stroke={c.color}
-                strokeWidth={hl === c.key ? 3 : 2} dot={{ fill: c.color, r: dotR }}
-                opacity={hl === null || hl === c.key ? 1 : 0.15}
-                onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', overflow: 'hidden' }}>
+          <ResponsiveContainer width="100%" height={CH}>
+            <LineChart {...common}>
+              <CartesianGrid strokeDasharray="3 3" stroke={G} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
+              <Tooltip content={<CustomTooltip />} />
+              {activeCats.map(c => (
+                <Line key={c.key} type="monotone" dataKey={c.label} stroke={c.color}
+                  strokeWidth={hl === c.key ? 3 : 2} dot={{ fill: c.color, r: dotR }}
+                  opacity={hl === null || hl === c.key ? 1 : 0.15}
+                  onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       );
     }
 
     if (chartType === 'area') {
       return (
-        <ResponsiveContainer width="100%" height={CH}>
-          <AreaChart {...common}>
-            <defs>
+        <div style={{ width: '100%', overflow: 'hidden' }}>
+          <ResponsiveContainer width="100%" height={CH}>
+            <AreaChart {...common}>
+              <defs>
+                {activeCats.map(c => (
+                  <linearGradient key={c.key} id={`ag-${c.key}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={c.color} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={c.color} stopOpacity={0} />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={G} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
+              <Tooltip content={<CustomTooltip />} />
               {activeCats.map(c => (
-                <linearGradient key={c.key} id={`ag-${c.key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={c.color} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={c.color} stopOpacity={0} />
-                </linearGradient>
+                <Area key={c.key} type="monotone" dataKey={c.label}
+                  stroke={c.color} fill={`url(#ag-${c.key})`}
+                  strokeWidth={hl === c.key ? 3 : 2}
+                  opacity={hl === null || hl === c.key ? 1 : 0.15}
+                  onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
               ))}
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={G} />
-            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-            <Tooltip content={<CustomTooltip />} />
-            {activeCats.map(c => (
-              <Area key={c.key} type="monotone" dataKey={c.label}
-                stroke={c.color} fill={`url(#ag-${c.key})`}
-                strokeWidth={hl === c.key ? 3 : 2}
-                opacity={hl === null || hl === c.key ? 1 : 0.15}
-                onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
-            ))}
-          </AreaChart>
-        </ResponsiveContainer>
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       );
     }
 
     // bar (default)
     return (
-      <ResponsiveContainer width="100%" height={CH}>
-        <BarChart {...common} barCategoryGap={isMobile ? "20%" : "18%"}>
-          <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
-          <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
-          <Tooltip content={<CustomTooltip />} />
-          {activeCats.map(c => (
-            <Bar key={c.key} dataKey={c.label} fill={c.color}
-              stackId={isMobile ? "a" : undefined}
-              radius={isMobile ? undefined : [3, 3, 0, 0]}
-              opacity={hl === null || hl === c.key ? 1 : 0.15}
-              onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ width: '100%', overflow: 'hidden' }}>
+        <ResponsiveContainer width="100%" height={CH}>
+          <BarChart {...common} barCategoryGap={isMobile ? "20%" : "18%"}>
+            <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
+            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 38} />
+            <Tooltip content={<CustomTooltip />} />
+            {activeCats.map(c => (
+              <Bar key={c.key} dataKey={c.label} fill={c.color}
+                stackId={isMobile ? "a" : undefined}
+                radius={isMobile ? undefined : [3, 3, 0, 0]}
+                opacity={hl === null || hl === c.key ? 1 : 0.15}
+                onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     );
   };
 
@@ -427,36 +474,84 @@ export default function Graphs() {
           </p>
         </div>
 
-        {/* ── KPI Grid: 3×2 on mobile, 6×1 on desktop ── */}
+        {/* ── KPI Grid: 2×3 on mobile, 6×1 on desktop ── */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)',
           gap: isMobile ? 8 : 12,
           marginBottom: isMobile ? 16 : 28,
         }}>
           {kpis.map((k, i) => <KpiCard key={i} {...k} />)}
         </div>
 
-        {/* ── Month filter (scrollable row) ── */}
+        {/* ── Month filter (Dropdown on mobile, tab list on desktop) ── */}
         <div style={{ marginBottom: isMobile ? 12 : 22 }}>
           <p style={{ color: '#555', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>মাস ফিল্টার:</p>
-          <div className="gr-scroll" style={scrollRow}>
-            {MONTH_ORDER.map(m => (
-              <button key={m} onClick={() => toggleMonth(m)} style={{
-                padding: '5px 14px',
-                borderRadius: 20,
-                border: `1px solid ${selMonths.has(m) ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
-                background: selMonths.has(m) ? 'rgba(229,9,20,0.15)' : 'transparent',
-                color: selMonths.has(m) ? '#E50914' : '#555',
-                fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                fontFamily: 'inherit', flexShrink: 0,
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}>
-                {MONTH_FULL[m] || m}
+          {isMobile ? (
+            <div style={{ position: 'relative', width: '100%' }}>
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  background: 'rgba(20,20,20,0.95)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#fff',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  outline: 'none',
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  fontFamily: 'inherit',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <option value="all">সব মাস (একত্রে)</option>
+                {MONTH_ORDER.map(m => (
+                  <option key={m} value={m}>{MONTH_FULL[m] || m}</option>
+                ))}
+              </select>
+              <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#888', fontSize: 10 }}>▼</div>
+            </div>
+          ) : (
+            <div className="gr-scroll" style={scrollRow}>
+              <button
+                onClick={() => setSelectedMonth('all')}
+                style={{
+                  padding: '5px 14px',
+                  borderRadius: 20,
+                  border: `1px solid ${selectedMonth === 'all' ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
+                  background: selectedMonth === 'all' ? 'rgba(229,9,20,0.15)' : 'transparent',
+                  color: selectedMonth === 'all' ? '#E50914' : '#555',
+                  fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  fontFamily: 'inherit', flexShrink: 0,
+                }}
+              >
+                সব মাস
               </button>
-            ))}
-          </div>
+              {MONTH_ORDER.map(m => (
+                <button
+                  key={m}
+                  onClick={() => setSelectedMonth(m)}
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: 20,
+                    border: `1px solid ${selectedMonth === m ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
+                    background: selectedMonth === m ? 'rgba(229,9,20,0.15)' : 'transparent',
+                    color: selectedMonth === m ? '#E50914' : '#555',
+                    fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                    fontFamily: 'inherit', flexShrink: 0,
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation',
+                  }}
+                >
+                  {MONTH_FULL[m] || m}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── Main Chart Panel ── */}
@@ -535,41 +630,45 @@ export default function Graphs() {
           {/* Trend */}
           <Card>
             <p style={{ color: '#bbb', fontSize: 12, fontWeight: 700, marginBottom: 10 }}>মাসিক মোট মামলার প্রবণতা</p>
-            <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
-              <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 4, right: 6, left: isMobile ? -28 : 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#E50914" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#E50914" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                <XAxis dataKey="month" tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 40} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="total" name="মোট" stroke="#E50914" fill="url(#tg)" strokeWidth={2} dot={{ fill: '#E50914', r: dotR }} />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div style={{ width: '100%', overflow: 'hidden' }}>
+              <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
+                <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 4, right: 6, left: isMobile ? -28 : 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#E50914" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#E50914" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis dataKey="month" tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#555', fontSize: axFs }} axisLine={false} tickLine={false} width={isMobile ? 28 : 40} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area type="monotone" dataKey="total" name="মোট" stroke="#E50914" fill="url(#tg)" strokeWidth={2} dot={{ fill: '#E50914', r: dotR }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
 
           {/* Breakdown pie */}
           <Card>
             <p style={{ color: '#bbb', fontSize: 12, fontWeight: 700, marginBottom: 10 }}>অপরাধ বিভাজন</p>
-            <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
-              <PieChart>
-                <Pie data={pieData.slice(0, 7)} dataKey="value" nameKey="name"
-                  cx="50%" cy="50%"
-                  outerRadius={isMobile ? 60 : 75}
-                  innerRadius={isMobile ? 28 : 38}
-                  paddingAngle={3} stroke="none">
-                  {pieData.slice(0, 7).map((e, i) => (
-                    <Cell key={i} fill={e.color}
-                      onMouseEnter={() => setHl(e.name)} onMouseLeave={() => setHl(null)} />
-                  ))}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div style={{ width: '100%', overflow: 'hidden' }}>
+              <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
+                <PieChart>
+                  <Pie data={pieData.slice(0, 7)} dataKey="value" nameKey="name"
+                    cx="50%" cy="50%"
+                    outerRadius={isMobile ? 60 : 75}
+                    innerRadius={isMobile ? 28 : 38}
+                    paddingAngle={3} stroke="none">
+                    {pieData.slice(0, 7).map((e, i) => (
+                      <Cell key={i} fill={e.color}
+                        onMouseEnter={() => setHl(e.name)} onMouseLeave={() => setHl(null)} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<PieTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
             {/* compact legend */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
               {pieData.slice(0, 7).map((e, i) => (
