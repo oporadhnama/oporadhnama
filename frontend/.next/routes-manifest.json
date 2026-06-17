@@ -83,6 +83,12 @@
       "namedRegex": "^/admin/dashboard/add\\-news(?:/)?$"
     },
     {
+      "page": "/admin/dashboard/manage-graphs",
+      "regex": "^/admin/dashboard/manage\\-graphs(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard/manage\\-graphs(?:/)?$"
+    },
+    {
       "page": "/admin/dashboard/manage-news",
       "regex": "^/admin/dashboard/manage\\-news(?:/)?$",
       "routeKeys": {},

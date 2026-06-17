@@ -4,6 +4,7 @@
   "/about/page": "/about",
   "/admin/dashboard/activity-logs/page": "/admin/dashboard/activity-logs",
   "/admin/dashboard/add-news/page": "/admin/dashboard/add-news",
+  "/admin/dashboard/manage-graphs/page": "/admin/dashboard/manage-graphs",
   "/admin/dashboard/manage-news/page": "/admin/dashboard/manage-news",
   "/admin/dashboard/moderators/page": "/admin/dashboard/moderators",
   "/admin/dashboard/page": "/admin/dashboard",

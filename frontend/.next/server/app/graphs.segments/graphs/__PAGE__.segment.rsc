@@ -1,5 +1,6 @@
 1:"$Sreact.fragment"
-2:I[97367,["/_next/static/chunks/3-go_mkgn9mgw.js","/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
-3:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen bg-black text-white pt-28 px-6 w-full max-w-4xl mx-auto flex flex-col items-center justify-center","children":["$","div",null,{"className":"text-center","children":[["$","div",null,{"className":"text-6xl mb-6 opacity-20","children":"📊"}],["$","h1",null,{"className":"text-3xl md:text-4xl font-bold mb-4","children":["গ্রাফ ও ",["$","span",null,{"className":"text-[#E50914]","children":"পরিসংখ্যান"}]]}],["$","p",null,{"className":"text-neutral-500 text-base","children":"এই বিভাগটি শীঘ্রই আসছে। অপরাধের পরিসংখ্যান ও বিশ্লেষণ এখানে প্রদর্শিত হবে।"}]]}]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"lpC9AfN4o7XFb5bsp7TMc"}
-4:null
+2:I[78341,["/_next/static/chunks/27hp9vaiep26t.js","/_next/static/chunks/1-8s9_t85wwr4.js","/_next/static/chunks/1qgd-qmm1juu9.js","/_next/static/chunks/3p5petl46hnst.js"],"default"]
+3:I[97367,["/_next/static/chunks/27hp9vaiep26t.js","/_next/static/chunks/1-8s9_t85wwr4.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/_next/static/chunks/1qgd-qmm1juu9.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/3p5petl46hnst.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"G7pEO5_3BSHlj0ZyzRZvY"}
+5:null
