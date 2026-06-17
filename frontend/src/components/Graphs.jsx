@@ -537,7 +537,7 @@ export default function Graphs() {
       minHeight: '100vh',
       background: '#08080a',
       color: '#fff',
-      paddingTop: isMobile ? 'max(24px, env(safe-area-inset-top, 24px))' : 80,
+      paddingTop: isMobile ? 'max(80px, env(safe-area-inset-top, 80px))' : 80,
       paddingBottom: isMobile ? (activeMobileData ? 240 : 56) : 60,
       fontFamily: "'Noto Sans Bengali','Inter',sans-serif",
       overflowX: 'hidden',
