@@ -64,16 +64,16 @@ function useIsMobile() {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(15,15,15,0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(229,9,20,0.5)', borderRadius: 12, padding: '10px 14px', maxWidth: 200, fontSize: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-      <p style={{ color: '#E50914', fontWeight: 800, marginBottom: 6, fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 4 }}>{label}</p>
+    <div style={{ background: 'rgba(15,15,15,0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(229,9,20,0.5)', borderRadius: 12, padding: '12px 16px', maxWidth: 240, fontSize: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+      <p style={{ color: '#E50914', fontWeight: 800, marginBottom: 8, fontSize: 15, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 6 }}>{label}</p>
       {payload.slice(0, 8).map((p, i) => (
-        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 4 }}>
-          <span style={{ color: p.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 110, fontSize: 11 }}>{p.name}</span>
-          <span style={{ color: '#fff', fontWeight: 700, flexShrink: 0, fontSize: 11 }}>{p.value?.toLocaleString()}</span>
+        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 6 }}>
+          <span style={{ color: p.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 130, fontSize: 13 }}>{p.name}</span>
+          <span style={{ color: '#fff', fontWeight: 700, flexShrink: 0, fontSize: 13 }}>{p.value?.toLocaleString()}</span>
         </div>
       ))}
       {payload.length > 8 && (
-        <p style={{ color: '#888', fontSize: 10, marginTop: 6, textAlign: 'center', fontStyle: 'italic' }}>+ আরও {payload.length - 8}</p>
+        <p style={{ color: '#888', fontSize: 11, marginTop: 8, textAlign: 'center', fontStyle: 'italic' }}>+ আরও {payload.length - 8}</p>
       )}
     </div>
   );
@@ -83,8 +83,8 @@ const PieTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const { name, value, payload: p } = payload[0];
   return (
-    <div style={{ background: 'rgba(15,15,15,0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(229,9,20,0.5)', borderRadius: 12, padding: '10px 14px', fontSize: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-      <p style={{ color: payload[0].fill, fontWeight: 800, marginBottom: 4 }}>{name}</p>
+    <div style={{ background: 'rgba(15,15,15,0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(229,9,20,0.5)', borderRadius: 12, padding: '12px 16px', fontSize: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+      <p style={{ color: payload[0].fill, fontWeight: 800, marginBottom: 6 }}>{name}</p>
       <p style={{ color: '#fff' }}>মামলা: <b>{value}</b></p>
       <p style={{ color: '#aaa' }}>মোট: {((value / p.total) * 100).toFixed(1)}%</p>
     </div>
@@ -99,8 +99,8 @@ function Card({ children, style = {} }) {
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       border: '1px solid rgba(255,255,255,0.05)',
-      borderRadius: 16,
-      padding: '16px',
+      borderRadius: 20,
+      padding: '24px',
       boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
       ...style,
     }}>
@@ -111,9 +111,9 @@ function Card({ children, style = {} }) {
 
 const scrollRow = {
   display: 'flex',
-  gap: 10,
+  gap: 12,
   overflowX: 'auto',
-  paddingBottom: 8,
+  paddingBottom: 12,
   msOverflowStyle: 'none',
   scrollbarWidth: 'none',
   WebkitOverflowScrolling: 'touch',
@@ -210,11 +210,13 @@ export default function Graphs() {
   /* Chart layout configs */
   const G = 'rgba(255,255,255,0.03)';
   const AX = '#666';
-  const CH = isMobile ? 300 : 380;
+  // Increased chart height for mobile to avoid feeling squashed
+  const CH = isMobile ? 400 : 450;
   const margin = isMobile
-    ? { top: 10, right: 10, left: -20, bottom: 0 }
+    ? { top: 10, right: 10, left: -10, bottom: 0 }
     : { top: 15, right: 25, left: 0, bottom: 5 };
-  const axFs = isMobile ? 10 : 12;
+  // Increased axis font size
+  const axFs = isMobile ? 13 : 14;
 
   const handleMobileClick = (e) => {
     if (isMobile && e?.activePayload) {
@@ -229,34 +231,34 @@ export default function Graphs() {
       <div style={{
         position: 'fixed',
         bottom: 0, left: 0, right: 0,
-        background: 'rgba(15, 15, 18, 0.85)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(229,9,20,0.3)',
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        padding: '24px 20px 40px',
+        background: 'rgba(15, 15, 18, 0.95)',
+        backdropFilter: 'blur(30px)',
+        WebkitBackdropFilter: 'blur(30px)',
+        borderTop: '1px solid rgba(229,9,20,0.4)',
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        padding: '30px 24px 50px',
         zIndex: 1000,
-        boxShadow: '0 -10px 40px rgba(0,0,0,0.6)',
-        animation: 'slideUp 0.3s ease-out',
+        boxShadow: '0 -10px 50px rgba(0,0,0,0.8)',
+        animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#fff' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <h3 style={{ margin: 0, fontSize: 24, fontWeight: 900, color: '#fff' }}>
             {activeMobileData.month} <span style={{ color: '#E50914' }}>২০২৬</span>
           </h3>
-          <button onClick={() => setActiveMobileData(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 32, height: 32, color: '#fff', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+          <button onClick={() => setActiveMobileData(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 40, height: 40, color: '#fff', fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
         </div>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxHeight: '50vh', overflowY: 'auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxHeight: '60vh', overflowY: 'auto', paddingRight: 8 }}>
           {activeCats.map(cat => {
             const val = activeMobileData[cat.label];
             if (val === undefined) return null;
             return (
-              <div key={cat.key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: cat.color, flexShrink: 0, boxShadow: `0 0 8px ${cat.color}88` }} />
+              <div key={cat.key} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ width: 14, height: 14, borderRadius: '50%', background: cat.color, flexShrink: 0, boxShadow: `0 0 10px ${cat.color}aa` }} />
                 <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-                  <span style={{ color: '#aaa', fontSize: 11, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cat.label}</span>
-                  <span style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>{val}</span>
+                  <span style={{ color: '#bbb', fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cat.label}</span>
+                  <span style={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>{val}</span>
                 </div>
               </div>
             );
@@ -267,7 +269,7 @@ export default function Graphs() {
   };
 
   const renderChart = () => {
-    if (!mounted) return <div style={{ height: CH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: '#444' }}>লোড হচ্ছে...</span></div>;
+    if (!mounted) return <div style={{ height: CH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: '#444', fontSize: 16 }}>লোড হচ্ছে...</span></div>;
 
     if (chartType === 'pie') {
       return (
@@ -275,11 +277,11 @@ export default function Graphs() {
           <ResponsiveContainer width="100%" height={CH}>
             <PieChart>
               <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%"
-                innerRadius={isMobile ? 50 : 80} outerRadius={isMobile ? 90 : 130} paddingAngle={2} stroke="none" cornerRadius={4}>
+                innerRadius={isMobile ? 70 : 100} outerRadius={isMobile ? 120 : 160} paddingAngle={2} stroke="none" cornerRadius={6}>
                 {pieData.map((e, i) => (
                   <Cell key={i} fill={e.color}
                     opacity={hl === null || hl === e.name ? 1 : 0.3}
-                    style={{ cursor: 'pointer', transition: 'opacity 0.2s', filter: `drop-shadow(0 4px 12px ${e.color}44)` }}
+                    style={{ cursor: 'pointer', transition: 'opacity 0.2s', filter: `drop-shadow(0 6px 16px ${e.color}55)` }}
                     onMouseEnter={() => setHl(e.name)}
                     onMouseLeave={() => setHl(null)}
                   />
@@ -295,9 +297,9 @@ export default function Graphs() {
     if (chartType === 'radar') {
       if (isMobile) {
         return (
-          <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: 13, gap: 10, textAlign: 'center', padding: '0 20px' }}>
+          <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 16, gap: 16, textAlign: 'center', padding: '0 24px' }}>
             <span>📱 রেডার চার্ট মোবাইল স্ক্রিনের জন্য উপযুক্ত নয়। অনুগ্রহ করে বার বা এরিয়া চার্ট দেখুন।</span>
-            <button onClick={() => setChartType('area')} style={{ padding: '8px 16px', borderRadius: 20, background: 'rgba(229,9,20,0.15)', color: '#E50914', border: '1px solid rgba(229,9,20,0.3)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <button onClick={() => setChartType('area')} style={{ padding: '12px 24px', borderRadius: 30, background: 'rgba(229,9,20,0.15)', color: '#E50914', border: '1px solid rgba(229,9,20,0.3)', fontSize: 16, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
               এরিয়া চার্ট দেখুন
             </button>
           </div>
@@ -306,11 +308,11 @@ export default function Graphs() {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           <ResponsiveContainer width="100%" height={CH}>
-            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius={130}>
+            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius={150}>
               <PolarGrid stroke={G} />
-              <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: 11 }} />
-              <PolarRadiusAxis tick={{ fill: '#444', fontSize: 10 }} />
-              <Radar dataKey="value" stroke="#E50914" fill="#E50914" fillOpacity={0.25} dot={{ fill: '#E50914', r: 4 }} />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#888', fontSize: 14 }} />
+              <PolarRadiusAxis tick={{ fill: '#444', fontSize: 12 }} />
+              <Radar dataKey="value" stroke="#E50914" fill="#E50914" fillOpacity={0.25} dot={{ fill: '#E50914', r: 5 }} />
               <Tooltip content={<CustomTooltip />} />
             </RadarChart>
           </ResponsiveContainer>
@@ -320,9 +322,9 @@ export default function Graphs() {
 
     if (selectedMonth !== 'all' && ['line', 'area'].includes(chartType)) {
       return (
-        <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: 13, gap: 10, textAlign: 'center', padding: '0 20px' }}>
+        <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 16, gap: 16, textAlign: 'center', padding: '0 24px' }}>
           <span>📊 এই মাসের ট্রেন্ড দেখার জন্য অনুগ্রহ করে "সব মাস" নির্বাচন করুন।</span>
-          <button onClick={() => setSelectedMonth('all')} style={{ padding: '8px 16px', borderRadius: 20, background: '#E50914', color: '#fff', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 12px rgba(229,9,20,0.4)' }}>
+          <button onClick={() => setSelectedMonth('all')} style={{ padding: '12px 24px', borderRadius: 30, background: '#E50914', color: '#fff', border: 'none', fontSize: 16, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 6px 16px rgba(229,9,20,0.4)' }}>
             সব মাস দেখুন
           </button>
         </div>
@@ -330,16 +332,16 @@ export default function Graphs() {
     }
 
     if (selectedMonth !== 'all' && chartType === 'bar') {
-      const singleH = Math.max(isMobile ? 280 : CH, activeCats.length * 45 + 50);
+      const singleH = Math.max(isMobile ? 350 : CH, activeCats.length * 55 + 60);
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           <ResponsiveContainer width="100%" height={singleH}>
-            <BarChart layout="vertical" data={singleMonthData} margin={{ top: 5, right: 20, left: isMobile ? 5 : 0, bottom: 5 }}>
+            <BarChart layout="vertical" data={singleMonthData} margin={{ top: 10, right: 20, left: isMobile ? 5 : 0, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} horizontal={false} />
               <XAxis type="number" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fill: '#ccc', fontSize: 11 }} axisLine={false} tickLine={false} width={isMobile ? 90 : 120} />
+              <YAxis type="category" dataKey="name" tick={{ fill: '#ccc', fontSize: 13 }} axisLine={false} tickLine={false} width={isMobile ? 110 : 140} />
               {!isMobile && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />}
-              <Bar dataKey="value" fill="#E50914" maxBarSize={isMobile ? 18 : 24} radius={[0, 6, 6, 0]}>
+              <Bar dataKey="value" fill="#E50914" maxBarSize={isMobile ? 24 : 30} radius={[0, 8, 8, 0]}>
                 {singleMonthData.map((e, i) => (
                   <Cell key={i} fill={e.color} />
                 ))}
@@ -358,13 +360,13 @@ export default function Graphs() {
           <ResponsiveContainer width="100%" height={CH}>
             <LineChart {...common} onClick={handleMobileClick}>
               <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
-              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 15, right: 15 }} height={30} />
-              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={36} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 20, right: 20 }} height={40} />
+              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={45} />
               {!isMobile && <Tooltip content={<CustomTooltip />} />}
               {activeCats.map(c => (
                 <Line key={c.key} type="monotone" dataKey={c.label} stroke={c.color}
-                  strokeWidth={hl === c.key ? 4 : 2} dot={{ fill: '#111', stroke: c.color, strokeWidth: 2, r: isMobile ? 4 : 5 }}
-                  activeDot={{ r: 7, fill: c.color, stroke: '#fff' }}
+                  strokeWidth={hl === c.key ? 5 : 3} dot={{ fill: '#111', stroke: c.color, strokeWidth: 3, r: isMobile ? 5 : 6 }}
+                  activeDot={{ r: 9, fill: c.color, stroke: '#fff' }}
                   opacity={hl === null || hl === c.key ? 1 : 0.15}
                   onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
               ))}
@@ -382,19 +384,19 @@ export default function Graphs() {
               <defs>
                 {activeCats.map(c => (
                   <linearGradient key={c.key} id={`ag-${c.key}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={c.color} stopOpacity={0.5} />
+                    <stop offset="5%" stopColor={c.color} stopOpacity={0.6} />
                     <stop offset="95%" stopColor={c.color} stopOpacity={0} />
                   </linearGradient>
                 ))}
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
-              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 15, right: 15 }} height={30} />
-              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={36} />
+              <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} padding={{ left: 20, right: 20 }} height={40} />
+              <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={45} />
               {!isMobile && <Tooltip content={<CustomTooltip />} />}
               {activeCats.map(c => (
                 <Area key={c.key} type="monotone" dataKey={c.label}
                   stroke={c.color} fill={`url(#ag-${c.key})`}
-                  strokeWidth={hl === c.key ? 3 : 2}
+                  strokeWidth={hl === c.key ? 4 : 3}
                   opacity={hl === null || hl === c.key ? 1 : 0.15}
                   onMouseEnter={() => setHl(c.key)} onMouseLeave={() => setHl(null)} />
               ))}
@@ -408,10 +410,10 @@ export default function Graphs() {
     return (
       <div style={{ width: '100%', overflow: 'hidden' }}>
         <ResponsiveContainer width="100%" height={CH}>
-          <BarChart {...common} barCategoryGap={isMobile ? "25%" : "20%"} onClick={handleMobileClick}>
+          <BarChart {...common} barCategoryGap={isMobile ? "20%" : "20%"} onClick={handleMobileClick}>
             <CartesianGrid strokeDasharray="3 3" stroke={G} vertical={false} />
-            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} height={30} />
-            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={36} />
+            <XAxis dataKey="month" tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} height={40} />
+            <YAxis tick={{ fill: AX, fontSize: axFs }} axisLine={false} tickLine={false} width={45} />
             {!isMobile && <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />}
             {activeCats.map((c, i) => {
               const isTop = i === activeCats.length - 1;
@@ -421,8 +423,8 @@ export default function Graphs() {
                   dataKey={c.label}
                   fill={c.color}
                   stackId={isMobile ? "mobile-stack" : undefined}
-                  maxBarSize={isMobile ? 40 : 50}
-                  radius={isMobile ? (isTop ? [4, 4, 0, 0] : [0, 0, 0, 0]) : [4, 4, 0, 0]}
+                  maxBarSize={isMobile ? 50 : 60}
+                  radius={isMobile ? (isTop ? [6, 6, 0, 0] : [0, 0, 0, 0]) : [6, 6, 0, 0]}
                   opacity={hl === null || hl === c.key ? 1 : 0.15}
                   onMouseEnter={() => setHl(c.key)}
                   onMouseLeave={() => setHl(null)}
@@ -441,8 +443,8 @@ export default function Graphs() {
       minHeight: '100vh',
       background: '#08080a',
       color: '#fff',
-      paddingTop: isMobile ? 80 : 100,
-      paddingBottom: 60,
+      paddingTop: isMobile ? 40 : 100,
+      paddingBottom: 80,
       fontFamily: "'Noto Sans Bengali','Inter',sans-serif",
       overflowX: 'hidden',
     }}>
@@ -457,21 +459,21 @@ export default function Graphs() {
       <div style={{
         maxWidth: 1200,
         margin: '0 auto',
-        padding: isMobile ? '0 12px' : '0 24px',
+        padding: isMobile ? '0 16px' : '0 32px',
         width: '100%',
       }}>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: isMobile ? 24 : 40 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 12, padding: '6px 16px', borderRadius: 30, background: 'rgba(229,9,20,0.1)', border: '1px solid rgba(229,9,20,0.2)' }}>
-            <span style={{ color: '#E50914', fontSize: isMobile ? 10 : 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? 32 : 48 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '8px 20px', borderRadius: 40, background: 'rgba(229,9,20,0.1)', border: '1px solid rgba(229,9,20,0.2)' }}>
+            <span style={{ color: '#E50914', fontSize: isMobile ? 13 : 14, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               ঢাকা মেট্রোপলিটন পুলিশ
             </span>
           </div>
-          <h1 style={{ fontSize: isMobile ? '1.8rem' : '3rem', fontWeight: 900, lineHeight: 1.1, margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: isMobile ? '2.4rem' : '3.6rem', fontWeight: 900, lineHeight: 1.15, margin: '0 0 12px', letterSpacing: '-0.02em' }}>
             অপরাধ <span style={{ color: '#E50914' }}>পরিসংখ্যান</span>
           </h1>
-          <p style={{ color: '#888', fontSize: isMobile ? 13 : 16, maxWidth: 500, margin: '0 auto', fontWeight: 500 }}>
+          <p style={{ color: '#888', fontSize: isMobile ? 15 : 18, maxWidth: 600, margin: '0 auto', fontWeight: 500 }}>
             ইন্টারেক্টিভ বিশ্লেষণ ও তথ্যাবলি • ২০২৬
           </p>
         </div>
@@ -479,35 +481,35 @@ export default function Graphs() {
         {/* KPI Carousel */}
         <div className="no-scrollbar" style={{
           display: 'flex',
-          gap: isMobile ? 12 : 16,
+          gap: isMobile ? 16 : 24,
           overflowX: 'auto',
           scrollSnapType: isMobile ? 'x mandatory' : 'none',
-          paddingBottom: 16,
-          marginBottom: isMobile ? 16 : 32,
-          margin: isMobile ? '0 -12px' : 0,
-          padding: isMobile ? '0 12px 16px' : '0 0 16px',
+          paddingBottom: 20,
+          marginBottom: isMobile ? 24 : 40,
+          margin: isMobile ? '0 -16px' : 0,
+          padding: isMobile ? '0 16px 20px' : '0 0 20px',
         }}>
           {kpis.map((k, i) => {
             const up = k.delta > 0;
             return (
               <div key={i} style={{
-                scrollSnapAlign: 'start',
-                minWidth: isMobile ? 140 : 180,
+                scrollSnapAlign: 'center',
+                minWidth: isMobile ? 220 : 260,
                 flex: isMobile ? '0 0 auto' : 1,
                 background: 'linear-gradient(145deg, rgba(20,20,24,0.8), rgba(12,12,15,0.9))',
                 border: `1px solid ${k.color}40`,
-                borderRadius: 20,
-                padding: '16px',
+                borderRadius: 24,
+                padding: '24px',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: `0 8px 24px -8px ${k.color}33`,
+                boxShadow: `0 8px 32px -8px ${k.color}33`,
               }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${k.color}, transparent)` }} />
-                <p style={{ color: '#aaa', fontSize: 11, marginBottom: 8, fontWeight: 600, letterSpacing: '0.05em' }}>{k.label}</p>
-                <p style={{ color: '#fff', fontSize: 26, fontWeight: 900, lineHeight: 1, marginBottom: 6 }}>{k.value?.toLocaleString()}</p>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, transparent, ${k.color}, transparent)` }} />
+                <p style={{ color: '#aaa', fontSize: 14, marginBottom: 12, fontWeight: 600, letterSpacing: '0.05em' }}>{k.label}</p>
+                <p style={{ color: '#fff', fontSize: 32, fontWeight: 900, lineHeight: 1, marginBottom: 10 }}>{k.value?.toLocaleString()}</p>
                 {k.delta !== undefined && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: up ? 'rgba(239,83,80,0.1)' : 'rgba(102,187,106,0.1)', width: 'fit-content', padding: '2px 8px', borderRadius: 10 }}>
-                    <span style={{ color: up ? '#ef5350' : '#66bb6a', fontSize: 10, fontWeight: 800 }}>{up ? '↑' : '↓'} {Math.abs(k.delta)}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: up ? 'rgba(239,83,80,0.1)' : 'rgba(102,187,106,0.1)', width: 'fit-content', padding: '4px 10px', borderRadius: 12 }}>
+                    <span style={{ color: up ? '#ef5350' : '#66bb6a', fontSize: 13, fontWeight: 800 }}>{up ? '↑' : '↓'} {Math.abs(k.delta)}</span>
                   </div>
                 )}
               </div>
@@ -516,18 +518,18 @@ export default function Graphs() {
         </div>
 
         {/* Month Filter Pills */}
-        <div style={{ marginBottom: isMobile ? 20 : 30 }}>
+        <div style={{ marginBottom: isMobile ? 24 : 40 }}>
           <div className="no-scrollbar" style={scrollRow}>
             <button
               onClick={() => setSelectedMonth('all')}
               style={{
-                padding: '8px 20px', borderRadius: 30,
+                padding: '12px 28px', borderRadius: 40,
                 border: `1px solid ${selectedMonth === 'all' ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
                 background: selectedMonth === 'all' ? '#E50914' : 'rgba(20,20,24,0.6)',
                 color: selectedMonth === 'all' ? '#fff' : '#888',
-                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                fontSize: 15, fontWeight: 800, cursor: 'pointer',
                 fontFamily: 'inherit', flexShrink: 0, transition: 'all 0.2s',
-                boxShadow: selectedMonth === 'all' ? '0 4px 16px rgba(229,9,20,0.4)' : 'none',
+                boxShadow: selectedMonth === 'all' ? '0 6px 20px rgba(229,9,20,0.4)' : 'none',
               }}
             >
               সব মাস
@@ -537,11 +539,11 @@ export default function Graphs() {
                 key={m}
                 onClick={() => setSelectedMonth(m)}
                 style={{
-                  padding: '8px 20px', borderRadius: 30,
+                  padding: '12px 28px', borderRadius: 40,
                   border: `1px solid ${selectedMonth === m ? '#fff' : 'rgba(255,255,255,0.1)'}`,
                   background: selectedMonth === m ? '#fff' : 'rgba(20,20,24,0.6)',
                   color: selectedMonth === m ? '#000' : '#888',
-                  fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  fontSize: 15, fontWeight: 800, cursor: 'pointer',
                   fontFamily: 'inherit', flexShrink: 0, transition: 'all 0.2s',
                 }}
               >
@@ -552,23 +554,23 @@ export default function Graphs() {
         </div>
 
         {/* Main Chart Card */}
-        <Card style={{ marginBottom: isMobile ? 20 : 32, padding: isMobile ? '16px 12px' : '24px' }}>
+        <Card style={{ marginBottom: isMobile ? 24 : 40, padding: isMobile ? '20px 16px' : '32px' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>প্রধান রেখাচিত্র</h2>
-            <div className="no-scrollbar" style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>প্রধান রেখাচিত্র</h2>
+            <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6 }}>
               {CHART_TYPES.map(t => (
                 <button
                   key={t.id} onClick={() => setChartType(t.id)}
                   style={{
-                    padding: '6px 12px', borderRadius: 10, border: 'none',
+                    padding: '8px 16px', borderRadius: 12, border: 'none',
                     background: chartType === t.id ? '#E50914' : 'transparent',
                     color: chartType === t.id ? '#fff' : '#777',
-                    fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit', transition: 'all 0.2s'
+                    fontSize: 14, fontWeight: 800, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', transition: 'all 0.2s'
                   }}
                 >
-                  <span style={{ opacity: 0.8 }}>{t.icon}</span> {t.label}
+                  <span style={{ opacity: 0.8, fontSize: 15 }}>{t.icon}</span> {t.label}
                 </button>
               ))}
             </div>
@@ -577,16 +579,16 @@ export default function Graphs() {
           {renderChart()}
           
           {isMobile && !['pie', 'radar'].includes(chartType) && selectedMonth === 'all' && (
-            <p style={{ textAlign: 'center', fontSize: 11, color: '#666', marginTop: 12, fontWeight: 500 }}>
+            <p style={{ textAlign: 'center', fontSize: 13, color: '#666', marginTop: 16, fontWeight: 600 }}>
               বিস্তারিত তথ্য দেখতে গ্রাফের যেকোনো অংশে ট্যাপ করুন
             </p>
           )}
 
           {isMobile && chartType === 'pie' && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 20, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24, justifyContent: 'center' }}>
               {pieData.map((e, i) => (
-                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#aaa', fontWeight: 600 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: e.color, display: 'inline-block', boxShadow: `0 0 6px ${e.color}88` }} />
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#aaa', fontWeight: 600 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: e.color, display: 'inline-block', boxShadow: `0 0 6px ${e.color}88` }} />
                   {e.name}
                 </span>
               ))}
@@ -595,21 +597,21 @@ export default function Graphs() {
         </Card>
 
         {/* Categories / Toggles */}
-        <Card style={{ marginBottom: isMobile ? 20 : 32 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <span style={{ color: '#fff', fontSize: 15, fontWeight: 800 }}>অপরাধ বিভাগসমূহ</span>
-            <div style={{ display: 'flex', gap: 8 }}>
+        <Card style={{ marginBottom: isMobile ? 24 : 40, padding: isMobile ? '20px 16px' : '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <span style={{ color: '#fff', fontSize: 18, fontWeight: 800 }}>অপরাধ বিভাগসমূহ</span>
+            <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
-                style={{ padding: '6px 14px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ padding: '8px 18px', borderRadius: 30, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
                 সব নির্বাচন
               </button>
               <button onClick={() => setSelCats(new Set(['murder']))}
-                style={{ padding: '6px 14px', borderRadius: 20, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ padding: '8px 18px', borderRadius: 30, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
                 রিসেট
               </button>
             </div>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8 }}>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 10 }}>
             {CATEGORIES.map(cat => {
               const selected = selCats.has(cat.key);
               return (
@@ -617,15 +619,15 @@ export default function Graphs() {
                   key={cat.key}
                   onClick={() => toggleCat(cat.key)}
                   style={{
-                    padding: '8px 16px', borderRadius: 30,
+                    padding: '10px 20px', borderRadius: 40,
                     border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
-                    background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.3)',
-                    color: selected ? '#fff' : '#666',
-                    fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
-                    display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', transition: 'all 0.2s',
+                    background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.4)',
+                    color: selected ? '#fff' : '#888',
+                    fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
+                    display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'inherit', transition: 'all 0.2s',
                   }}
                 >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: selected ? cat.color : '#333', boxShadow: selected ? `0 0 8px ${cat.color}` : 'none' }} />
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 10px ${cat.color}` : 'none' }} />
                   {cat.label}
                 </button>
               );
@@ -634,15 +636,15 @@ export default function Graphs() {
         </Card>
 
         {/* Mini Analytics Widgets */}
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 20 : 24, marginBottom: 40 }}>
-          <Card style={{ padding: isMobile ? '20px 16px' : '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <p style={{ color: '#fff', fontSize: 15, fontWeight: 800, margin: 0 }}>মোট মামলা (মাসিক)</p>
-              <span style={{ background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 10, padding: '4px 8px', borderRadius: 8, fontWeight: 700 }}>TREND</span>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 24 : 32, marginBottom: 40 }}>
+          <Card style={{ padding: isMobile ? '24px 20px' : '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <p style={{ color: '#fff', fontSize: 18, fontWeight: 800, margin: 0 }}>মোট মামলা (মাসিক)</p>
+              <span style={{ background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 12, padding: '6px 12px', borderRadius: 12, fontWeight: 800 }}>TREND</span>
             </div>
             <div style={{ width: '100%', overflow: 'hidden' }}>
               {mounted ? (
-                <ResponsiveContainer width="100%" height={160}>
+                <ResponsiveContainer width="100%" height={200}>
                   <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 5, right: 0, left: -25, bottom: 0 }}>
                     <defs>
                       <linearGradient id="tg-mini" x1="0" y1="0" x2="0" y2="1">
@@ -651,27 +653,27 @@ export default function Graphs() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
-                    <XAxis dataKey="month" tick={{ fill: '#777', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#777', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="month" tick={{ fill: '#777', fontSize: 13 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#777', fontSize: 13 }} axisLine={false} tickLine={false} />
                     {!isMobile && <Tooltip content={<CustomTooltip />} />}
-                    <Area type="monotone" dataKey="total" stroke="#E50914" fill="url(#tg-mini)" strokeWidth={3} dot={{ fill: '#000', stroke: '#E50914', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <Area type="monotone" dataKey="total" stroke="#E50914" fill="url(#tg-mini)" strokeWidth={4} dot={{ fill: '#000', stroke: '#E50914', strokeWidth: 3, r: 5 }} activeDot={{ r: 8 }} />
                   </AreaChart>
                 </ResponsiveContainer>
-              ) : <div style={{ height: 160 }} />}
+              ) : <div style={{ height: 200 }} />}
             </div>
           </Card>
 
-          <Card style={{ padding: isMobile ? '20px 16px' : '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <p style={{ color: '#fff', fontSize: 15, fontWeight: 800, margin: 0 }}>অপরাধ বিভাজন</p>
-              <span style={{ background: 'rgba(255,255,255,0.05)', color: '#aaa', fontSize: 10, padding: '4px 8px', borderRadius: 8, fontWeight: 700 }}>TOP 6</span>
+          <Card style={{ padding: isMobile ? '24px 20px' : '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <p style={{ color: '#fff', fontSize: 18, fontWeight: 800, margin: 0 }}>অপরাধ বিভাজন</p>
+              <span style={{ background: 'rgba(255,255,255,0.05)', color: '#aaa', fontSize: 12, padding: '6px 12px', borderRadius: 12, fontWeight: 800 }}>TOP 6</span>
             </div>
             <div style={{ width: '100%', overflow: 'hidden' }}>
               {mounted ? (
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
                     <Pie data={pieData.slice(0, 6)} dataKey="value" nameKey="name"
-                      cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={2} stroke="none" cornerRadius={4}>
+                      cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={2} stroke="none" cornerRadius={6}>
                       {pieData.slice(0, 6).map((e, i) => (
                         <Cell key={i} fill={e.color} />
                       ))}
@@ -679,12 +681,12 @@ export default function Graphs() {
                     <Tooltip content={<PieTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
-              ) : <div style={{ height: 180 }} />}
+              ) : <div style={{ height: 220 }} />}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
               {pieData.slice(0, 6).map((e, i) => (
-                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#888', fontWeight: 600 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: e.color, display: 'inline-block' }} />
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#888', fontWeight: 600 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: e.color, display: 'inline-block' }} />
                   {e.name}
                 </span>
               ))}
