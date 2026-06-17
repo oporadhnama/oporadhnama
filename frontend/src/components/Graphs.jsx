@@ -60,6 +60,17 @@ function useIsMobile() {
   return isMobile;
 }
 
+function useIsSmallMobile() {
+  const [isSmall, setIsSmall] = useState(false);
+  useEffect(() => {
+    const check = () => setIsSmall(window.innerWidth < 380);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isSmall;
+}
+
 /* ─── Tooltips ───────────────────────────────────────────────────────────── */
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -143,6 +154,7 @@ function EdgeFade({ side = 'right' }) {
 /* ═══ Main Component ════════════════════════════════════════════════════════ */
 export default function Graphs() {
   const isMobile = useIsMobile();
+  const isSmallMobile = useIsSmallMobile();
   const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState('bar');
   const [selCats, setSelCats] = useState(
@@ -232,9 +244,9 @@ export default function Graphs() {
   /* Chart layout configs */
   const G = 'rgba(255,255,255,0.03)';
   const AX = '#666';
-  const CH = isMobile ? 280 : 380;
+  const CH = isMobile ? (isSmallMobile ? 300 : 320) : 380;
   const margin = isMobile
-    ? { top: 10, right: 8, left: 0, bottom: 0 }
+    ? { top: 10, right: 10, left: 2, bottom: 4 }
     : { top: 15, right: 25, left: 0, bottom: 5 };
   const axFs = isMobile ? 10.5 : 12;
 
@@ -262,13 +274,13 @@ export default function Graphs() {
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderTop: '1px solid rgba(229,9,20,0.3)',
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          padding: '14px 18px max(18px, env(safe-area-inset-bottom))',
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          padding: '12px 16px max(16px, env(safe-area-inset-bottom))',
           zIndex: 1000,
           boxShadow: '0 -10px 40px rgba(0,0,0,0.6)',
           animation: 'slideUp 0.25s ease-out',
-          maxHeight: '60vh',
+          maxHeight: '50vh',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -525,8 +537,8 @@ export default function Graphs() {
       minHeight: '100vh',
       background: '#08080a',
       color: '#fff',
-      paddingTop: isMobile ? 32 : 80,
-      paddingBottom: isMobile ? (activeMobileData ? 220 : 48) : 60,
+      paddingTop: isMobile ? 'max(24px, env(safe-area-inset-top, 24px))' : 80,
+      paddingBottom: isMobile ? (activeMobileData ? 240 : 56) : 60,
       fontFamily: "'Noto Sans Bengali','Inter',sans-serif",
       overflowX: 'hidden',
       transition: 'padding-bottom 0.2s',
@@ -537,6 +549,10 @@ export default function Graphs() {
           from { transform: translateY(100%); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
         }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         @media (max-width: 767px) {
           button { -webkit-tap-highlight-color: transparent; }
         }
@@ -545,79 +561,78 @@ export default function Graphs() {
       <div style={{
         maxWidth: 1200,
         margin: '0 auto',
-        padding: isMobile ? '0 14px' : '0 24px',
+        padding: isMobile ? '0 16px' : '0 24px',
         width: '100%',
+        boxSizing: 'border-box',
       }}>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: isMobile ? 20 : 40 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 10, padding: '6px 14px', borderRadius: 30, background: 'rgba(229,9,20,0.1)', border: '1px solid rgba(229,9,20,0.2)' }}>
-            <span style={{ color: '#E50914', fontSize: isMobile ? 10.5 : 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? 16 : 40 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 8, padding: '5px 12px', borderRadius: 30, background: 'rgba(229,9,20,0.1)', border: '1px solid rgba(229,9,20,0.2)' }}>
+            <span style={{ color: '#E50914', fontSize: isMobile ? 10 : 12, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               ঢাকা মেট্রোপলিটন পুলিশ
             </span>
           </div>
-          <h1 style={{ fontSize: isMobile ? '1.6rem' : '2.8rem', fontWeight: 900, lineHeight: 1.15, margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: isMobile ? '1.4rem' : '2.8rem', fontWeight: 900, lineHeight: 1.15, margin: '0 0 4px', letterSpacing: '-0.02em' }}>
             অপরাধ <span style={{ color: '#E50914' }}>পরিসংখ্যান</span>
           </h1>
-          <p style={{ color: '#888', fontSize: isMobile ? 12.5 : 15, maxWidth: 500, margin: '0 auto', fontWeight: 500 }}>
+          <p style={{ color: '#888', fontSize: isMobile ? 12 : 15, maxWidth: 500, margin: '0 auto', fontWeight: 500 }}>
             ইন্টারেক্টিভ বিশ্লেষণ ও তথ্যাবলি • ২০২৬
           </p>
         </div>
 
-        {/* KPI Carousel */}
-        <div style={{ position: 'relative', marginBottom: isMobile ? 18 : 36 }}>
-          <div className="no-scrollbar" style={{
-            display: 'flex',
-            gap: isMobile ? 10 : 20,
-            overflowX: 'auto',
-            scrollSnapType: isMobile ? 'x mandatory' : 'none',
-            margin: isMobile ? '0 -14px' : 0,
-            padding: isMobile ? '0 14px 14px' : '0 0 16px',
+        {/* KPI Grid — 2-column on mobile for full visibility without scrolling */}
+        <div style={{ marginBottom: isMobile ? 14 : 36 }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: isMobile ? 8 : 20,
           }}>
             {kpis.map((k, i) => {
               const up = k.delta > 0;
               return (
                 <div key={i} style={{
-                  scrollSnapAlign: 'start',
-                  minWidth: isMobile ? 138 : 220,
-                  flex: isMobile ? '0 0 auto' : 1,
                   background: 'linear-gradient(145deg, rgba(20,20,24,0.8), rgba(12,12,15,0.9))',
                   border: `1px solid ${k.color}40`,
-                  borderRadius: 16,
-                  padding: isMobile ? '14px' : '16px',
+                  borderRadius: isMobile ? 12 : 16,
+                  padding: isMobile ? '10px 12px' : '16px',
                   position: 'relative',
                   overflow: 'hidden',
                   boxShadow: `0 6px 20px -6px ${k.color}33`,
+                  animation: `fadeIn 0.3s ease-out ${i * 0.05}s both`,
                 }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${k.color}, transparent)` }} />
-                  <p style={{ color: '#aaa', fontSize: isMobile ? 11 : 12, marginBottom: 8, fontWeight: 600, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{k.label}</p>
-                  <p style={{ color: '#fff', fontSize: isMobile ? 21 : 24, fontWeight: 900, lineHeight: 1, marginBottom: 8 }}>{k.value?.toLocaleString()}</p>
+                  <p style={{ color: '#aaa', fontSize: isMobile ? 10.5 : 12, marginBottom: 4, fontWeight: 600, letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{k.label}</p>
+                  <p style={{ color: '#fff', fontSize: isMobile ? 18 : 24, fontWeight: 900, lineHeight: 1, marginBottom: 6 }}>{k.value?.toLocaleString()}</p>
                   {k.delta !== undefined && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: up ? 'rgba(239,83,80,0.1)' : 'rgba(102,187,106,0.1)', width: 'fit-content', padding: '3px 8px', borderRadius: 8 }}>
-                      <span style={{ color: up ? '#ef5350' : '#66bb6a', fontSize: 11, fontWeight: 800 }}>{up ? '↑' : '↓'} {Math.abs(k.delta)}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: up ? 'rgba(239,83,80,0.1)' : 'rgba(102,187,106,0.1)', width: 'fit-content', padding: '2px 6px', borderRadius: 6 }}>
+                      <span style={{ color: up ? '#ef5350' : '#66bb6a', fontSize: isMobile ? 10 : 11, fontWeight: 800 }}>{up ? '↑' : '↓'} {Math.abs(k.delta)}</span>
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-          {isMobile && <EdgeFade side="right" />}
         </div>
 
-        {/* Month Filter Pills */}
-        <div style={{ marginBottom: isMobile ? 16 : 36, position: 'relative' }}>
-          <div className="no-scrollbar" style={{ ...scrollRow, margin: isMobile ? '0 -14px' : 0, padding: isMobile ? '0 14px 8px' : '0 0 8px' }}>
+        {/* Month Filter Pills — wrap on mobile so all months are visible */}
+        <div style={{ marginBottom: isMobile ? 12 : 36 }}>
+          <div style={{
+            display: 'flex',
+            flexWrap: isMobile ? 'wrap' : 'nowrap',
+            gap: isMobile ? 6 : 10,
+          }}>
             <button
               onClick={() => setSelectedMonth('all')}
               style={{
-                padding: isMobile ? '9px 18px' : '8px 20px', borderRadius: 30,
+                padding: isMobile ? '7px 14px' : '8px 20px', borderRadius: 30,
                 border: `1px solid ${selectedMonth === 'all' ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
                 background: selectedMonth === 'all' ? '#E50914' : 'rgba(20,20,24,0.6)',
                 color: selectedMonth === 'all' ? '#fff' : '#888',
-                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                fontSize: isMobile ? 12.5 : 13, fontWeight: 700, cursor: 'pointer',
                 fontFamily: 'inherit', flexShrink: 0, transition: 'all 0.2s',
                 boxShadow: selectedMonth === 'all' ? '0 4px 16px rgba(229,9,20,0.4)' : 'none',
-                minHeight: 40,
+                minHeight: isMobile ? 36 : 40,
               }}
             >
               সব মাস
@@ -627,113 +642,98 @@ export default function Graphs() {
                 key={m}
                 onClick={() => setSelectedMonth(m)}
                 style={{
-                  padding: isMobile ? '9px 18px' : '8px 20px', borderRadius: 30,
+                  padding: isMobile ? '7px 14px' : '8px 20px', borderRadius: 30,
                   border: `1px solid ${selectedMonth === m ? '#fff' : 'rgba(255,255,255,0.1)'}`,
                   background: selectedMonth === m ? '#fff' : 'rgba(20,20,24,0.6)',
                   color: selectedMonth === m ? '#000' : '#888',
-                  fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  fontSize: isMobile ? 12.5 : 13, fontWeight: 700, cursor: 'pointer',
                   fontFamily: 'inherit', flexShrink: 0, transition: 'all 0.2s',
-                  minHeight: 40,
+                  minHeight: isMobile ? 36 : 40,
                 }}
               >
                 {MONTH_FULL[m] || m}
               </button>
             ))}
           </div>
-          {isMobile && <EdgeFade side="right" />}
         </div>
 
         {/* Main Chart Card */}
-        <Card style={{ marginBottom: isMobile ? 16 : 36, padding: isMobile ? '14px' : '24px' }}>
+        <Card style={{ marginBottom: isMobile ? 12 : 36, padding: isMobile ? '12px' : '24px' }}>
 
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? 12 : 0, marginBottom: 16 }}>
-            <h2 style={{ fontSize: isMobile ? 16 : 18, fontWeight: 800, color: '#fff', margin: 0 }}>প্রধান রেখাচিত্র</h2>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? 10 : 0, marginBottom: isMobile ? 10 : 16 }}>
+            <h2 style={{ fontSize: isMobile ? 15 : 18, fontWeight: 800, color: '#fff', margin: 0 }}>প্রধান রেখাচিত্র</h2>
 
-            {/* Chart-type switcher: now shown and usable on mobile too */}
-            <div style={{ position: 'relative' }}>
-              <div className="no-scrollbar" style={{
-                display: 'flex', gap: 6, overflowX: 'auto',
-                background: isMobile ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.03)',
-                borderRadius: 12, padding: 4,
-                margin: isMobile ? '0 -14px' : 0,
-                paddingLeft: isMobile ? 14 : 4,
-                paddingRight: isMobile ? 14 : 4,
-              }}>
-                {CHART_TYPES.map(t => (
-                  <button
-                    key={t.id} onClick={() => setChartType(t.id)}
-                    style={{
-                      padding: isMobile ? '8px 14px' : '6px 14px', borderRadius: 10, border: 'none',
-                      background: chartType === t.id ? '#E50914' : 'transparent',
-                      color: chartType === t.id ? '#fff' : '#777',
-                      fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit', transition: 'all 0.2s',
-                      flexShrink: 0, minHeight: isMobile ? 40 : 'auto',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <span style={{ opacity: 0.8, fontSize: 14 }}>{t.icon}</span> {t.label}
-                  </button>
-                ))}
-              </div>
+            {/* Chart-type switcher: full-width grid on mobile for easy tapping */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(5, 1fr)' : 'repeat(5, auto)',
+              gap: isMobile ? 4 : 6,
+              background: 'rgba(255,255,255,0.04)',
+              borderRadius: 10, padding: 3,
+            }}>
+              {CHART_TYPES.map(t => (
+                <button
+                  key={t.id} onClick={() => setChartType(t.id)}
+                  style={{
+                    padding: isMobile ? '7px 0' : '6px 14px', borderRadius: 8, border: 'none',
+                    background: chartType === t.id ? '#E50914' : 'transparent',
+                    color: chartType === t.id ? '#fff' : '#777',
+                    fontSize: isMobile ? 11.5 : 13, fontWeight: 700, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3,
+                    fontFamily: 'inherit', transition: 'all 0.2s',
+                    minHeight: isMobile ? 34 : 'auto',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span style={{ opacity: 0.8, fontSize: isMobile ? 12 : 14 }}>{t.icon}</span>
+                  {(!isMobile || isSmallMobile === false) && <span>{t.label}</span>}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Category toggles — compact on mobile, collapsible so the chart isn't pushed below the fold */}
-          <div style={{ marginBottom: 14 }}>
+          {/* Category toggles — collapsible on mobile with wrapping chip grid */}
+          <div style={{ marginBottom: isMobile ? 8 : 14 }}>
             {isMobile && (
               <button
                 onClick={() => setCatsOpen(o => !o)}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: 12, padding: '10px 14px', color: '#ccc', fontSize: 12.5, fontWeight: 700,
-                  fontFamily: 'inherit', cursor: 'pointer', minHeight: 44,
+                  borderRadius: 10, padding: '8px 12px', color: '#ccc', fontSize: 12, fontWeight: 700,
+                  fontFamily: 'inherit', cursor: 'pointer', minHeight: 40,
                 }}
               >
-                <span>বিভাগ নির্বাচন ({activeCats.length}/{CATEGORIES.length})</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span>বিভাগ ({activeCats.length}/{CATEGORIES.length})</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ display: 'flex', gap: 3 }}>
-                    {activeCats.slice(0, 4).map(c => (
-                      <span key={c.key} style={{ width: 8, height: 8, borderRadius: '50%', background: c.color, boxShadow: `0 0 4px ${c.color}88` }} />
+                    {activeCats.slice(0, 5).map(c => (
+                      <span key={c.key} style={{ width: 7, height: 7, borderRadius: '50%', background: c.color, boxShadow: `0 0 4px ${c.color}88` }} />
                     ))}
+                    {activeCats.length > 5 && <span style={{ color: '#666', fontSize: 10 }}>+{activeCats.length - 5}</span>}
                   </span>
-                  <span style={{ transform: catsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', fontSize: 11, color: '#888' }}>▼</span>
+                  <span style={{ transform: catsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', fontSize: 10, color: '#888' }}>▼</span>
                 </span>
               </button>
             )}
 
             {(!isMobile || catsOpen) && (
-              <div style={{ marginTop: isMobile ? 10 : 0 }}>
-                {!isMobile && (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 10 }}>
-                    <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
-                      style={{ padding: '6px 14px', borderRadius: 24, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-                      সব নির্বাচন
-                    </button>
-                    <button onClick={() => setSelCats(new Set(['murder']))}
-                      style={{ padding: '6px 14px', borderRadius: 24, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-                      রিসেট
-                    </button>
-                  </div>
-                )}
-                {isMobile && (
-                  <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                    <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', minHeight: 38 }}>
-                      সব নির্বাচন
-                    </button>
-                    <button onClick={() => setSelCats(new Set(['murder']))}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: 10, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', minHeight: 38 }}>
-                      রিসেট
-                    </button>
-                  </div>
-                )}
-                <div style={{ position: 'relative' }}>
-                  <div className="no-scrollbar" style={{
-                    display: 'flex', gap: 8, overflowX: 'auto',
-                    margin: isMobile ? '0 -14px' : 0,
-                    padding: isMobile ? '0 14px 6px' : '0 0 4px',
+              <div style={{ marginTop: isMobile ? 8 : 0 }}>
+                {/* Select all / Reset */}
+                <div style={{ display: 'flex', justifyContent: isMobile ? 'stretch' : 'flex-end', gap: 6, marginBottom: 8 }}>
+                  <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
+                    style={{ flex: isMobile ? 1 : 'none', padding: isMobile ? '6px 10px' : '6px 14px', borderRadius: isMobile ? 8 : 24, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: isMobile ? 11.5 : 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', minHeight: isMobile ? 34 : 'auto' }}>
+                    সব নির্বাচন
+                  </button>
+                  <button onClick={() => setSelCats(new Set(['murder']))}
+                    style={{ flex: isMobile ? 1 : 'none', padding: isMobile ? '6px 10px' : '6px 14px', borderRadius: isMobile ? 8 : 24, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: isMobile ? 11.5 : 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', minHeight: isMobile ? 34 : 'auto' }}>
+                    রিসেট
+                  </button>
+                </div>
+                {/* Category chips — wrapping grid on mobile, scrollable on desktop */}
+                {isMobile ? (
+                  <div style={{
+                    display: 'flex', flexWrap: 'wrap', gap: 6,
                   }}>
                     {CATEGORIES.map(cat => {
                       const selected = selCats.has(cat.key);
@@ -742,52 +742,97 @@ export default function Graphs() {
                           key={cat.key}
                           onClick={() => toggleCat(cat.key)}
                           style={{
-                            padding: isMobile ? '8px 14px' : '8px 16px', borderRadius: 30,
-                            border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
-                            background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.3)',
-                            color: selected ? '#fff' : '#888',
-                            fontSize: isMobile ? 12.5 : 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
-                            display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', transition: 'all 0.2s',
-                            flexShrink: 0, minHeight: 38,
+                            padding: '5px 10px', borderRadius: 20,
+                            border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.06)'}`,
+                            background: selected ? `${cat.color}18` : 'rgba(0,0,0,0.3)',
+                            color: selected ? '#fff' : '#666',
+                            fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+                            display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit',
+                            transition: 'all 0.15s',
+                            minHeight: 30,
                           }}
                         >
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 6px ${cat.color}` : 'none' }} />
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 4px ${cat.color}` : 'none', flexShrink: 0 }} />
                           {cat.label}
                         </button>
                       );
                     })}
                   </div>
-                  {isMobile && <EdgeFade side="right" />}
-                </div>
+                ) : (
+                  <div style={{ position: 'relative' }}>
+                    <div className="no-scrollbar" style={{
+                      display: 'flex', gap: 8, overflowX: 'auto',
+                      padding: '0 0 4px',
+                    }}>
+                      {CATEGORIES.map(cat => {
+                        const selected = selCats.has(cat.key);
+                        return (
+                          <button
+                            key={cat.key}
+                            onClick={() => toggleCat(cat.key)}
+                            style={{
+                              padding: '8px 16px', borderRadius: 30,
+                              border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
+                              background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.3)',
+                              color: selected ? '#fff' : '#888',
+                              fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+                              display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', transition: 'all 0.2s',
+                              flexShrink: 0, minHeight: 38,
+                            }}
+                          >
+                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 6px ${cat.color}` : 'none' }} />
+                            {cat.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {renderChart()}
 
+          {/* Mobile legend — shows selected categories below chart for context */}
+          {isMobile && !['pie'].includes(activeChartType) && (
+            <div style={{
+              display: 'flex', flexWrap: 'wrap', gap: '4px 10px',
+              justifyContent: 'center', marginTop: 10, padding: '8px 0 4px',
+              borderTop: '1px solid rgba(255,255,255,0.04)',
+            }}>
+              {activeCats.map(c => (
+                <span key={c.key} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10.5, color: '#999', fontWeight: 600 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: c.color, display: 'inline-block', boxShadow: `0 0 3px ${c.color}66` }} />
+                  {c.label}
+                </span>
+              ))}
+            </div>
+          )}
+
           {isMobile && !['pie', 'radar'].includes(activeChartType) && (
-            <p style={{ textAlign: 'center', fontSize: 11.5, color: '#666', marginTop: 12, fontWeight: 500 }}>
-              বিস্তারিত তথ্য দেখতে গ্রাফের যেকোনো অংশে ট্যাপ করুন
+            <p style={{ textAlign: 'center', fontSize: 10.5, color: '#555', marginTop: 6, fontWeight: 500 }}>
+              ট্যাপ করে বিস্তারিত দেখুন
             </p>
           )}
 
           {isMobile && activeChartType === 'pie' && (
-            <p style={{ textAlign: 'center', fontSize: 11.5, color: '#666', marginTop: 12, fontWeight: 500 }}>
-              হাইলাইট করতে অংশে ট্যাপ করুন
+            <p style={{ textAlign: 'center', fontSize: 10.5, color: '#555', marginTop: 6, fontWeight: 500 }}>
+              হাইলাইট করতে ট্যাপ করুন
             </p>
           )}
         </Card>
 
         {/* Mini Analytics Widgets */}
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 16 : 24, marginBottom: 40 }}>
-          <Card style={{ padding: isMobile ? '16px 14px' : '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <p style={{ color: '#fff', fontSize: isMobile ? 14.5 : 16, fontWeight: 800, margin: 0 }}>মোট মামলা (মাসিক)</p>
-              <span style={{ background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 11, padding: '4px 10px', borderRadius: 10, fontWeight: 700 }}>TREND</span>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 24, marginBottom: 40 }}>
+          <Card style={{ padding: isMobile ? '12px' : '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 10 : 16 }}>
+              <p style={{ color: '#fff', fontSize: isMobile ? 13.5 : 16, fontWeight: 800, margin: 0 }}>মোট মামলা (মাসিক)</p>
+              <span style={{ background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 10, padding: '3px 8px', borderRadius: 8, fontWeight: 700 }}>TREND</span>
             </div>
             <div style={{ width: '100%', overflow: 'hidden' }}>
               {mounted ? (
-                <ResponsiveContainer width="100%" height={isMobile ? 160 : 180}>
+                <ResponsiveContainer width="100%" height={isMobile ? 150 : 180}>
                   <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="tg-mini" x1="0" y1="0" x2="0" y2="1">
@@ -796,27 +841,27 @@ export default function Graphs() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
-                    <XAxis dataKey="month" tick={{ fill: '#777', fontSize: isMobile ? 11 : 12 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#777', fontSize: isMobile ? 11 : 12 }} axisLine={false} tickLine={false} width={isMobile ? 30 : undefined} />
+                    <XAxis dataKey="month" tick={{ fill: '#777', fontSize: isMobile ? 10.5 : 12 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#777', fontSize: isMobile ? 10.5 : 12 }} axisLine={false} tickLine={false} width={isMobile ? 30 : undefined} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Area type="monotone" dataKey="total" stroke="#E50914" fill="url(#tg-mini)" strokeWidth={3} dot={{ fill: '#000', stroke: '#E50914', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <Area type="monotone" dataKey="total" stroke="#E50914" fill="url(#tg-mini)" strokeWidth={2.5} dot={{ fill: '#000', stroke: '#E50914', strokeWidth: 2, r: 3.5 }} activeDot={{ r: 5 }} />
                   </AreaChart>
                 </ResponsiveContainer>
-              ) : <div style={{ height: isMobile ? 160 : 180 }} />}
+              ) : <div style={{ height: isMobile ? 150 : 180 }} />}
             </div>
           </Card>
 
-          <Card style={{ padding: isMobile ? '16px 14px' : '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <p style={{ color: '#fff', fontSize: isMobile ? 14.5 : 16, fontWeight: 800, margin: 0 }}>অপরাধ বিভাজন</p>
-              <span style={{ background: 'rgba(255,255,255,0.05)', color: '#aaa', fontSize: 11, padding: '4px 10px', borderRadius: 10, fontWeight: 700 }}>TOP 6</span>
+          <Card style={{ padding: isMobile ? '12px' : '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 10 : 16 }}>
+              <p style={{ color: '#fff', fontSize: isMobile ? 13.5 : 16, fontWeight: 800, margin: 0 }}>অপরাধ বিভাজন</p>
+              <span style={{ background: 'rgba(255,255,255,0.05)', color: '#aaa', fontSize: 10, padding: '3px 8px', borderRadius: 8, fontWeight: 700 }}>TOP 6</span>
             </div>
             <div style={{ width: '100%', overflow: 'hidden' }}>
               {mounted ? (
-                <ResponsiveContainer width="100%" height={isMobile ? 180 : 200}>
+                <ResponsiveContainer width="100%" height={isMobile ? 160 : 200}>
                   <PieChart>
                     <Pie data={pieData.slice(0, 6)} dataKey="value" nameKey="name"
-                      cx="50%" cy="50%" innerRadius={isMobile ? 44 : 50} outerRadius={isMobile ? 72 : 80} paddingAngle={2} stroke="none" cornerRadius={4}>
+                      cx="50%" cy="50%" innerRadius={isMobile ? 38 : 50} outerRadius={isMobile ? 65 : 80} paddingAngle={2} stroke="none" cornerRadius={4}>
                       {pieData.slice(0, 6).map((e, i) => (
                         <Cell key={i} fill={e.color} />
                       ))}
@@ -824,13 +869,13 @@ export default function Graphs() {
                     <Tooltip content={<PieTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
-              ) : <div style={{ height: isMobile ? 180 : 200 }} />}
+              ) : <div style={{ height: isMobile ? 160 : 200 }} />}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? '4px 6px' : 8, justifyItems: isMobile ? 'start' : 'center', marginTop: isMobile ? 4 : 0 }}>
               {pieData.slice(0, 6).map((e, i) => (
-                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#888', fontWeight: 600 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: e.color, display: 'inline-block' }} />
-                  {e.name}
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: isMobile ? 10 : 11, color: '#888', fontWeight: 600 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: e.color, display: 'inline-block', flexShrink: 0 }} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.name}</span>
                 </span>
               ))}
             </div>
