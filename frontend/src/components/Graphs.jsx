@@ -213,7 +213,7 @@ export default function Graphs() {
   // Increased chart height for mobile to avoid feeling squashed
   const CH = isMobile ? 400 : 450;
   const margin = isMobile
-    ? { top: 10, right: 10, left: -10, bottom: 0 }
+    ? { top: 10, right: 15, left: 0, bottom: 0 }
     : { top: 15, right: 25, left: 0, bottom: 5 };
   // Increased axis font size
   const axFs = isMobile ? 13 : 14;
@@ -645,7 +645,7 @@ export default function Graphs() {
             <div style={{ width: '100%', overflow: 'hidden' }}>
               {mounted ? (
                 <ResponsiveContainer width="100%" height={200}>
-                  <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 5, right: 0, left: -25, bottom: 0 }}>
+                  <AreaChart data={RAW_DATA.filter(d => selMonths.has(d.month))} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="tg-mini" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#E50914" stopOpacity={0.4} />
