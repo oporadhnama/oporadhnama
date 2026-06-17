@@ -125,7 +125,7 @@ export default function Graphs() {
   const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState('bar');
   const [selCats, setSelCats] = useState(
-    new Set(['murder', 'rape', 'narcotics', 'other_cases', 'other_violence_women_children'])
+    new Set(['murder', 'rape', 'dacoity'])
   );
   const [selectedMonth, setSelectedMonth] = useState('all');
   const [hl, setHl] = useState(null);
@@ -225,8 +225,10 @@ export default function Graphs() {
   };
 
   /* ─── Sub-components ───────────────────────────────────────────────────── */
+  const activeChartType = isMobile ? 'bar' : chartType;
+
   const MobileBottomSheet = () => {
-    if (!isMobile || !activeMobileData || ['pie', 'radar'].includes(chartType) || selectedMonth !== 'all') return null;
+    if (!isMobile || !activeMobileData || ['pie', 'radar'].includes(activeChartType) || selectedMonth !== 'all') return null;
     return (
       <div style={{
         position: 'fixed',
@@ -271,7 +273,7 @@ export default function Graphs() {
   const renderChart = () => {
     if (!mounted) return <div style={{ height: CH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: '#444', fontSize: 16 }}>লোড হচ্ছে...</span></div>;
 
-    if (chartType === 'pie') {
+    if (activeChartType === 'pie') {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           <ResponsiveContainer width="100%" height={CH}>
@@ -294,7 +296,7 @@ export default function Graphs() {
       );
     }
 
-    if (chartType === 'radar') {
+    if (activeChartType === 'radar') {
       if (isMobile) {
         return (
           <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 16, gap: 16, textAlign: 'center', padding: '0 24px' }}>
@@ -320,7 +322,7 @@ export default function Graphs() {
       );
     }
 
-    if (selectedMonth !== 'all' && ['line', 'area'].includes(chartType)) {
+    if (selectedMonth !== 'all' && ['line', 'area'].includes(activeChartType)) {
       return (
         <div style={{ height: CH, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 16, gap: 16, textAlign: 'center', padding: '0 24px' }}>
           <span>📊 এই মাসের ট্রেন্ড দেখার জন্য অনুগ্রহ করে "সব মাস" নির্বাচন করুন।</span>
@@ -331,7 +333,7 @@ export default function Graphs() {
       );
     }
 
-    if (selectedMonth !== 'all' && chartType === 'bar') {
+    if (selectedMonth !== 'all' && activeChartType === 'bar') {
       const singleH = Math.max(isMobile ? 350 : CH, activeCats.length * 55 + 60);
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
@@ -354,7 +356,7 @@ export default function Graphs() {
 
     const common = { data: chartData, margin };
 
-    if (chartType === 'line') {
+    if (activeChartType === 'line') {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           <ResponsiveContainer width="100%" height={CH}>
@@ -376,7 +378,7 @@ export default function Graphs() {
       );
     }
 
-    if (chartType === 'area') {
+    if (activeChartType === 'area') {
       return (
         <div style={{ width: '100%', overflow: 'hidden' }}>
           <ResponsiveContainer width="100%" height={CH}>
@@ -487,8 +489,9 @@ export default function Graphs() {
           paddingBottom: 20,
           marginBottom: isMobile ? 24 : 40,
           margin: isMobile ? '0 -16px' : 0,
-          padding: isMobile ? '0 16px 20px' : '0 0 20px',
+          padding: isMobile ? '0 0 20px' : '0 0 20px',
         }}>
+          {isMobile && <div style={{ minWidth: 4, flexShrink: 0 }} />}
           {kpis.map((k, i) => {
             const up = k.delta > 0;
             return (
@@ -558,33 +561,47 @@ export default function Graphs() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>প্রধান রেখাচিত্র</h2>
-            <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6 }}>
-              {CHART_TYPES.map(t => (
-                <button
-                  key={t.id} onClick={() => setChartType(t.id)}
-                  style={{
-                    padding: '8px 16px', borderRadius: 12, border: 'none',
-                    background: chartType === t.id ? '#E50914' : 'transparent',
-                    color: chartType === t.id ? '#fff' : '#777',
-                    fontSize: 14, fontWeight: 800, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', transition: 'all 0.2s'
-                  }}
-                >
-                  <span style={{ opacity: 0.8, fontSize: 15 }}>{t.icon}</span> {t.label}
-                </button>
-              ))}
-            </div>
+            {!isMobile && (
+              <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6 }}>
+                {CHART_TYPES.map(t => (
+                  <button
+                    key={t.id} onClick={() => setChartType(t.id)}
+                    style={{
+                      padding: '8px 16px', borderRadius: 12, border: 'none',
+                      background: chartType === t.id ? '#E50914' : 'transparent',
+                      color: chartType === t.id ? '#fff' : '#777',
+                      fontSize: 14, fontWeight: 800, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', transition: 'all 0.2s'
+                    }}
+                  >
+                    <span style={{ opacity: 0.8, fontSize: 15 }}>{t.icon}</span> {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {renderChart()}
           
-          {isMobile && !['pie', 'radar'].includes(chartType) && selectedMonth === 'all' && (
+          {isMobile && !['pie', 'radar'].includes(activeChartType) && selectedMonth === 'all' && (
             <p style={{ textAlign: 'center', fontSize: 13, color: '#666', marginTop: 16, fontWeight: 600 }}>
               বিস্তারিত তথ্য দেখতে গ্রাফের যেকোনো অংশে ট্যাপ করুন
             </p>
           )}
 
-          {isMobile && chartType === 'pie' && (
+          {/* Simple Legend for mobile since toggles are hidden */}
+          {isMobile && activeChartType === 'bar' && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 16, justifyContent: 'center' }}>
+              {activeCats.map(c => (
+                <span key={c.key} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#aaa', fontWeight: 600 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: c.color, display: 'inline-block', boxShadow: `0 0 6px ${c.color}88` }} />
+                  {c.label}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {isMobile && activeChartType === 'pie' && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24, justifyContent: 'center' }}>
               {pieData.map((e, i) => (
                 <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#aaa', fontWeight: 600 }}>
@@ -597,43 +614,45 @@ export default function Graphs() {
         </Card>
 
         {/* Categories / Toggles */}
-        <Card style={{ marginBottom: isMobile ? 24 : 40, padding: isMobile ? '20px 16px' : '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <span style={{ color: '#fff', fontSize: 18, fontWeight: 800 }}>অপরাধ বিভাগসমূহ</span>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
-                style={{ padding: '8px 18px', borderRadius: 30, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
-                সব নির্বাচন
-              </button>
-              <button onClick={() => setSelCats(new Set(['murder']))}
-                style={{ padding: '8px 18px', borderRadius: 30, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
-                রিসেট
-              </button>
-            </div>
-          </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 10 }}>
-            {CATEGORIES.map(cat => {
-              const selected = selCats.has(cat.key);
-              return (
-                <button
-                  key={cat.key}
-                  onClick={() => toggleCat(cat.key)}
-                  style={{
-                    padding: '10px 20px', borderRadius: 40,
-                    border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
-                    background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.4)',
-                    color: selected ? '#fff' : '#888',
-                    fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
-                    display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'inherit', transition: 'all 0.2s',
-                  }}
-                >
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 10px ${cat.color}` : 'none' }} />
-                  {cat.label}
+        {!isMobile && (
+          <Card style={{ marginBottom: isMobile ? 24 : 40, padding: isMobile ? '20px 16px' : '32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <span style={{ color: '#fff', fontSize: 18, fontWeight: 800 }}>অপরাধ বিভাগসমূহ</span>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
+                  style={{ padding: '8px 18px', borderRadius: 30, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  সব নির্বাচন
                 </button>
-              );
-            })}
-          </div>
-        </Card>
+                <button onClick={() => setSelCats(new Set(['murder']))}
+                  style={{ padding: '8px 18px', borderRadius: 30, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  রিসেট
+                </button>
+              </div>
+            </div>
+            <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 10 }}>
+              {CATEGORIES.map(cat => {
+                const selected = selCats.has(cat.key);
+                return (
+                  <button
+                    key={cat.key}
+                    onClick={() => toggleCat(cat.key)}
+                    style={{
+                      padding: '10px 20px', borderRadius: 40,
+                      border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
+                      background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.4)',
+                      color: selected ? '#fff' : '#888',
+                      fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
+                      display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'inherit', transition: 'all 0.2s',
+                    }}
+                  >
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 10px ${cat.color}` : 'none' }} />
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
+        )}
 
         {/* Mini Analytics Widgets */}
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 24 : 32, marginBottom: 40 }}>
