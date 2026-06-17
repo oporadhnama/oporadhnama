@@ -147,10 +147,31 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    # ── Feature 1: Global API rate limiting ──────────────────────────────
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "20/hour",
+        "user": "100/hour",
+        # Strict rate for public submit endpoint (applied in SubmitPostView)
+        "submit_anon": "5/hour",
+    },
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    # ── Feature 2: Shorter access token + refresh rotation ───────────────
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+# ── Feature 2: Cookie settings for cross-origin HttpOnly refresh token ───────
+# Render (backend) and Vercel (frontend) are on different origins, so SameSite
+# must be 'None' with Secure=True to allow cross-site cookie sending.
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True

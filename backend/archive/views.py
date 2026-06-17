@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters import rest_framework as filters
 from django.contrib.auth import authenticate
@@ -15,6 +16,13 @@ from archive.serializers import (
     LoginSerializer, RegisterModeratorSerializer, UserSerializer,
     ActivityLogSerializer,
 )
+
+
+# ── Feature 1: Custom strict throttle for public submit endpoint ────────────
+
+class SubmitPostThrottle(AnonRateThrottle):
+    """5 submissions per hour per IP for the public tip form."""
+    scope = 'submit_anon'
 
 
 # ─── Helper: create an activity log entry ────────────────────────────────────
@@ -134,6 +142,8 @@ class SubmitPostView(viewsets.GenericViewSet):
     serializer_class = SubmitPostSerializer
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [AllowAny]
+    # Feature 1: strict 5/hour throttle for the public submit form
+    throttle_classes = [SubmitPostThrottle]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -185,7 +195,10 @@ class UserReportDetailView(generics.RetrieveDestroyAPIView):
 # ─── Authentication ──────────────────────────────────────────────────────────
 
 class LoginView(APIView):
-    """POST /api/auth/login/ — returns JWT tokens + user info. Logs login."""
+    """POST /api/auth/login/ — returns JWT access token + user info.
+    The refresh token is set as an HttpOnly cookie (not in the JSON body).
+    Logs login.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -199,7 +212,7 @@ class LoginView(APIView):
 
         if user is None:
             return Response(
-                {'error': 'ভুল ইউজারনেম অথবা পাসওয়ার্ড।'},
+                {'error': 'ভুল ইউজারনাম অথবা পাসওয়ার্ড।'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
@@ -213,11 +226,28 @@ class LoginView(APIView):
         log_activity(user=user, action='login')
 
         refresh = RefreshToken.for_user(user)
-        return Response({
+
+        # Feature 2: Build response with access token only in the body.
+        # The refresh token travels as an HttpOnly cookie so it is never
+        # accessible to JavaScript (XSS protection).
+        response = Response({
             'access': str(refresh.access_token),
-            'refresh': str(refresh),
+            # 'refresh' intentionally omitted from the JSON body
             'user': UserSerializer(user).data,
         })
+
+        # SameSite=None + Secure=True required for cross-origin cookies
+        # (Render backend ↔ Vercel frontend on different domains).
+        response.set_cookie(
+            key='refresh_token',
+            value=str(refresh),
+            httponly=True,
+            secure=True,
+            samesite='None',
+            max_age=7 * 24 * 60 * 60,  # 7 days in seconds
+            path='/',
+        )
+        return response
 
 
 class RegisterModeratorView(generics.CreateAPIView):

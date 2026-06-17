@@ -12,6 +12,7 @@ from archive.views import (
     LoginView, RegisterModeratorView, ModeratorsListView, DashboardStatsView,
     PublicStatsView, DeleteModeratorView, ActivityLogView,
 )
+from archive.feeds import LatestPostsFeed
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet, basename='post')
@@ -35,6 +36,8 @@ urlpatterns = [
     path('api/public-stats/', PublicStatsView.as_view(), name='public-stats'),
     # Activity logs
     path('api/activity-logs/', ActivityLogView.as_view(), name='activity-logs'),
+    # Feature 4: RSS feed — latest 50 published posts
+    path('api/feed/rss/', LatestPostsFeed(), name='rss-feed'),
 ]
 
 if settings.DEBUG:

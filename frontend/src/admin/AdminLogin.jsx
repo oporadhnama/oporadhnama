@@ -20,7 +20,8 @@ export default function AdminLogin() {
       const data = await loginAdmin(username, password);
       if (typeof window !== 'undefined') {
         window.localStorage.setItem('access_token', data.access);
-        window.localStorage.setItem('refresh_token', data.refresh);
+        // Feature 2: refresh_token is now stored in an HttpOnly cookie by the
+        // backend — do NOT store it in localStorage (XSS protection).
         window.localStorage.setItem('user', JSON.stringify(data.user));
       }
       router.push('/admin/dashboard');

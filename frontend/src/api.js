@@ -120,10 +120,14 @@ export async function loginAdmin(username, password) {
   const res = await fetch(`${API_BASE}/api/auth/login/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    // Feature 2: credentials:'include' is required so the browser stores
+    // and forwards the HttpOnly refresh_token cookie set by the backend.
+    credentials: 'include',
     body: JSON.stringify({ username, password }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'লগইন ব্যর্থ হয়েছে');
+  // Note: data.refresh is no longer sent by the server (it's in the cookie).
   return data;
 }
 

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { API_BASE } from '../../../lib/api';
 
 const SITE_URL = 'https://oporadhnama.vercel.app';
@@ -127,7 +128,62 @@ export default async function NewsDetailPage({ params }) {
   }
 
   const embedUrl = post.show_video !== false ? getEmbedUrl(post.video_url) : null;
-  const imageUrl = resolveImageUrl(post.image);
+  const rawImageUrl = resolveImageUrl(post.image);
+
+  // Feature 3: Cloudinary CDN optimisation — inject transformation params
+  // w_1200  → resize to 1200 px wide (max detail width)
+  // f_auto  → serve WebP/AVIF where the browser supports it
+  // q_auto  → Cloudinary picks the optimal quality level automatically
+  // Non-Cloudinary URLs (local dev, legacy S3) are returned unchanged.
+  function applyCloudinaryTransform(url, transform = 'w_1200,f_auto,q_auto') {
+    if (!url || !url.includes('res.cloudinary.com')) return url;
+    const marker = '/upload/';
+    const idx = url.indexOf(marker);
+    if (idx === -1) return url;
+    const after = url.slice(idx + marker.length);
+    if (/^(w_|h_|f_|q_|c_)/.test(after)) return url; // already transformed
+    return url.slice(0, idx + marker.length) + transform + '/' + after;
+  }
+
+  const imageUrl = applyCloudinaryTransform(rawImageUrl);
+  const isCloudinaryImage = rawImageUrl && rawImageUrl.includes('res.cloudinary.com');
+
+  // Feature 5: Enhanced JSON-LD — NewsArticle schema
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/news/${post.slug || slug}`,
+    },
+    headline: post.title,
+    description: (post.description || '').slice(0, 155),
+    datePublished: post.created_at || post.date,
+    dateModified: post.created_at || post.date,
+    url: `${SITE_URL}/news/${post.slug || slug}`,
+    image: imageUrl ? [imageUrl] : [`${SITE_URL}/og-image.jpg`],
+    keywords: [post.category_name, post.division, 'অপরাধনামা', 'বাংলাদেশ অপরাধ সংবাদ']
+      .filter(Boolean)
+      .join(', '),
+    author: {
+      '@type': 'Organization',
+      name: 'অপরাধনামা',
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'অপরাধনামা',
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+      },
+    },
+    articleSection: post.category_name || 'সংবাদ',
+    inLanguage: 'bn',
+  };
 
   return (
     <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-4xl mx-auto pb-16">
@@ -149,10 +205,24 @@ export default async function NewsDetailPage({ params }) {
         {post.location_text ? <span>🏷️ {post.location_text}</span> : null}
       </div>
 
-      {/* Featured image */}
+      {/* Feature 3: Featured image — Next.js <Image> for Cloudinary, plain <img> fallback */}
       {imageUrl ? (
         <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
-          <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
+          {isCloudinaryImage ? (
+            <Image
+              src={imageUrl}
+              alt={post.title}
+              width={1200}
+              height={630}
+              className="w-full h-auto object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, 896px"
+            />
+          ) : (
+            // Fallback for non-Cloudinary URLs (local dev, legacy hosts)
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
+          )}
         </div>
       ) : null}
 
@@ -189,29 +259,10 @@ export default async function NewsDetailPage({ params }) {
         </a>
       ) : null}
 
-      {/* JSON-LD structured data for Google News */}
+      {/* Feature 5: Enhanced JSON-LD structured data for Google News */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'NewsArticle',
-            headline: post.title,
-            description: (post.description || '').slice(0, 155),
-            datePublished: post.created_at || post.date,
-            dateModified: post.created_at || post.date,
-            url: `${SITE_URL}/news/${post.slug || slug}`,
-            image: imageUrl ? [imageUrl] : [],
-            author: { '@type': 'Organization', name: 'অপরাধনামা' },
-            publisher: {
-              '@type': 'Organization',
-              name: 'অপরাধনামা',
-              url: SITE_URL,
-            },
-            articleSection: post.category_name || 'সংবাদ',
-            inLanguage: 'bn',
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     </div>
   );
