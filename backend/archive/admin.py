@@ -8,6 +8,11 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+@admin.action(description='Promote selected reports to published posts')
+def promote_to_post(modeladmin, request, queryset):
+    queryset.update(is_user_report=False)
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'slug', 'title', 'category', 'division', 'date', 'created_at')
@@ -17,3 +22,4 @@ class PostAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     ordering = ('-date', '-created_at')
     readonly_fields = ('slug',)
+    actions = [promote_to_post]

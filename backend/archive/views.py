@@ -358,6 +358,7 @@ class ActivityLogView(generics.ListAPIView):
     """GET /api/activity-logs/ — activity logs for admins."""
     serializer_class = ActivityLogSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = PostLimitOffsetPagination
 
     def get_queryset(self):
         return ActivityLog.objects.select_related('user').order_by('-created_at')
