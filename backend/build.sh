@@ -1,8 +1,13 @@
-#!/usr/bin/env bash
-set -o errexit
-
-pip install -r requirements.txt
-python cleanup_db.py          # মাইগ্রেশন চালানোর আগে নিরাপদে রিজন পরিষ্কার
-python manage.py migrate
-python setup_admin.py
-python manage.py collectstatic --no-input
+Django>=4.2,<5.0
+django-cors-headers==4.3.1
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+django-filter==24.2
+Pillow>=11.0.0
+gunicorn==22.0.0
+psycopg2-binary==2.9.9
+dj-database-url==2.1.0
+whitenoise==6.5.0
+django-cloudinary-storage==0.3.0
+cloudinary==1.36.0
+python-dotenv==1.0.1
