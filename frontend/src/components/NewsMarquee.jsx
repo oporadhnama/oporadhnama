@@ -4,6 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { fetchPosts } from '../api';
 
+function formatBengaliDate(dateStr) {
+  if (!dateStr) return '';
+  try {
+    return new Intl.DateTimeFormat('bn-BD', { dateStyle: 'long' }).format(new Date(dateStr));
+  } catch {
+    return dateStr;
+  }
+}
+
 export default function NewsMarquee({ initialPosts = [] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(initialPosts.length === 0);
@@ -147,7 +156,7 @@ export default function NewsMarquee({ initialPosts = [] }) {
                 <Link
                   key={`marquee-${index}`}
                   href={`/news/${post.slug || post.id}`}
-                  className="inline-block w-72 flex-shrink-0 bg-neutral-900 border border-neutral-800 hover:border-[#E50914]/40 rounded-lg p-5 shadow-md hover:shadow-xl hover:shadow-black/40 transition-all duration-300"
+                  className="inline-flex flex-col w-72 flex-shrink-0 bg-neutral-900 border border-neutral-800 hover:border-[#E50914]/40 rounded-lg p-5 shadow-md hover:shadow-xl hover:shadow-black/40 transition-all duration-300"
                   aria-label={`সংবাদ পড়ুন: ${post.title || ''}`}
                 >
                   {/* Category badge */}
@@ -163,14 +172,20 @@ export default function NewsMarquee({ initialPosts = [] }) {
                   </h3>
 
                   {/* Description */}
-                  <p className="text-sm text-neutral-400 line-clamp-2 mb-3 whitespace-normal leading-relaxed">
+                  <p className="text-sm text-neutral-400 line-clamp-2 mb-3 whitespace-normal leading-relaxed flex-grow">
                     {post.description || ''}
                   </p>
 
-                  {/* Action Link */}
-                  <span className="text-[#E50914] font-semibold text-sm hover:underline transition-all duration-200 inline-block">
-                    বিস্তারিত পড়ুন →
-                  </span>
+                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
+                    <div className="flex flex-col">
+                      <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
+                      <span className="text-neutral-600 text-[10px]">{(post.location_text || post.division) && `স্থান: ${post.location_text || post.division}`}</span>
+                    </div>
+                    {/* Action Link */}
+                    <span className="text-[#E50914] font-semibold text-sm hover:underline transition-all duration-200 inline-block">
+                      বিস্তারিত পড়ুন →
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>

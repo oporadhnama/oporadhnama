@@ -303,7 +303,10 @@ export default function AllNews() {
                 </p>
 
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
-                  <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
+                  <div className="flex flex-col">
+                    <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
+                    <span className="text-neutral-600 text-[10px]">{(post.location_text || post.division) && `স্থান: ${post.location_text || post.division}`}</span>
+                  </div>
                   <span className="text-[#E50914] text-xs font-bold hover:underline">
                     বিস্তারিত পড়ুন →
                   </span>
