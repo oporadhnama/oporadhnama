@@ -1,6 +1,6 @@
 export const revalidate = 86400; // Revalidate at most once per day
 
-const SITE_URL = 'https://oporadhnama.vercel.app';
+const SITE_URL = 'https://oporadhnama.info';
 const API_BASE = 'https://oporadhnama.onrender.com';
 
 export default async function sitemap() {

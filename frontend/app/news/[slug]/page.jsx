@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { API_BASE } from '../../../lib/api';
 
-const SITE_URL = 'https://oporadhnama.vercel.app';
+const SITE_URL = 'https://oporadhnama.info';
 
 // ভিডিও এমবেড ইউআরএল জেনারেটর
 function getEmbedUrl(url) {

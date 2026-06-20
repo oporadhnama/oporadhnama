@@ -2,7 +2,7 @@ from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Rss201rev2Feed
 from archive.models import Post
 
-SITE_URL = 'https://oporadhnama.vercel.app'
+SITE_URL = 'https://oporadhnama.info'
 API_BASE = 'https://oporadhnama.onrender.com'
 
 

@@ -3,7 +3,7 @@ import SiteShell from '../components/SiteShell';
 
 export const metadata = {
   // metadataBase is required so Next.js can resolve relative OG image URLs
-  metadataBase: new URL('https://oporadhnama.vercel.app'),
+  metadataBase: new URL('https://oporadhnama.info'),
   title: {
     default: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
     template: '%s | অপরাধনামা',
@@ -19,7 +19,7 @@ export const metadata = {
     'বাংলাদেশ সংবাদ',
     'dhaka crime',
   ],
-  authors: [{ name: 'অপরাধনামা', url: 'https://oporadhnama.vercel.app' }],
+  authors: [{ name: 'অপরাধনামা', url: 'https://oporadhnama.info' }],
   robots: {
     index: true,
     follow: true,
@@ -31,13 +31,13 @@ export const metadata = {
     },
   },
   alternates: {
-    canonical: 'https://oporadhnama.vercel.app',
+    canonical: 'https://oporadhnama.info',
   },
   openGraph: {
     title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
     description:
       'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
-    url: 'https://oporadhnama.vercel.app',
+    url: 'https://oporadhnama.info',
     siteName: 'অপরাধনামা',
     images: [
       {
