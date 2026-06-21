@@ -243,9 +243,10 @@ export default async function NewsDetailPage({ params }) {
       ) : null}
 
       {/* Article body */}
-      <div className="text-neutral-300 text-base leading-relaxed whitespace-pre-line mb-8">
-        {post.description}
-      </div>
+      <div 
+        className="text-neutral-300 text-base leading-relaxed whitespace-pre-line mb-8 article-body"
+        dangerouslySetInnerHTML={{ __html: post.description }}
+      />
 
       {/* Source link */}
       {post.source_link ? (

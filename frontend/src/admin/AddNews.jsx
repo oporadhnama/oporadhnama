@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { fetchCategories, createPost, createCategory } from '../api';
 
 export default function AddNews() {
@@ -22,6 +22,35 @@ export default function AddNews() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
+
+  const [isDragging, setIsDragging] = useState(false);
+  const textareaRef = useRef(null);
+
+  const insertFormatting = (startTag, endTag) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = form.description;
+
+    const before = text.substring(0, start);
+    const selected = text.substring(start, end);
+    const after = text.substring(end);
+
+    const newText = `${before}${startTag}${selected}${endTag}${after}`;
+    setForm({ ...form, description: newText });
+
+    // Set cursor position back inside the tags
+    setTimeout(() => {
+      textarea.focus();
+      if (selected) {
+        textarea.setSelectionRange(start, start + startTag.length + selected.length + endTag.length);
+      } else {
+        textarea.setSelectionRange(start + startTag.length, start + startTag.length);
+      }
+    }, 0);
+  };
 
   const divisions = [
     'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা',
@@ -130,7 +159,27 @@ export default function AddNews() {
         {/* Description */}
         <div>
           <label className="block text-neutral-400 text-xs font-medium mb-2">বিস্তারিত বিবরণ *</label>
-          <textarea name="description" value={form.description} onChange={handleChange} required rows={5} placeholder="সংবাদের বিবরণ লিখুন" className={inputClass + ' resize-none'} />
+          
+          {/* Formatting Toolbar */}
+          <div className="flex flex-wrap gap-2 mb-2 p-2 bg-neutral-800 rounded-lg border border-neutral-700">
+            <button type="button" onClick={() => insertFormatting('<b>', '</b>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm font-bold text-white transition-colors" title="Bold">B</button>
+            <button type="button" onClick={() => insertFormatting('<i>', '</i>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm italic text-white transition-colors" title="Italic">I</button>
+            <button type="button" onClick={() => insertFormatting('<u>', '</u>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm underline text-white transition-colors" title="Underline">U</button>
+            <button type="button" onClick={() => insertFormatting('<h3>', '</h3>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm font-bold text-white transition-colors" title="Heading">H3</button>
+            <button type="button" onClick={() => insertFormatting('<blockquote>', '</blockquote>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm text-white transition-colors" title="Quote">""</button>
+            <button type="button" onClick={() => insertFormatting('<span class="highlight">', '</span>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm font-medium text-[#ff4d55] transition-colors" title="Highlight">HL</button>
+          </div>
+
+          <textarea 
+            ref={textareaRef}
+            name="description" 
+            value={form.description} 
+            onChange={handleChange} 
+            required 
+            rows={8} 
+            placeholder="সংবাদের বিবরণ লিখুন (উপরের টুলবার ব্যবহার করে টেক্সট ডিজাইন করতে পারেন)" 
+            className={inputClass + ' resize-y'} 
+          />
         </div>
 
         {/* Category + Division row */}
@@ -179,15 +228,45 @@ export default function AddNews() {
           </div>
         </div>
 
-        {/* Image Upload */}
+        {/* Image Upload Drag & Drop */}
         <div>
           <label className="block text-neutral-400 text-xs font-medium mb-2">স্থির চিত্র (ছবি আপলোড)</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImageFile(e.target.files[0] || null)}
-            className={inputClass + ' file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#E50914] file:text-white hover:file:bg-[#c40812] file:cursor-pointer'}
-          />
+          <div 
+            className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${isDragging ? 'border-[#E50914] bg-[#E50914]/10' : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-800'}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                setImageFile(e.dataTransfer.files[0]);
+              }
+            }}
+            onClick={() => document.getElementById('imageUploadInput').click()}
+          >
+            {imageFile ? (
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <span className="text-green-400 text-sm">✅ ছবি নির্বাচন করা হয়েছে</span>
+                <span className="text-neutral-400 text-xs">{imageFile.name}</span>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); }} className="text-[#E50914] text-xs hover:underline mt-2">ছবি বাতিল করুন</button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center space-y-2 pointer-events-none">
+                <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center mb-2">
+                  <span className="text-2xl text-neutral-400">+</span>
+                </div>
+                <span className="text-neutral-300 text-sm font-medium">এখানে ছবি টেনে আনুন (Drag & Drop)</span>
+                <span className="text-neutral-500 text-xs">অথবা ক্লিক করে ফাইল সিলেক্ট করুন</span>
+              </div>
+            )}
+            <input
+              id="imageUploadInput"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setImageFile(e.target.files[0] || null)}
+            />
+          </div>
         </div>
 
         {/* Video URL + Toggle */}
