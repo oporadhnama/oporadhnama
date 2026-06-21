@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchCategories, createPost, createCategory } from '../api';
+import { fetchCategories, updatePost, createCategory, fetchPostById } from '../api';
+import API_BASE from '../api';
 
-export default function AddNews() {
+export default function EditNews({ postId }) {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
@@ -22,6 +24,7 @@ export default function AddNews() {
     is_sensitive_image: false,
   });
   const [imageFile, setImageFile] = useState(null);
+  const [currentImage, setCurrentImage] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
 
   const [isDragging, setIsDragging] = useState(false);
@@ -42,7 +45,6 @@ export default function AddNews() {
     const newText = `${before}${startTag}${selected}${endTag}${after}`;
     setForm({ ...form, description: newText });
 
-    // Set cursor position back inside the tags
     setTimeout(() => {
       textarea.focus();
       if (selected) {
@@ -59,12 +61,30 @@ export default function AddNews() {
   ];
 
   useEffect(() => {
-    fetchCategories()
-      .then(data => {
-        setCategories(Array.isArray(data) ? data : []);
+    Promise.all([fetchCategories(), fetchPostById(postId)])
+      .then(([cats, postData]) => {
+        setCategories(Array.isArray(cats) ? cats : []);
+        if (postData) {
+          setForm({
+            title: postData.title || '',
+            description: postData.description || '',
+            category: postData.category || '',
+            location_text: postData.location_text || '',
+            date: postData.date || new Date().toISOString().split('T')[0],
+            division: postData.division || '',
+            source_link: postData.source_link || '',
+            video_url: postData.video_url || '',
+            show_video: postData.show_video !== false,
+            is_sensitive_image: postData.is_sensitive_image || false,
+          });
+          if (postData.image) {
+            setCurrentImage(postData.image.startsWith('http') ? postData.image : `${API_BASE}${postData.image}`);
+          }
+        }
       })
-      .catch(() => {});
-  }, []);
+      .catch((err) => setError('তথ্য লোড করতে সমস্যা হয়েছে'))
+      .finally(() => setLoading(false));
+  }, [postId]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,7 +92,7 @@ export default function AddNews() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
     setError('');
     setSuccess('');
 
@@ -82,7 +102,7 @@ export default function AddNews() {
       const trimmedName = newCategoryName.trim();
       if (!trimmedName) {
         setError('নতুন ক্যাটেগরির নাম লিখুন।');
-        setLoading(false);
+        setSaving(false);
         return;
       }
       try {
@@ -91,7 +111,7 @@ export default function AddNews() {
         setCategories(prev => [...prev, newCat]);
       } catch (err) {
         setError(err.message);
-        setLoading(false);
+        setSaving(false);
         return;
       }
     }
@@ -118,27 +138,28 @@ export default function AddNews() {
     }
 
     try {
-      await createPost(formData);
-      setSuccess('সংবাদ সফলভাবে যোগ করা হয়েছে!');
-      setForm({
-        title: '', description: '', category: '', location_text: '',
-        date: new Date().toISOString().split('T')[0], division: '',
-        source_link: '', video_url: '', show_video: true, is_sensitive_image: false,
-      });
-      setImageFile(null);
-      setNewCategoryName('');
+      await updatePost(postId, formData);
+      setSuccess('সংবাদ সফলভাবে সম্পাদনা করা হয়েছে!');
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   const inputClass = "w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#E50914] transition-colors placeholder-neutral-600";
 
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-10 h-10 border-4 border-neutral-700 border-t-[#E50914] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-white mb-8">নতুন সংবাদ যোগ করুন</h1>
+      <h1 className="text-2xl font-bold text-white mb-8">সংবাদ সম্পাদনা করুন</h1>
 
       {success && (
         <div className="bg-green-900/30 border border-green-700 text-green-400 rounded-xl p-4 mb-6 text-sm">
@@ -233,6 +254,12 @@ export default function AddNews() {
         {/* Image Upload Drag & Drop */}
         <div>
           <label className="block text-neutral-400 text-xs font-medium mb-2">স্থির চিত্র (ছবি আপলোড)</label>
+          {currentImage && !imageFile && (
+             <div className="mb-4">
+               <span className="text-neutral-500 text-xs mb-2 block">বর্তমান ছবি:</span>
+               <img src={currentImage} alt="Current" className="w-48 h-auto rounded-lg border border-neutral-700" />
+             </div>
+          )}
           <div 
             className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${isDragging ? 'border-[#E50914] bg-[#E50914]/10' : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-800'}`}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -248,16 +275,16 @@ export default function AddNews() {
           >
             {imageFile ? (
               <div className="flex flex-col items-center justify-center space-y-2">
-                <span className="text-green-400 text-sm">✅ ছবি নির্বাচন করা হয়েছে</span>
+                <span className="text-green-400 text-sm">✅ নতুন ছবি নির্বাচন করা হয়েছে</span>
                 <span className="text-neutral-400 text-xs">{imageFile.name}</span>
-                <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); }} className="text-[#E50914] text-xs hover:underline mt-2">ছবি বাতিল করুন</button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); }} className="text-[#E50914] text-xs hover:underline mt-2">নতুন ছবি বাতিল করুন</button>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center space-y-2 pointer-events-none">
                 <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center mb-2">
                   <span className="text-2xl text-neutral-400">+</span>
                 </div>
-                <span className="text-neutral-300 text-sm font-medium">এখানে ছবি টেনে আনুন (Drag & Drop)</span>
+                <span className="text-neutral-300 text-sm font-medium">নতুন ছবি টেনে আনুন (Drag & Drop)</span>
                 <span className="text-neutral-500 text-xs">অথবা ক্লিক করে ফাইল সিলেক্ট করুন</span>
               </div>
             )}
@@ -327,8 +354,8 @@ export default function AddNews() {
           <input type="url" name="source_link" value={form.source_link} onChange={handleChange} placeholder="https://..." className={inputClass} />
         </div>
 
-        <button type="submit" disabled={loading} className="w-full bg-[#E50914] hover:bg-[#c40812] text-white font-bold py-3 rounded-lg transition-all duration-300 disabled:opacity-50 text-sm">
-          {loading ? 'আপলোড হচ্ছে...' : 'সংবাদ প্রকাশ করুন'}
+        <button type="submit" disabled={saving} className="w-full bg-[#E50914] hover:bg-[#c40812] text-white font-bold py-3 rounded-lg transition-all duration-300 disabled:opacity-50 text-sm">
+          {saving ? 'সংরক্ষণ করা হচ্ছে...' : 'পরিবর্তন সংরক্ষণ করুন'}
         </button>
       </form>
     </div>

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import SensitiveImage from '../../../src/components/SensitiveImage';
 import { API_BASE } from '../../../lib/api';
 
 const SITE_URL = 'https://oporadhnama.info';
@@ -207,22 +208,18 @@ export default async function NewsDetailPage({ params }) {
 
       {/* Feature 3: Featured image — Next.js <Image> for Cloudinary, plain <img> fallback */}
       {imageUrl ? (
-        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
-          {isCloudinaryImage ? (
-            <Image
-              src={imageUrl}
-              alt={post.title}
-              width={1200}
-              height={630}
-              className="w-full h-auto object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, 896px"
-            />
-          ) : (
-            // Fallback for non-Cloudinary URLs (local dev, legacy hosts)
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
-          )}
+        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800 relative">
+          <SensitiveImage
+            src={imageUrl}
+            alt={post.title}
+            isSensitive={post.is_sensitive_image}
+            isCloudinaryImage={isCloudinaryImage}
+            width={1200}
+            height={630}
+            className="w-full h-auto"
+            priority={true}
+            sizes="(max-width: 768px) 100vw, 896px"
+          />
         </div>
       ) : null}
 

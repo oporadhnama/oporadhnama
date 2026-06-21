@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Trash2, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Trash2, ExternalLink, AlertTriangle, Edit2 } from 'lucide-react';
 import { fetchPosts, deletePost } from '../api';
 import { readStoredJSON } from '../storage';
 
@@ -94,6 +94,13 @@ export default function ManageNews() {
                         title="দেখুন"
                       >
                         <ExternalLink className="w-4 h-4" strokeWidth={1.8} />
+                      </Link>
+                      <Link
+                        href={`/admin/dashboard/edit-news/${post.id}`}
+                        className="text-amber-400 hover:text-amber-300 transition-colors"
+                        title="সম্পাদনা"
+                      >
+                        <Edit2 className="w-4 h-4" strokeWidth={1.8} />
                       </Link>
                       {isSuperAdmin && (
                         <button

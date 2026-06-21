@@ -45,6 +45,7 @@ class Post(models.Model):
     division = models.CharField(max_length=100, db_index=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_user_report = models.BooleanField(default=False, help_text='Mark as a raw user submission from the public report form')
+    is_sensitive_image = models.BooleanField(default=False, help_text='Mark if the image contains sensitive content (blur effect)')
     created_at = models.DateTimeField(auto_now_add=True)
     # SEO slug — auto-populated on first save; unique across all posts
     slug = models.SlugField(

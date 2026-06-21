@@ -31,6 +31,7 @@ class PostSerializer(serializers.ModelSerializer):
             'division',
             'category',
             'category_name',
+            'is_sensitive_image',
             'created_at',
         ]
         read_only_fields = ['slug']
