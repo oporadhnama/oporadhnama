@@ -16,11 +16,16 @@ DIVISION_SLUG_MAP = {
 }
 
 
-def generate_post_slug(post_id, division, date):
-    """Build a URL-safe slug: {id}-{division_ascii}-{YYYY-MM-DD}"""
+def generate_post_slug(post_id, title, division, date):
+    """Build a URL-safe slug: {id}-{title_slug}-{division_ascii}-{YYYY-MM-DD}"""
+    title_slug = slugify(title, allow_unicode=True)
+    if not title_slug:
+        title_slug = 'news'
+    else:
+        title_slug = title_slug[:150].strip('-')
     div_ascii = DIVISION_SLUG_MAP.get(division, slugify(division) or 'bd')
     date_str = str(date)  # already YYYY-MM-DD
-    return f"{post_id}-{div_ascii}-{date_str}"
+    return f"{post_id}-{title_slug}-{div_ascii}-{date_str}"
 
 
 class Category(models.Model):
@@ -52,8 +57,8 @@ class Post(models.Model):
         max_length=300,
         unique=True,
         blank=True,
-        allow_unicode=False,
-        help_text="Auto-generated SEO-friendly URL segment. Format: {id}-{division}-{date}",
+        allow_unicode=True,
+        help_text="Auto-generated SEO-friendly URL segment. Format: {id}-{title}-{division}-{date}",
     )
 
     class Meta:
@@ -66,12 +71,12 @@ class Post(models.Model):
         # First save: get the PK by saving without slug, then set slug and save again
         if not self.pk:
             super().save(*args, **kwargs)
-            self.slug = generate_post_slug(self.pk, self.division, self.date)
+            self.slug = generate_post_slug(self.pk, self.title, self.division, self.date)
             # Use update_fields to avoid recursion
             Post.objects.filter(pk=self.pk).update(slug=self.slug)
         else:
             if not self.slug:
-                self.slug = generate_post_slug(self.pk, self.division, self.date)
+                self.slug = generate_post_slug(self.pk, self.title, self.division, self.date)
             super().save(*args, **kwargs)
 
 

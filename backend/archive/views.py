@@ -88,14 +88,15 @@ class PostViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
 
     def get_object(self):
-        """Support both slug and numeric-ID lookups for backward compatibility."""
+        """Support both slug and numeric-ID lookups, including extracting ID from slug prefix."""
         lookup_value = self.kwargs.get(self.lookup_field, '')
-        # If the lookup value is purely numeric, treat it as a PK fallback
-        if lookup_value.isdigit():
+        # If the lookup value starts with digits followed by a hyphen (e.g. 42-some-slug), or is purely numeric
+        parts = lookup_value.split('-', 1)
+        if parts[0].isdigit():
             from django.shortcuts import get_object_or_404
             obj = get_object_or_404(
                 self.get_queryset(),
-                pk=int(lookup_value),
+                pk=int(parts[0]),
             )
             self.check_object_permissions(self.request, obj)
             return obj
