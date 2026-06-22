@@ -1,4 +1,4 @@
-export const revalidate = 86400; // Revalidate at most once per day
+export const revalidate = 3600; // Revalidate every hour so Google always gets a fresh sitemap
 
 const SITE_URL = 'https://oporadhnama.info';
 const API_BASE = 'https://oporadhnama.onrender.com';
@@ -55,10 +55,25 @@ export default async function sitemap() {
   ];
 
   try {
-    // ── Fetch news articles from the correct endpoint: /api/posts/ ─────────
-    const response = await fetch(`${API_BASE}/api/posts/?limit=1000`, {
-      next: { revalidate: 86400 },
-    });
+    // ── Fetch news articles with a 5-second timeout ────────────────────────
+    // (Render free tier sleeps — a slow wake-up will cause Googlebot to
+    //  give up; we fall back to static routes gracefully instead.)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    let response;
+    try {
+      response = await fetch(`${API_BASE}/api/posts/?limit=1000`, {
+        next: { revalidate: 3600 },
+        signal: controller.signal,
+      });
+    } catch (fetchErr) {
+      // Timed out or network error — return static routes so sitemap is still valid
+      console.error('Sitemap API fetch failed (timeout or network):', fetchErr);
+      return staticRoutes;
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       console.error(`Sitemap fetch failed: ${response.status}`);
@@ -82,11 +97,12 @@ export default async function sitemap() {
         lastModDate = new Date();
       }
 
-      // 2. URI Encode the URL to safely handle non-ASCII Bengali characters in slugs
-      const rawUrl = `${SITE_URL}/news/${article.slug || article.id}`;
-      
+      // 2. Next.js handles XML encoding automatically — do NOT use encodeURI()
+      //    as it double-encodes Bengali characters that are already percent-encoded.
+      const url = `${SITE_URL}/news/${article.slug || article.id}`;
+
       return {
-        url: encodeURI(rawUrl),
+        url,
         lastModified: formatSitemapDate(lastModDate),
         changeFrequency: 'weekly',
         priority: 0.7,
