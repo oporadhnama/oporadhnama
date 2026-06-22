@@ -1,10 +1,8 @@
+// Use environment variable for API base URL.
+// Accept either a bare backend URL or one that accidentally ends in /api.
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://oporadhnama.onrender.com';
-const parsedApiUrl = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+const API_BASE = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
 const isBrowser = typeof window !== 'undefined';
-
-// Use relative URL on client to prevent cross-origin credential warnings (Safe Browsing).
-// Next.js rewrites will proxy this to the backend.
-const API_BASE = isBrowser ? '' : parsedApiUrl;
 
 /**
  * Core fetch wrapper that injects JWT auth header when available.
