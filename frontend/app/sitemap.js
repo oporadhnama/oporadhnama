@@ -97,9 +97,11 @@ export default async function sitemap() {
         lastModDate = new Date();
       }
 
-      // 2. Next.js handles XML encoding automatically — do NOT use encodeURI()
-      //    as it double-encodes Bengali characters that are already percent-encoded.
-      const url = `${SITE_URL}/news/${article.slug || article.id}`;
+      // 2. Encode only the slug portion so raw Bengali characters become valid
+      //    percent-encoded ASCII. encodeURIComponent encodes everything including
+      //    slashes, so we apply it only to the slug, not the whole URL.
+      const slug = encodeURIComponent(String(article.slug || article.id));
+      const url = `${SITE_URL}/news/${slug}`;
 
       return {
         url,
