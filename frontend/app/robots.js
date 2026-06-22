@@ -1,4 +1,4 @@
-export const revalidate = 86400 // Revalidate at most once per day
+export const dynamic = 'force-dynamic' // Revalidate at most once per day
 
 export default function robots() {
   return {

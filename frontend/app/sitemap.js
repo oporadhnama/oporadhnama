@@ -3,42 +3,52 @@ export const revalidate = 86400; // Revalidate at most once per day
 const SITE_URL = 'https://oporadhnama.info';
 const API_BASE = 'https://oporadhnama.onrender.com';
 
+function formatSitemapDate(dateInput) {
+  try {
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    return d.toISOString().replace(/\.\d+Z$/, 'Z');
+  } catch (_) {
+    return new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+  }
+}
+
 export default async function sitemap() {
   // ── Static routes ──────────────────────────────────────────────────────────
   const staticRoutes = [
     {
       url: SITE_URL,
-      lastModified: new Date(),
+      lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
       url: `${SITE_URL}/all-news`,
-      lastModified: new Date(),
+      lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/archive`,
-      lastModified: new Date(),
+      lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'daily',
       priority: 0.7,
     },
     {
       url: `${SITE_URL}/about`,
-      lastModified: new Date(),
+      lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${SITE_URL}/contact`,
-      lastModified: new Date(),
+      lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${SITE_URL}/submit`,
-      lastModified: new Date(),
+      lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'monthly',
       priority: 0.4,
     },
@@ -77,7 +87,7 @@ export default async function sitemap() {
       
       return {
         url: encodeURI(rawUrl),
-        lastModified: lastModDate,
+        lastModified: formatSitemapDate(lastModDate),
         changeFrequency: 'weekly',
         priority: 0.7,
       };
