@@ -45,6 +45,8 @@ export default function AdminLogin() {
         </div>
 
         <form
+          method="POST"
+          action="/admin/login"
           onSubmit={handleSubmit}
           className="bg-neutral-900/70 border border-neutral-800 rounded-2xl p-8 backdrop-blur-md shadow-2xl"
         >
@@ -60,6 +62,9 @@ export default function AdminLogin() {
             <label className="block text-neutral-400 text-xs font-medium mb-2">ইউজারনেম</label>
             <input
               type="text"
+              name="username"
+              id="username"
+              autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -72,6 +77,9 @@ export default function AdminLogin() {
             <label className="block text-neutral-400 text-xs font-medium mb-2">পাসওয়ার্ড</label>
             <input
               type="password"
+              name="password"
+              id="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
