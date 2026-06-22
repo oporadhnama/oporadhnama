@@ -60,12 +60,28 @@ export default async function sitemap() {
     const articles = Array.isArray(data) ? data : (data.results || []);
 
     // ── Dynamic routes: use slug if available, else fall back to id ────────
-    const newsRoutes = articles.map((article) => ({
-      url: `${SITE_URL}/news/${article.slug || article.id}`,
-      lastModified: new Date(article.created_at || article.date || new Date()),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    }));
+    const newsRoutes = articles.map((article) => {
+      // 1. Safely handle dates (prevent 500 errors from "Invalid Date")
+      let lastModDate;
+      try {
+        lastModDate = new Date(article.created_at || article.date || new Date());
+        if (isNaN(lastModDate.getTime())) {
+          lastModDate = new Date();
+        }
+      } catch (e) {
+        lastModDate = new Date();
+      }
+
+      // 2. URI Encode the URL to safely handle non-ASCII Bengali characters in slugs
+      const rawUrl = `${SITE_URL}/news/${article.slug || article.id}`;
+      
+      return {
+        url: encodeURI(rawUrl),
+        lastModified: lastModDate,
+        changeFrequency: 'weekly',
+        priority: 0.7,
+      };
+    });
 
     return [...staticRoutes, ...newsRoutes];
   } catch (error) {
