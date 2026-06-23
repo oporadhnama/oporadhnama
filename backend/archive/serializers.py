@@ -1,7 +1,7 @@
 import datetime
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from archive.models import Category, Post, ActivityLog
+from archive.models import Category, Post, ActivityLog, Campaign, CampaignDay
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -127,3 +127,17 @@ class ActivityLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActivityLog
         fields = ['id', 'username', 'action', 'action_display', 'target_label', 'details', 'created_at']
+
+
+class CampaignDaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampaignDay
+        fields = '__all__'
+
+
+class CampaignSerializer(serializers.ModelSerializer):
+    days = CampaignDaySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Campaign
+        fields = '__all__'

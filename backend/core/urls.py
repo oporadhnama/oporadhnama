@@ -10,7 +10,8 @@ from rest_framework.routers import DefaultRouter
 from archive.views import (
     PostViewSet, CategoryViewSet, SubmitPostView, UserReportListView, UserReportDetailView,
     LoginView, RegisterModeratorView, ModeratorsListView, DashboardStatsView,
-    PublicStatsView, DeleteModeratorView, ActivityLogView, CampaignActiveView
+    PublicStatsView, DeleteModeratorView, ActivityLogView, CampaignActiveView,
+    AdminCampaignViewSet, AdminCampaignDayViewSet
 )
 from archive.feeds import LatestPostsFeed
 
@@ -18,6 +19,8 @@ router = DefaultRouter()
 router.register(r'posts', PostViewSet, basename='post')
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'submit', SubmitPostView, basename='submit')
+router.register(r'admin-campaigns', AdminCampaignViewSet, basename='admin-campaigns')
+router.register(r'admin-campaign-days', AdminCampaignDayViewSet, basename='admin-campaign-days')
 
 admin_url_path = os.environ.get("ADMIN_URL_PATH", "admin").strip().strip("/")
 

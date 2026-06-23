@@ -1,5 +1,5 @@
 from django.contrib import admin
-from archive.models import Category, Post, Campaign, CampaignDay
+from archive.models import Category, Post
 
 
 @admin.register(Category)
@@ -23,17 +23,3 @@ class PostAdmin(admin.ModelAdmin):
     ordering = ('-date', '-created_at')
     readonly_fields = ('slug',)
     actions = [promote_to_post]
-
-
-class CampaignDayInline(admin.TabularInline):
-    model = CampaignDay
-    extra = 1
-    ordering = ('day_number',)
-
-
-@admin.register(Campaign)
-class CampaignAdmin(admin.ModelAdmin):
-    list_display = ('title', 'is_active', 'start_date', 'end_date', 'created_at')
-    list_filter = ('is_active',)
-    search_fields = ('title',)
-    inlines = [CampaignDayInline]

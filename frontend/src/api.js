@@ -269,4 +269,77 @@ export async function clearActivityLogs() {
   }
 }
 
+export async function fetchAdminCampaigns() {
+  const res = await apiFetch('/api/admin-campaigns/');
+  if (!res.ok) throw new Error('ক্যাম্পেইন লোড করতে সমস্যা হয়েছে');
+  const data = await res.json();
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.results)) return data.results;
+  return [];
+}
+
+export async function createAdminCampaign(data) {
+  const res = await apiFetch('/api/admin-campaigns/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'ক্যাম্পেইন তৈরি করতে সমস্যা হয়েছে');
+  }
+  return res.json();
+}
+
+export async function updateAdminCampaign(id, data) {
+  const res = await apiFetch(`/api/admin-campaigns/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'ক্যাম্পেইন আপডেট করতে সমস্যা হয়েছে');
+  }
+  return res.json();
+}
+
+export async function fetchAdminCampaignDays(campaignId) {
+  // Alternatively we can use nested routes or just filter days if we create a filter.
+  // The easiest is just using the campaign serializer since it nests the days.
+  // Wait, I will just call fetchAdminCampaigns since it returns nested days.
+}
+
+export async function createAdminCampaignDay(formData) {
+  const res = await apiFetch('/api/admin-campaign-days/', {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'দিন তৈরি করতে সমস্যা হয়েছে');
+  }
+  return res.json();
+}
+
+export async function updateAdminCampaignDay(id, formData) {
+  const res = await apiFetch(`/api/admin-campaign-days/${id}/`, {
+    method: 'PATCH',
+    body: formData,
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'দিন আপডেট করতে সমস্যা হয়েছে');
+  }
+  return res.json();
+}
+
+export async function deleteAdminCampaignDay(id) {
+  const res = await apiFetch(`/api/admin-campaign-days/${id}/`, {
+    method: 'DELETE',
+  });
+  if (res.status === 204 || res.ok) {
+    return true;
+  }
+  throw new Error('দিন মুছতে সমস্যা হয়েছে');
+}
+
 export default API_BASE;

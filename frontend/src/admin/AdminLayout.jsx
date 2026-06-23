@@ -16,6 +16,7 @@ import {
   Activity,
   FolderOpen,
   BarChart2,
+  Calendar,
 } from 'lucide-react';
 import { readStoredJSON } from '../storage';
 
@@ -39,6 +40,7 @@ export default function AdminLayout({ children }) {
     { label: 'সংবাদ ব্যবস্থাপনা', path: '/admin/dashboard/manage-news', icon: Newspaper },
     { label: 'ব্যবহারকারী প্রতিবেদন', path: '/admin/dashboard/user-reports', icon: FolderOpen },
     { label: 'গ্রাফ ব্যবস্থাপনা', path: '/admin/dashboard/manage-graphs', icon: BarChart2 },
+    { label: 'ইভেন্ট প্যানেল', path: '/admin/dashboard/campaigns', icon: Calendar },
     { label: 'সংবাদ যোগ করুন', path: '/admin/dashboard/add-news', icon: PlusCircle },
   ];
 

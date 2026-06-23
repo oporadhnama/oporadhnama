@@ -14,7 +14,7 @@ from django.db.models import Count
 from archive.serializers import (
     PostSerializer, CategorySerializer, SubmitPostSerializer,
     LoginSerializer, RegisterModeratorSerializer, UserSerializer,
-    ActivityLogSerializer,
+    ActivityLogSerializer, CampaignSerializer, CampaignDaySerializer
 )
 
 
@@ -373,6 +373,21 @@ class ActivityLogView(generics.ListAPIView):
             )
         ActivityLog.objects.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminCampaignViewSet(viewsets.ModelViewSet):
+    """Admin CRUD for campaigns."""
+    queryset = Campaign.objects.all().order_by('-created_at')
+    serializer_class = CampaignSerializer
+    permission_classes = [IsAdminUser]
+
+
+class AdminCampaignDayViewSet(viewsets.ModelViewSet):
+    """Admin CRUD for campaign days."""
+    queryset = CampaignDay.objects.all().order_by('-date')
+    serializer_class = CampaignDaySerializer
+    permission_classes = [IsAdminUser]
+    parser_classes = (MultiPartParser, FormParser)
 
 
 class CampaignActiveView(APIView):
