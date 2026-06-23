@@ -12,6 +12,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/sitemaps-v2.xml',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig
