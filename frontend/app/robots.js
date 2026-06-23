@@ -6,6 +6,6 @@ export default function robots() {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://oporadhnama.info/sitemaps-v2.xml',
+    sitemap: 'https://oporadhnama.info/sitemap.xml',
   }
 }
