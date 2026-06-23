@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server';
+
 export const revalidate = 3600; // Revalidate every hour so Google always gets a fresh sitemap
 
 const SITE_URL = 'https://oporadhnama.info';
@@ -13,7 +15,7 @@ function formatSitemapDate(dateInput) {
   }
 }
 
-export default async function sitemap() {
+async function getSitemapData() {
   // ── Static routes ──────────────────────────────────────────────────────────
   const staticRoutes = [
     {
@@ -116,4 +118,31 @@ export default async function sitemap() {
     console.error('Sitemap generation error:', error);
     return staticRoutes;
   }
+}
+
+export async function GET() {
+  const routes = await getSitemapData();
+
+  const xmlItems = routes
+    .map(
+      (route) => `  <url>
+    <loc>${route.url}</loc>
+    ${route.lastModified ? `<lastmod>${route.lastModified}</lastmod>` : ''}
+    ${route.changeFrequency ? `<changefreq>${route.changeFrequency}</changefreq>` : ''}
+    ${route.priority !== undefined ? `<priority>${route.priority.toFixed(1)}</priority>` : ''}
+  </url>`
+    )
+    .join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${xmlItems}
+</urlset>`;
+
+  return new NextResponse(xml, {
+    headers: {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+    },
+  });
 }
