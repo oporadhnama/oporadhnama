@@ -10,7 +10,7 @@ from rest_framework.routers import DefaultRouter
 from archive.views import (
     PostViewSet, CategoryViewSet, SubmitPostView, UserReportListView, UserReportDetailView,
     LoginView, RegisterModeratorView, ModeratorsListView, DashboardStatsView,
-    PublicStatsView, DeleteModeratorView, ActivityLogView,
+    PublicStatsView, DeleteModeratorView, ActivityLogView, CampaignActiveView
 )
 from archive.feeds import LatestPostsFeed
 
@@ -34,6 +34,8 @@ urlpatterns = [
     # Dashboard stats
     path('api/stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('api/public-stats/', PublicStatsView.as_view(), name='public-stats'),
+    # Campaign
+    path('api/campaign/active/', CampaignActiveView.as_view(), name='campaign-active'),
     # Activity logs
     path('api/activity-logs/', ActivityLogView.as_view(), name='activity-logs'),
     # Feature 4: RSS feed — latest 50 published posts

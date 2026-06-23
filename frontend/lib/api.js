@@ -46,6 +46,14 @@ export async function fetchPostBySlug(slug) {
   return fetchJson(`/api/posts/${slug}/`);
 }
 
-// Backward-compatible alias
 export const fetchPostById = fetchPostBySlug;
 
+export async function fetchActiveCampaign() {
+  try {
+    const data = await fetchJson('/api/campaign/active/');
+    return data;
+  } catch (err) {
+    console.error('Failed to fetch active campaign:', err);
+    return { active: false };
+  }
+}

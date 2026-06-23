@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters import rest_framework as filters
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from archive.models import Post, Category, ActivityLog
+from archive.models import Post, Category, ActivityLog, Campaign, CampaignDay
 from django.db.models import Count
 from archive.serializers import (
     PostSerializer, CategorySerializer, SubmitPostSerializer,
@@ -373,4 +373,47 @@ class ActivityLogView(generics.ListAPIView):
             )
         ActivityLog.objects.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CampaignActiveView(APIView):
+    """GET /api/campaign/active/ — returns the active campaign and its current day content."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        campaign = Campaign.objects.filter(is_active=True).first()
+        if not campaign:
+            return Response({"active": False})
+
+        # Try to find the day matching today's date
+        today = datetime.date.today()
+        # Find exact match
+        day = campaign.days.filter(date=today).first()
+        
+        # If no exact match, find the most recent past day
+        if not day:
+            day = campaign.days.filter(date__lte=today).order_by('-date').first()
+            
+        # If still no match (future start date), just get the first day
+        if not day:
+            day = campaign.days.order_by('date').first()
+
+        data = {
+            "active": True,
+            "title": campaign.title,
+            "start_date": campaign.start_date,
+            "end_date": campaign.end_date,
+            "day": None
+        }
+
+        if day:
+            data["day"] = {
+                "day_number": day.day_number,
+                "date": day.date,
+                "video_url": day.video_url,
+                "image_url": day.image.url if day.image else None,
+                "summary_text": day.summary_text,
+                "read_more_link": day.read_more_link,
+            }
+
+        return Response(data)
 

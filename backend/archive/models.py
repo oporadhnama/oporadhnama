@@ -113,3 +113,31 @@ class ActivityLog(models.Model):
 
     def __str__(self):
         return f"{self.user} → {self.get_action_display()} ({self.target_label})"
+
+
+class Campaign(models.Model):
+    title = models.CharField(max_length=255, default="অবিস্মরণীয় জুলাই")
+    is_active = models.BooleanField(default=False, help_text="Toggle to activate this campaign on the frontend.")
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} ({'Active' if self.is_active else 'Inactive'})"
+
+
+class CampaignDay(models.Model):
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name="days")
+    day_number = models.PositiveIntegerField(help_text="e.g. 15 for 15th day")
+    date = models.DateField(db_index=True)
+    video_url = models.URLField(blank=True, default='', help_text="YouTube or Facebook video link (optional)")
+    image = models.ImageField(upload_to='campaigns/', blank=True, null=True, help_text="Optional image if video is not available")
+    summary_text = models.TextField(blank=True, default='', help_text="Narrative for this day")
+    read_more_link = models.URLField(blank=True, default='', help_text="Link to read today's analysis")
+
+    class Meta:
+        ordering = ['date', 'day_number']
+        unique_together = ('campaign', 'date')
+
+    def __str__(self):
+        return f"{self.campaign.title} - Day {self.day_number}"
