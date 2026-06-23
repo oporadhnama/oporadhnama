@@ -97,10 +97,17 @@ export default async function sitemap() {
         lastModDate = new Date();
       }
 
-      // 2. Encode only the slug portion so raw Bengali characters become valid
-      //    percent-encoded ASCII. encodeURIComponent encodes everything including
-      //    slashes, so we apply it only to the slug, not the whole URL.
-      const slug = encodeURIComponent(String(article.slug || article.id));
+      // 2. Normalise the slug: first decode any existing percent-encoding so we
+      //    never double-encode (e.g. API may already return "76-%E0%A6%B8...")
+      //    then re-encode cleanly so raw Bengali chars become valid ASCII URLs.
+      const rawSlug = String(article.slug || article.id);
+      let slug;
+      try {
+        slug = encodeURIComponent(decodeURIComponent(rawSlug));
+      } catch (_) {
+        // decodeURIComponent throws on malformed sequences — fall back to raw
+        slug = encodeURIComponent(rawSlug);
+      }
       const url = `${SITE_URL}/news/${slug}`;
 
       return {
