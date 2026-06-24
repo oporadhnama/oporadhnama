@@ -1,5 +1,6 @@
 import HeroSection from '../components/HeroSection';
 import TributeHero from '../components/TributeHero';
+import JulyQuotesBanner from '../components/JulyQuotesBanner';
 import StatsCounter from '../components/StatsCounter';
 import NewsMarquee from '../components/NewsMarquee';
 import { fetchCategories, fetchPosts, fetchPublicStats, fetchActiveCampaign } from '../lib/api';
@@ -32,7 +33,10 @@ export default async function HomePage() {
   return (
     <>
       {activeCampaign?.active ? (
-        <TributeHero campaign={activeCampaign} />
+        <>
+          <TributeHero campaign={activeCampaign} />
+          <JulyQuotesBanner />
+        </>
       ) : (
         <HeroSection />
       )}

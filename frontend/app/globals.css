@@ -41,13 +41,28 @@ body {
 }
 
 @keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
 
-  100% {
-    transform: translateX(-50%);
-  }
+@keyframes julyMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes julyBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+  50% { box-shadow: 0 0 8px 2px rgba(229, 9, 20, 0.35); }
+}
+
+@keyframes julyLinkGlow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 10px rgba(229, 9, 20, 0.7); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-marquee {
