@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showJulyStats, setShowJulyStats] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const pathname = usePathname();
@@ -24,7 +25,25 @@ export default function Navbar() {
     return () => document.removeEventListener('click', handleOutsideClick);
   }, [isOpen]);
 
-  const links = [
+  useEffect(() => {
+    // Fetch active campaign to determine if July Stats should be shown
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://oporadhnama.onrender.com';
+    const apiBase = apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+    
+    fetch(`${apiBase}/api/campaign/active/`)
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.active) {
+          setShowJulyStats(true);
+        }
+      })
+      .catch(err => console.error("Failed to fetch active campaign:", err));
+  }, []);
+
+  const baseLinks = [
     { label: "সংবাদ আর্কাইভ", path: "/archive" },
     { label: "সকল সংবাদ", path: "/all-news" },
     { label: "গ্রাফ", path: "/graphs" },
@@ -32,6 +51,10 @@ export default function Navbar() {
     { label: "আমাদের সম্পর্কে", path: "/about" },
     { label: "যোগাযোগ", path: "/contact" }
   ];
+
+  const links = showJulyStats 
+    ? [...baseLinks.slice(0, 3), { label: "জুলাই পরিসংখ্যান", path: "/july-stats" }, ...baseLinks.slice(3)] 
+    : baseLinks;
 
   const isActive = (path) => pathname === path;
 
@@ -116,3 +139,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

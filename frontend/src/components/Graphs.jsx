@@ -581,6 +581,8 @@ export default function Graphs() {
           </p>
         </div>
 
+
+
         {/* KPI Grid — 2-column on mobile for full visibility without scrolling */}
         <div style={{ marginBottom: isMobile ? 14 : 36 }}>
           <div style={{
