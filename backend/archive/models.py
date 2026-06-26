@@ -52,6 +52,7 @@ class Post(models.Model):
     is_user_report = models.BooleanField(default=False, help_text='Mark as a raw user submission from the public report form')
     is_sensitive_image = models.BooleanField(default=False, help_text='Mark if the image contains sensitive content (blur effect)')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # SEO slug — auto-populated on first save; unique across all posts
     slug = models.SlugField(
         max_length=300,

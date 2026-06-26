@@ -58,7 +58,7 @@ export default function Footer({ campaignActive }) {
             <span className="text-white font-bold">অপরাধ</span>
             <span className="text-[#E50914] font-bold">নামা</span> সংবাদের স্বচ্ছতা ও সত্যের জন্য।
           </p>
-          <p>© {new Date().getFullYear()} অপরাধনামা</p>
+          <small>© {new Date().getFullYear()} অপরাধনামা. সর্বস্বত্ব সংরক্ষিত।</small>
         </div>
       </div>
     </footer>

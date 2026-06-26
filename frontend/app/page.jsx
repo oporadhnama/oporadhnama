@@ -5,7 +5,15 @@ import StatsCounter from '../components/StatsCounter';
 import NewsMarquee from '../components/NewsMarquee';
 import { fetchCategories, fetchPosts, fetchPublicStats, fetchActiveCampaign } from '../lib/api';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
+
+export const metadata = {
+  alternates: { canonical: 'https://oporadhnama.info' },
+  openGraph: {
+    url: 'https://oporadhnama.info',
+    type: 'website',
+  },
+};
 
 function normalizeStats(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
@@ -19,10 +27,10 @@ function normalizeStats(data) {
 
 export default async function HomePage() {
   const [statsResult, categoriesResult, postsResult, campaignResult] = await Promise.allSettled([
-    fetchPublicStats(),
-    fetchCategories(),
-    fetchPosts('limit=12'),
-    fetchActiveCampaign(),
+    fetchPublicStats({ next: { revalidate: 60 } }),
+    fetchCategories({ next: { revalidate: 60 } }),
+    fetchPosts('limit=12', { next: { revalidate: 60 } }),
+    fetchActiveCampaign({ next: { revalidate: 60 } }),
   ]);
 
   const initialStats = statsResult.status === 'fulfilled' ? normalizeStats(statsResult.value) : {};
@@ -30,8 +38,29 @@ export default async function HomePage() {
   const initialPosts = postsResult.status === 'fulfilled' ? postsResult.value.results || [] : [];
   const activeCampaign = campaignResult.status === 'fulfilled' ? campaignResult.value : { active: false };
 
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'অপরাধনামা',
+    url: 'https://oporadhnama.info',
+    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    inLanguage: 'bn',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://oporadhnama.info/all-news?q={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       {activeCampaign?.active ? (
         <>
           <TributeHero campaign={activeCampaign} />

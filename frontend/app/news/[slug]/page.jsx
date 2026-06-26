@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import SensitiveImage from '../../../src/components/SensitiveImage';
 import { API_BASE } from '../../../lib/api';
@@ -32,7 +33,7 @@ async function getPost(slug) {
 
   // Try slug-based endpoint first
   try {
-    const res = await fetch(`${API}/api/posts/${slug}/`, { cache: 'no-store' });
+    const res = await fetch(`${API}/api/posts/${slug}/`, { next: { revalidate: 300 } });
     if (res.ok) {
       const post = await res.json();
       if (post && post.title) return post;
@@ -44,7 +45,7 @@ async function getPost(slug) {
   // Fallback: if slug looks like a numeric ID, try /api/posts/{id}/
   if (/^\d+$/.test(slug)) {
     try {
-      const res = await fetch(`${API}/api/posts/${slug}/`, { cache: 'no-store' });
+      const res = await fetch(`${API}/api/posts/${slug}/`, { next: { revalidate: 300 } });
       if (res.ok) {
         const post = await res.json();
         if (post && post.title) return post;
@@ -160,7 +161,7 @@ export default async function NewsDetailPage({ params }) {
     headline: post.title,
     description: (post.description || '').slice(0, 155),
     datePublished: post.created_at || post.date,
-    dateModified: post.created_at || post.date,
+    dateModified: post.updated_at || post.created_at || post.date,
     url: `${SITE_URL}/news/${post.slug || slug}`,
     image: imageUrl ? [imageUrl] : [`${SITE_URL}/og-image.jpg`],
     keywords: [post.category_name, post.division, 'অপরাধনামা', 'বাংলাদেশ অপরাধ সংবাদ']
@@ -177,21 +178,46 @@ export default async function NewsDetailPage({ params }) {
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/og-image.jpg`,
-        width: 1200,
-        height: 630,
+        url: `${SITE_URL}/logo-publisher.png`,
+        width: 600,
+        height: 60,
       },
     },
     articleSection: post.category_name || 'সংবাদ',
     inLanguage: 'bn',
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'হোম',
+        item: SITE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'সকল সংবাদ',
+        item: `${SITE_URL}/all-news`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: post.title,
+        item: `${SITE_URL}/news/${post.slug || slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-4xl mx-auto pb-16">
       {/* Back link */}
-      <a href="/all-news" className="text-neutral-500 hover:text-[#E50914] text-sm mb-6 inline-block transition-colors">
+      <Link href="/all-news" className="text-neutral-500 hover:text-[#E50914] text-sm mb-6 inline-block transition-colors">
         ← সকল সংবাদে ফিরে যান
-      </a>
+      </Link>
 
       {/* Article heading */}
       <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4">
@@ -261,6 +287,10 @@ export default async function NewsDetailPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );

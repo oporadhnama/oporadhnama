@@ -112,11 +112,21 @@ async function getSitemapData() {
       }
       const url = `${SITE_URL}/news/${slug}`;
 
+      let image = null;
+      if (article.image) {
+        const rawImageUrl = article.image.startsWith('http') ? article.image : `${API_BASE}${article.image}`;
+        image = {
+          loc: rawImageUrl,
+          title: article.title || '',
+        };
+      }
+
       return {
         url,
         lastModified: formatSitemapDate(lastModDate),
         changeFrequency: 'weekly',
         priority: 0.7,
+        image,
       };
     });
 
@@ -137,12 +147,19 @@ export async function GET() {
     ${route.lastModified ? `<lastmod>${route.lastModified}</lastmod>` : ''}
     ${route.changeFrequency ? `<changefreq>${route.changeFrequency}</changefreq>` : ''}
     ${route.priority !== undefined ? `<priority>${route.priority.toFixed(1)}</priority>` : ''}
+    ${route.image && route.image.loc ? `    <image:image>
+      <image:loc>${route.image.loc.replace(/&/g, '&amp;')}</image:loc>
+      ${route.image.title ? `<image:title>${route.image.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')}</image:title>` : ''}
+    </image:image>` : ''}
   </url>`
     )
     .join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+>
 ${xmlItems}
 </urlset>`;
 

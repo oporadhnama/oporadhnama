@@ -81,6 +81,8 @@ export default function TributeHero({ campaign }) {
               <img
                 src={imageUrl}
                 alt={`জুলাই দিন ${dayNumber}`}
+                loading="eager"
+                fetchPriority="high"
                 className="max-w-full max-h-[70vh] w-auto h-auto object-contain block"
                 style={{ display: 'block' }}
               />
