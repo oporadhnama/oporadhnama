@@ -37,6 +37,18 @@ async function getSitemapData() {
       priority: 0.7,
     },
     {
+      url: `${SITE_URL}/graphs`,
+      lastModified: formatSitemapDate(new Date()),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    },
+    {
+      url: `${SITE_URL}/july-stats`,
+      lastModified: formatSitemapDate(new Date()),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/about`,
       lastModified: formatSitemapDate(new Date()),
       changeFrequency: 'monthly',
@@ -55,6 +67,7 @@ async function getSitemapData() {
       priority: 0.4,
     },
   ];
+
 
   try {
     // ── Fetch news articles with a 5-second timeout ────────────────────────

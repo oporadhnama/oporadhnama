@@ -93,10 +93,28 @@ export const metadata = {
 export default function RootLayout({ children }) {
   const organizationJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': 'NewsMediaOrganization',
     name: 'অপরাধনামা',
+    alternateName: 'Oporadhnama',
     url: 'https://oporadhnama.info',
-    logo: 'https://oporadhnama.info/logo-publisher.png',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://oporadhnama.info/logo-publisher.png',
+      width: 600,
+      height: 60,
+    },
+    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    inLanguage: 'bn',
+    foundingDate: '2024',
+    areaServed: {
+      '@type': 'Country',
+      name: 'Bangladesh',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'editorial',
+      url: 'https://oporadhnama.info/contact',
+    },
     sameAs: [
       'https://www.facebook.com/oporadhnama',
       'https://twitter.com/oporadhnama',

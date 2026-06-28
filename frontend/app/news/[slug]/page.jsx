@@ -93,6 +93,14 @@ export async function generateMetadata({ params }) {
   return {
     title: `${post.title} | অপরাধনামা`,
     description,
+    keywords: [
+      post.category_name,
+      post.division,
+      'অপরাধনামা',
+      'বাংলাদেশ অপরাধ সংবাদ',
+      'crime news bangladesh',
+      post.location_text,
+    ].filter(Boolean),
     alternates: {
       canonical: canonicalUrl,
     },
@@ -104,6 +112,7 @@ export async function generateMetadata({ params }) {
       siteName: 'অপরাধনামা',
       locale: 'bn_BD',
       publishedTime: post.created_at || post.date,
+      modifiedTime: post.updated_at || post.created_at || post.date,
       section: post.category_name || 'সংবাদ',
       images: imageUrl
         ? [{ url: imageUrl, width: 1200, height: 630, alt: post.title }]
@@ -111,6 +120,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: imageUrl ? 'summary_large_image' : 'summary',
+      site: '@oporadhnama',
       title: post.title,
       description,
       images: imageUrl ? [imageUrl] : [`${SITE_URL}/og-image.jpg`],
