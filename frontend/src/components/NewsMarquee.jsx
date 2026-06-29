@@ -13,6 +13,35 @@ function formatBengaliDate(dateStr) {
   }
 }
 
+const CATEGORY_PALETTES = {
+  'খুন': { color: '#FF4D55', bg: 'rgba(255, 77, 85, 0.15)', border: '#FF4D55' },
+  'ধর্ষণ': { color: '#FF7682', bg: 'rgba(255, 118, 130, 0.15)', border: '#FF7682' },
+  'ডাকাতি': { color: '#FF9800', bg: 'rgba(255, 152, 0, 0.15)', border: '#FF9800' },
+  'মাদক': { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', border: '#F59E0B' },
+  'জাতীয়': { color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: '#10B981' },
+  'আন্তর্জাতিক': { color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)', border: '#38BDF8' },
+  'বিশ্লেষণ': { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)', border: '#A78BFA' },
+  'পডকাস্ট': { color: '#FCD34D', bg: 'rgba(252, 211, 77, 0.15)', border: '#FCD34D' },
+  'কূটনীতি': { color: '#0EA5E9', bg: 'rgba(14, 165, 233, 0.15)', border: '#0EA5E9' },
+  'মধ্যপ্রাচ্য সংকট': { color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.15)', border: '#06B6D4' },
+  'অন্যান্য': { color: '#94A3B8', bg: 'rgba(148, 163, 184, 0.15)', border: '#94A3B8' },
+};
+
+const DEFAULT_PALETTES = [
+  { color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: '#10B981' },
+  { color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)', border: '#38BDF8' },
+  { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)', border: '#A78BFA' },
+  { color: '#F43F5E', bg: 'rgba(244, 63, 94, 0.15)', border: '#F43F5E' },
+  { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', border: '#F59E0B' },
+];
+
+function getCategoryPalette(categoryName, index) {
+  if (categoryName && CATEGORY_PALETTES[categoryName]) {
+    return CATEGORY_PALETTES[categoryName];
+  }
+  return DEFAULT_PALETTES[index % DEFAULT_PALETTES.length];
+}
+
 export default function NewsMarquee({ initialPosts = [] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [loading, setLoading] = useState(initialPosts.length === 0);
@@ -72,15 +101,11 @@ export default function NewsMarquee({ initialPosts = [] }) {
     if (!container) return;
 
     const onWheel = (e) => {
-      // Capture the scroll — prevent the page from scrolling at all
       e.preventDefault();
       e.stopPropagation();
-      // Use deltaY for vertical wheel, deltaX for horizontal (trackpad)
       container.scrollLeft += e.deltaY || e.deltaX;
     };
 
-    // { passive: false } is essential — React synthetic events are passive by
-    // default, which means e.preventDefault() is silently ignored there.
     container.addEventListener('wheel', onWheel, { passive: false });
     return () => container.removeEventListener('wheel', onWheel);
   }, [loading]);
@@ -102,7 +127,6 @@ export default function NewsMarquee({ initialPosts = [] }) {
 
   const handleTouchMove = (e) => {
     if (!containerRef.current) return;
-    // Prevent vertical page scroll while dragging the marquee horizontally
     e.preventDefault();
     const x = e.touches[0].pageX - containerRef.current.offsetLeft;
     const walk = (x - startX.current) * 2;
@@ -140,8 +164,6 @@ export default function NewsMarquee({ initialPosts = [] }) {
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             WebkitOverflowScrolling: 'touch',
-            // Allow only horizontal touch-drag on this element;
-            // vertical panning is handled by the touch handlers above.
             touchAction: 'pan-x',
           }}
         >
@@ -152,42 +174,58 @@ export default function NewsMarquee({ initialPosts = [] }) {
             </div>
           ) : (
             <div className="gap-5 flex px-8">
-              {scrollPosts.map((post, index) => (
-                <Link
-                  key={`marquee-${index}`}
-                  href={`/news/${post.slug || post.id}`}
-                  className="inline-flex flex-col w-72 flex-shrink-0 bg-neutral-900 border border-neutral-800 hover:border-[#E50914]/40 rounded-lg p-5 shadow-md hover:shadow-xl hover:shadow-black/40 transition-all duration-300"
-                  aria-label={`সংবাদ পড়ুন: ${post.title || ''}`}
-                >
-                  {/* Category badge */}
-                  {post.category_name && (
-                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded mb-3">
-                      {post.category_name}
-                    </span>
-                  )}
+              {scrollPosts.map((post, index) => {
+                const palette = getCategoryPalette(post.category_name, index);
+                return (
+                  <Link
+                    key={`marquee-${index}`}
+                    href={`/news/${post.slug || post.id}`}
+                    className="inline-flex flex-col w-72 flex-shrink-0 bg-neutral-900 rounded-lg p-5 shadow-md hover:shadow-xl hover:shadow-black/40 transition-all duration-300"
+                    aria-label={`সংবাদ পড়ুন: ${post.title || ''}`}
+                    style={{
+                      borderLeft: `4px solid ${palette.border}`,
+                      borderTop: '1px solid rgba(255,255,255,0.08)',
+                      borderRight: '1px solid rgba(255,255,255,0.08)',
+                      borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {/* Category badge */}
+                    {post.category_name && (
+                      <span 
+                        className="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded mb-3 w-fit"
+                        style={{ color: palette.color, backgroundColor: palette.bg }}
+                      >
+                        {post.category_name}
+                      </span>
+                    )}
 
-                  {/* Title */}
-                  <h3 className="text-base font-bold text-white mb-2 whitespace-normal leading-snug line-clamp-2">
-                    {post.title || ''}
-                  </h3>
+                    {/* Title */}
+                    <h3 className="text-base font-bold text-white mb-2 whitespace-normal leading-snug line-clamp-2 hover:text-neutral-200 transition-colors">
+                      {post.title || ''}
+                    </h3>
 
-                  {/* Description */}
-                  <p className="text-sm text-neutral-400 line-clamp-2 mb-3 whitespace-normal leading-relaxed flex-grow">
-                    {post.description || ''}
-                  </p>
+                    {/* Description */}
+                    <p className="text-sm text-neutral-300 line-clamp-2 mb-3 whitespace-normal leading-relaxed flex-grow">
+                      {post.description || ''}
+                    </p>
 
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
-                    <div className="flex flex-col">
-                      <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
-                      <span className="text-neutral-600 text-[10px]">{(post.location_text || post.division) && `স্থান: ${post.location_text || post.division}`}</span>
+                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
+                      <div className="flex flex-col">
+                        <span className="text-neutral-400 text-xs">{formatBengaliDate(post.date)}</span>
+                        {(post.location_text || post.division) && (
+                          <span className="text-neutral-500 text-[11px]">
+                            {`স্থান: ${[post.location_text, post.division].filter(Boolean).join(', ')}`}
+                          </span>
+                        )}
+                      </div>
+                      {/* Action Link */}
+                      <span className="font-semibold text-sm hover:underline transition-all duration-200 inline-block" style={{ color: palette.color }}>
+                        বিস্তারিত পড়ুন →
+                      </span>
                     </div>
-                    {/* Action Link */}
-                    <span className="text-[#E50914] font-semibold text-sm hover:underline transition-all duration-200 inline-block">
-                      বিস্তারিত পড়ুন →
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>

@@ -83,7 +83,7 @@ export default function ManageNews() {
                       {post.category_name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-neutral-400">{post.division}</td>
+                  <td className="px-6 py-4 text-neutral-400">{post.division || '-'}</td>
                   <td className="px-6 py-4 text-neutral-500">{post.date}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">

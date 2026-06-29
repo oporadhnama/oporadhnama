@@ -128,7 +128,7 @@ export default function Overview() {
                             {post.category_name}
                           </span>
                         </td>
-                        <td className="px-6 py-3 text-neutral-400">{post.division}</td>
+                        <td className="px-6 py-3 text-neutral-400">{post.division || '-'}</td>
                         <td className="px-6 py-3 text-neutral-500">{post.date}</td>
                       </tr>
                     ))}

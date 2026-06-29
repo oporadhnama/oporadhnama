@@ -229,9 +229,9 @@ export default function EditNews({ postId }) {
             )}
           </div>
           <div>
-            <label className="block text-neutral-400 text-xs font-medium mb-2">বিভাগ *</label>
-            <select name="division" value={form.division} onChange={handleChange} required className={inputClass + ' cursor-pointer'}>
-              <option value="">বিভাগ নির্বাচন করুন</option>
+            <label className="block text-neutral-400 text-xs font-medium mb-2">বিভাগ (ঐচ্ছিক)</label>
+            <select name="division" value={form.division} onChange={handleChange} className={inputClass + ' cursor-pointer'}>
+              <option value="">বিভাগ নির্বাচন করুন (ঐচ্ছিক)</option>
               {divisions.map(d => (
                 <option key={d} value={d}>{d}</option>
               ))}

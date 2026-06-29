@@ -238,7 +238,7 @@ export default async function NewsDetailPage({ params }) {
       <div className="flex flex-wrap gap-4 text-sm text-neutral-500 mb-8 pb-6 border-b border-neutral-800">
         <span>📅 {post.date}</span>
         <span>📂 {post.category_name}</span>
-        <span>📍 {post.division}</span>
+        {post.division ? <span>📍 {post.division}</span> : null}
         {post.location_text ? <span>🏷️ {post.location_text}</span> : null}
       </div>
 
