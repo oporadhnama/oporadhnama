@@ -78,14 +78,16 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.png', type: 'image/png' },
-      { url: '/icons.svg', type: 'image/svg+xml' },
+      { url: '/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-144x144.png', sizes: '144x144', type: 'image/png' },
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
     apple: [
       { url: '/apple-touch-icon-iphone-60x60.png', sizes: '60x60', type: 'image/png' },
       { url: '/apple-touch-icon-ipad-76x76.png', sizes: '76x76', type: 'image/png' },
       { url: '/apple-touch-icon-iphone-retina-120x120.png', sizes: '120x120', type: 'image/png' },
       { url: '/apple-touch-icon-ipad-retina-152x152.png', sizes: '152x152', type: 'image/png' },
+      { url: '/apple-touch-icon-180x180.png', sizes: '180x180', type: 'image/png' },
     ],
   },
 };
