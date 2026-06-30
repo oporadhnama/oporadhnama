@@ -15,9 +15,9 @@ def promote_to_post(modeladmin, request, queryset):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id', 'slug', 'title', 'category', 'division', 'date', 'created_at')
+    list_display = ('id', 'slug', 'title', 'category', 'division', 'author_name', 'date', 'created_at')
     list_filter = ('category', 'division', 'date')
-    search_fields = ('title', 'description', 'location_text', 'slug')
+    search_fields = ('title', 'description', 'location_text', 'author_name', 'slug')
     list_per_page = 25
     date_hierarchy = 'date'
     ordering = ('-date', '-created_at')

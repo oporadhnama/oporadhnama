@@ -18,6 +18,7 @@ export default function EditNews({ postId }) {
     location_text: '',
     date: new Date().toISOString().split('T')[0],
     division: '',
+    author_name: 'অপরাধনামা ডেক্স',
     source_link: '',
     video_url: '',
     show_video: true,
@@ -57,7 +58,7 @@ export default function EditNews({ postId }) {
 
   const divisions = [
     'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা',
-    'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ',
+    'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ', 'আন্তর্জাতিক',
   ];
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function EditNews({ postId }) {
             location_text: postData.location_text || '',
             date: postData.date || new Date().toISOString().split('T')[0],
             division: postData.division || '',
+            author_name: postData.author_name || 'অপরাধনামা ডেক্স',
             source_link: postData.source_link || '',
             video_url: postData.video_url || '',
             show_video: postData.show_video !== false,
@@ -128,6 +130,9 @@ export default function EditNews({ postId }) {
     }
     if (form.division) {
       formData.append('division', form.division);
+    }
+    if (form.author_name) {
+      formData.append('author_name', form.author_name);
     }
     formData.append('source_link', form.source_link);
     formData.append('video_url', form.video_url);
@@ -249,6 +254,13 @@ export default function EditNews({ postId }) {
             <label className="block text-neutral-400 text-xs font-medium mb-2">স্থান</label>
             <input type="text" name="location_text" value={form.location_text} onChange={handleChange} placeholder="ঘটনার স্থান" className={inputClass} />
           </div>
+        </div>
+
+        {/* Author Name */}
+        <div>
+          <label className="block text-neutral-400 text-xs font-medium mb-2">রিপোর্টারের নাম (Author Name)</label>
+          <input type="text" name="author_name" value={form.author_name} onChange={handleChange} placeholder="যেমন: অপরাধনামা ডেক্স" className={inputClass} />
+          <p className="text-neutral-600 text-[10px] mt-1">Google News এর জন্য রিপোর্টারের নাম দেওয়া বাধ্যতামূলক।</p>
         </div>
 
         {/* Image Upload Drag & Drop */}

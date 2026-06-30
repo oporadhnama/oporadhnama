@@ -29,6 +29,7 @@ class PostSerializer(serializers.ModelSerializer):
             'location_text',
             'date',
             'division',
+            'author_name',
             'category',
             'category_name',
             'is_sensitive_image',

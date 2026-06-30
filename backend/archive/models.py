@@ -12,6 +12,7 @@ DIVISION_SLUG_MAP = {
     'সিলেট': 'sylhet',
     'রংপুর': 'rangpur',
     'ময়মনসিংহ': 'mymensingh',
+    'আন্তর্জাতিক': 'international',
     'অজানা': 'unknown',
 }
 
@@ -46,6 +47,7 @@ class Post(models.Model):
     video_url = models.URLField(blank=True, default='', help_text="Facebook or YouTube video link (optional)")
     show_video = models.BooleanField(default=True, help_text="Show video on detail page")
     location_text = models.CharField(max_length=255, blank=True, default='')
+    author_name = models.CharField(max_length=100, default='অপরাধনামা ডেক্স', help_text="Author or reporter name for Google News transparency")
     date = models.DateField(db_index=True)
     division = models.CharField(max_length=100, db_index=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)

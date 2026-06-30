@@ -22,6 +22,7 @@ export const metadata = {
     'bangla crime news',
     'অপরাধ বার্তা',
     'বাংলাদেশ সংবাদ',
+    'আন্তর্জাতিক',
     'dhaka crime',
     'চট্টগ্রাম অপরাধ',
     'রাজশাহী অপরাধ',

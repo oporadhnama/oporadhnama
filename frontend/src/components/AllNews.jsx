@@ -95,7 +95,7 @@ export default function AllNews() {
 
   const divisions = [
     'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা',
-    'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ',
+    'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ', 'আন্তর্জাতিক'
   ];
 
   // Detect device size on mount

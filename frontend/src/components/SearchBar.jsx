@@ -6,7 +6,7 @@ import { fetchCategories } from '../api';
 
 const DIVISIONS = [
   'ঢাকা', 'চট্টগ্রাম', 'রাজশাহী', 'খুলনা',
-  'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ',
+  'বরিশাল', 'সিলেট', 'রংপুর', 'ময়মনসিংহ', 'আন্তর্জাতিক',
 ];
 
 export default function SearchBar() {

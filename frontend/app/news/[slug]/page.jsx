@@ -101,6 +101,7 @@ export async function generateMetadata({ params }) {
       'crime news bangladesh',
       post.location_text,
     ].filter(Boolean),
+    authors: [{ name: post.author_name || 'অপরাধনামা' }],
     alternates: {
       canonical: canonicalUrl,
     },
@@ -178,8 +179,8 @@ export default async function NewsDetailPage({ params }) {
       .filter(Boolean)
       .join(', '),
     author: {
-      '@type': 'Organization',
-      name: 'অপরাধনামা',
+      '@type': 'Person',
+      name: post.author_name || 'অপরাধনামা',
       url: SITE_URL,
     },
     publisher: {
@@ -236,6 +237,7 @@ export default async function NewsDetailPage({ params }) {
 
       {/* Meta row */}
       <div className="flex flex-wrap gap-4 text-sm text-neutral-500 mb-8 pb-6 border-b border-neutral-800">
+        <span>✍️ {post.author_name || 'অপরাধনামা'}</span>
         <span>📅 {post.date}</span>
         <span>📂 {post.category_name}</span>
         {post.division ? <span>📍 {post.division}</span> : null}
