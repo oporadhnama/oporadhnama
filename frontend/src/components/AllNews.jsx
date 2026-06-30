@@ -28,6 +28,35 @@ function getBengaliError(err) {
   return 'তথ্য আনতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
 }
 
+const CATEGORY_PALETTES = {
+  'খুন': { color: '#FF4D55', bg: 'rgba(255, 77, 85, 0.15)', border: '#FF4D55' },
+  'ধর্ষণ': { color: '#FF7682', bg: 'rgba(255, 118, 130, 0.15)', border: '#FF7682' },
+  'ডাকাতি': { color: '#FF9800', bg: 'rgba(255, 152, 0, 0.15)', border: '#FF9800' },
+  'মাদক': { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', border: '#F59E0B' },
+  'জাতীয়': { color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: '#10B981' },
+  'আন্তর্জাতিক': { color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)', border: '#38BDF8' },
+  'বিশ্লেষণ': { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)', border: '#A78BFA' },
+  'পডকাস্ট': { color: '#FCD34D', bg: 'rgba(252, 211, 77, 0.15)', border: '#FCD34D' },
+  'কূটনীতি': { color: '#0EA5E9', bg: 'rgba(14, 165, 233, 0.15)', border: '#0EA5E9' },
+  'মধ্যপ্রাচ্য সংকট': { color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.15)', border: '#06B6D4' },
+  'অন্যান্য': { color: '#94A3B8', bg: 'rgba(148, 163, 184, 0.15)', border: '#94A3B8' },
+};
+
+const DEFAULT_PALETTES = [
+  { color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: '#10B981' },
+  { color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)', border: '#38BDF8' },
+  { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)', border: '#A78BFA' },
+  { color: '#F43F5E', bg: 'rgba(244, 63, 94, 0.15)', border: '#F43F5E' },
+  { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', border: '#F59E0B' },
+];
+
+function getCategoryPalette(categoryName, index) {
+  if (categoryName && CATEGORY_PALETTES[categoryName]) {
+    return CATEGORY_PALETTES[categoryName];
+  }
+  return DEFAULT_PALETTES[index % DEFAULT_PALETTES.length];
+}
+
 // ── Skeleton Card ─────────────────────────────────────────────────────────────
 
 function SkeletonCard() {
@@ -283,18 +312,31 @@ export default function AllNews() {
       {!loading && !error && posts.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map(post => (
+            {posts.map((post, index) => {
+              const palette = getCategoryPalette(post.category_name, index);
+              return (
               <Link
                 key={post.id}
                 href={`/news/${post.slug || post.id}`}
-                className="bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
+                className="bg-neutral-900/60 rounded-xl p-6 border hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
                 aria-label={`সংবাদ পড়ুন: ${post.title}`}
+                style={{
+                  borderLeft: `4px solid ${palette.border}`,
+                  borderTop: '1px solid rgba(255,255,255,0.08)',
+                  borderRight: '1px solid rgba(255,255,255,0.08)',
+                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                }}
               >
-                <span className="self-start text-[10px] font-bold uppercase tracking-wider text-[#E50914] bg-[#E50914]/10 px-2 py-0.5 rounded mb-3">
-                  {post.category_name}
-                </span>
+                {post.category_name && (
+                  <span 
+                    className="self-start text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded mb-3"
+                    style={{ color: palette.color, backgroundColor: palette.bg }}
+                  >
+                    {post.category_name}
+                  </span>
+                )}
 
-                <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2">
+                <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2 hover:text-neutral-200 transition-colors">
                   {post.title}
                 </h3>
 
@@ -305,14 +347,14 @@ export default function AllNews() {
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
                   <div className="flex flex-col">
                     <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
-                    <span className="text-neutral-600 text-[10px]">{(post.location_text || post.division) && `স্থান: ${post.location_text || post.division}`}</span>
+                    <span className="text-neutral-600 text-[10px]">{(post.location_text || post.division) && `স্থান: ${[post.location_text, post.division].filter(Boolean).join(', ')}`}</span>
                   </div>
-                  <span className="text-[#E50914] text-xs font-bold hover:underline">
+                  <span className="text-xs font-bold hover:underline transition-all duration-200" style={{ color: palette.color }}>
                     বিস্তারিত পড়ুন →
                   </span>
                 </div>
               </Link>
-            ))}
+            )})}
           </div>
 
           {/* Pagination Controls */}

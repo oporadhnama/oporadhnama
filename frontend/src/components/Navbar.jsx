@@ -51,7 +51,6 @@ export default function Navbar({ campaignActive }) {
   }, [campaignActive]);
 
   const baseLinks = [
-    { label: 'সংবাদ আর্কাইভ', path: '/archive' },
     { label: 'সকল সংবাদ', path: '/all-news' },
     { label: 'গ্রাফ', path: '/graphs' },
     { label: 'তথ্য দিন', path: '/submit' },
