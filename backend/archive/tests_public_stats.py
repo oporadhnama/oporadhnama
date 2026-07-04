@@ -7,7 +7,7 @@ import datetime
 class PublicStatsViewTest(TestCase):
     def setUp(self):
         # create categories
-        self.cat_names = ['খুন', 'ধর্ষণ', 'চাঁদাবাজি', 'দুর্নীতি', 'অন্যান্য']
+        self.cat_names = ['হত্যাকান্ড', 'ধর্ষণ', 'চাঁদাবাজি', 'দুর্নীতি', 'অন্যান্য']
         self.categories = [Category.objects.create(name=n) for n in self.cat_names]
 
         # create posts: 2 posts per category except "অন্যান্য" gets 1

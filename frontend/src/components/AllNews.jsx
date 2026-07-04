@@ -29,7 +29,7 @@ function getBengaliError(err) {
 }
 
 const CATEGORY_PALETTES = {
-  'খুন': { color: '#FF4D55', bg: 'rgba(255, 77, 85, 0.15)', border: '#FF4D55' },
+  'হত্যাকান্ড': { color: '#FF4D55', bg: 'rgba(255, 77, 85, 0.15)', border: '#FF4D55' },
   'ধর্ষণ': { color: '#FF7682', bg: 'rgba(255, 118, 130, 0.15)', border: '#FF7682' },
   'ডাকাতি': { color: '#FF9800', bg: 'rgba(255, 152, 0, 0.15)', border: '#FF9800' },
   'মাদক': { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', border: '#F59E0B' },

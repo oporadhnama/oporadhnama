@@ -22,7 +22,7 @@ const MONTH_FULL = { 'ফেব্র': 'ফেব্রুয়ারি', '�
 const CATEGORIES = [
   { key: 'dacoity', label: 'ডাকাতি', color: '#E50914' },
   { key: 'robbery', label: 'রাহাজানি', color: '#ff6b6b' },
-  { key: 'murder', label: 'খুন', color: '#ff4500' },
+  { key: 'murder', label: 'হত্যাকান্ড', color: '#ff4500' },
   { key: 'speedy_trial', label: 'দ্রুত বিচার', color: '#ff8c00' },
   { key: 'rape', label: 'ধর্ষণ', color: '#ffa500' },
   { key: 'other_violence_women_children', label: 'নারী-শিশু নির্যাতন', color: '#ffd700' },
@@ -224,7 +224,7 @@ export default function Graphs() {
     return [
       { label: 'মোট মামলা', color: '#E50914', value: months.reduce((s, d) => s + d.total, 0), delta: prev ? last.total - prev.total : undefined },
       { label: 'মাদক', color: '#ab47bc', value: months.reduce((s, d) => s + d.narcotics, 0), delta: prev ? last.narcotics - prev.narcotics : undefined },
-      { label: 'খুন', color: '#ff4500', value: months.reduce((s, d) => s + d.murder, 0), delta: prev ? last.murder - prev.murder : undefined },
+      { label: 'হত্যাকান্ড', color: '#ff4500', value: months.reduce((s, d) => s + d.murder, 0), delta: prev ? last.murder - prev.murder : undefined },
       { label: 'ধর্ষণ', color: '#ffa500', value: months.reduce((s, d) => s + d.rape, 0), delta: prev ? last.rape - prev.rape : undefined },
       { label: 'নারী-শিশু', color: '#ffd700', value: months.reduce((s, d) => s + d.other_violence_women_children, 0), delta: prev ? last.other_violence_women_children - prev.other_violence_women_children : undefined },
       { label: 'অপহরণ', color: '#9370db', value: months.reduce((s, d) => s + d.kidnapping, 0), delta: prev ? last.kidnapping - prev.kidnapping : undefined },

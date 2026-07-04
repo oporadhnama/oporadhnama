@@ -198,7 +198,7 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
     }, 0);
   }, [counts]);
 
-  const murderCount = useMemo(() => toSafeNumber(counts['খুন']), [counts]);
+  const murderCount = useMemo(() => toSafeNumber(counts['হত্যাকান্ড']), [counts]);
   const rapeCount = useMemo(() => toSafeNumber(counts['ধর্ষণ']), [counts]);
 
   if (loading) {
@@ -214,10 +214,10 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
       <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-16 bg-black text-white px-4 py-4 md:px-10 md:py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
         <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-3 md:pb-0 md:pr-10">
           <StatCard
-            label="খুন"
+            label="হত্যাকান্ড"
             value={murderCount}
-            linkTo={categoryMap['খুন'] ? `/all-news?category=${categoryMap['খুন']}` : ''}
-            hasLink={Boolean(categoryMap['খুন']) && mounted}
+            linkTo={categoryMap['হত্যাকান্ড'] ? `/all-news?category=${categoryMap['হত্যাকান্ড']}` : ''}
+            hasLink={Boolean(categoryMap['হত্যাকান্ড']) && mounted}
           />
         </div>
 

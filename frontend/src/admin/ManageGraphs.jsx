@@ -14,7 +14,7 @@ import {
 const DEFAULT_CATEGORIES = [
   { key: 'dacoity',                       label: 'ডাকাতি',                color: '#E50914' },
   { key: 'robbery',                       label: 'রাহাজানি',              color: '#ff6b6b' },
-  { key: 'murder',                        label: 'খুন',                    color: '#ff4500' },
+  { key: 'murder',                        label: 'হত্যাকান্ড',                    color: '#ff4500' },
   { key: 'speedy_trial',                  label: 'দ্রুত বিচার',           color: '#ff8c00' },
   { key: 'rape',                          label: 'ধর্ষণ',                 color: '#ffa500' },
   { key: 'other_violence_women_children', label: 'নারী ও শিশু নির্যাতন', color: '#ffd700' },
@@ -406,7 +406,7 @@ function AddMonthModal({ onAdd, onClose }) {
 function LivePreview({ data }) {
   const chartData = data.map(row => ({
     month: row.month,
-    খুন: row.murder,
+    হত্যাকান্ড: row.murder,
     ধর্ষণ: row.rape,
     মাদক: row.narcotics,
     মোট: calcTotal(row),
@@ -428,7 +428,7 @@ function LivePreview({ data }) {
             itemStyle={{ color: '#ccc' }}
           />
           <Legend formatter={v => <span style={{ color: '#aaa', fontSize: 11 }}>{v}</span>} />
-          <Bar dataKey="খুন" fill="#ff4500" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="হত্যাকান্ড" fill="#ff4500" radius={[3, 3, 0, 0]} />
           <Bar dataKey="ধর্ষণ" fill="#ffa500" radius={[3, 3, 0, 0]} />
           <Bar dataKey="মাদক" fill="#ab47bc" radius={[3, 3, 0, 0]} />
         </BarChart>
