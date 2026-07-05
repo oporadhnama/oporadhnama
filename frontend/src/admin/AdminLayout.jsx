@@ -39,6 +39,7 @@ export default function AdminLayout({ children }) {
   const navItems = [
     { label: 'ওভারভিউ', path: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'সংবাদ ব্যবস্থাপনা', path: '/admin/dashboard/manage-news', icon: Newspaper },
+    { label: 'ক্যাটাগরি ব্যবস্থাপনা', path: '/admin/dashboard/manage-categories', icon: FolderOpen },
     { label: 'ব্যবহারকারী প্রতিবেদন', path: '/admin/dashboard/user-reports', icon: FolderOpen },
     { label: 'গ্রাফ ব্যবস্থাপনা', path: '/admin/dashboard/manage-graphs', icon: BarChart2 },
     { label: 'ইভেন্ট প্যানেল', path: '/admin/dashboard/campaigns', icon: Calendar },

@@ -102,6 +102,21 @@ export async function createCategory(name) {
   return res.json();
 }
 
+export async function deleteCategory(id) {
+  const res = await apiFetch(`/api/categories/${id}/`, {
+    method: 'DELETE',
+  });
+  if (res.status === 204 || res.ok) {
+    return true;
+  }
+  try {
+    const data = await res.json();
+    throw new Error(data.error || 'ক্যাটেগরি মুছতে সমস্যা হয়েছে');
+  } catch {
+    throw new Error('ক্যাটেগরি মুছতে সমস্যা হয়েছে');
+  }
+}
+
 export async function submitPublicTip(formData) {
   const res = await apiFetch('/api/submit/', {
     method: 'POST',

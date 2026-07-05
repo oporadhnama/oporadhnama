@@ -135,6 +135,30 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def create(self, request, *args, **kwargs):
+        name = request.data.get('name', '').strip()
+        if name:
+            # Check if category with the same name already exists
+            cat = Category.objects.filter(name__iexact=name).first()
+            if cat:
+                serializer = self.get_serializer(cat)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        return super().create(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        other_cat, _ = Category.objects.get_or_create(name='অন্যান্য')
+        
+        if instance.name == 'অন্যান্য' or instance.id == other_cat.id:
+             return Response({"error": "'অন্যান্য' ক্যাটাগরি মুছে ফেলা যাবে না।"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Move all associated posts to 'অন্যান্য' category
+        Post.objects.filter(category=instance).update(category=other_cat)
+        
+        # Delete the category
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 # ─── Public submission ───────────────────────────────────────────────────────
 
