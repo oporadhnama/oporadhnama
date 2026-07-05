@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Bot, Sparkles, Copy, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 
@@ -31,7 +33,7 @@ export default function AIAssistant() {
           messages: [
             {
               role: 'system',
-              content: 'তুমি একজন "অপরাধনামা নিউজ এক্সপার্ট"। তোমার কাজ হলো সাধারণ নিউজ থেকে কপিরাইট মুক্ত, আকর্ষণীয় এবং নির্দিষ্ট ফরম্যাটে নিউজ লেখা। তোমাকে অপরাধের ধরন, স্থান, এবং নতুন একটি শিরোনাম লিখতে হবে। লেখায় অবশ্যই এই HTML ট্যাগগুলো ব্যবহার করবে: "এখানে নরমাল <b>এখানে লেখা বোল্ড</b> <i>এখানে লেখা ইটালিক</i> <h3>এখানে বিস্তারিত এর মাঝে ছোট শিরোনাম</h3> <blockquote>এখানে উক্তি</blockquote> <span class=\\"highlight\\">এখানে হাইলাইট</span>"। লেখাটি এমন হতে হবে যেন অন্য নিউজ থেকে কপি করা না বোঝায় (কপিরাইট মুক্ত)।'
+              content: 'তুমি একজন "অপরাধনামা নিউজ এক্সপার্ট"। তোমার কাজ হলো সাধারণ নিউজ থেকে কপিরাইট মুক্ত, আকর্ষণীয় এবং নির্দিষ্ট ফরম্যাটে নিউজ লেখা। তোমাকে অপরাধের ধরন, স্থান, এবং নতুন একটি শিরোনাম লিখতে হবে। লেখায় অবশ্যই নিচের ট্যাগগুলোকে ইন্ডিকেটর হিসেবে ব্যবহার করবে (এগুলো একচুয়াল HTML হিসেবে নয়, বরং নিউজ এডিটরে ফরম্যাটিং ইন্ডিকেটর হিসেবে কাজ করবে):\n- সাধারণ লেখার জন্য কোনো ট্যাগ লাগবে না\n- বোল্ড করার জন্য: <b>এখানে লেখা</b>\n- ইটালিক করার জন্য: <i>এখানে লেখা</i>\n- সাব-হেডিং বা ছোট শিরোনামের জন্য: <h3>এখানে শিরোনাম</h3>\n- কোনো উক্তির জন্য: <blockquote>এখানে উক্তি</blockquote>\n- হাইলাইট করার জন্য: <span class="highlight">এখানে লেখা</span>\nলেখাটি এমন হতে হবে যেন অন্য নিউজ থেকে হুবহু কপি করা না বোঝায় (কপিরাইট মুক্ত)।'
             },
             {
               role: 'user',
@@ -73,7 +75,7 @@ export default function AIAssistant() {
         <div>
           <h1 className="text-2xl font-bold text-white">AI নিউজ অ্যাসিস্ট্যান্ট</h1>
           <p className="text-neutral-400 text-sm mt-1">
-            যেকোনো খবর দিন, AI সেটি অপরাধনামা স্টাইলে লিখে দেবে।
+            যেকোনো খবর দিন, AI সেটি অপরাধনামা স্টাইলে লিখে দেবে (ইন্ডিকেটর ট্যাগ সহ)।
           </p>
         </div>
       </div>
@@ -155,32 +157,14 @@ export default function AIAssistant() {
             )}
             {result && (
               <div 
-                className="text-neutral-200 text-sm whitespace-pre-wrap font-mono"
+                className="text-neutral-200 text-sm whitespace-pre-wrap font-mono select-all"
               >
                 {result}
               </div>
             )}
           </div>
-          
-          {result && (
-            <div className="h-1/3 overflow-y-auto text-xs text-neutral-500 bg-neutral-950 p-3 rounded-lg border border-neutral-800">
-              <p className="font-medium text-neutral-400 mb-2 sticky top-0 bg-neutral-950 pb-1 border-b border-neutral-800">প্রিভিউ:</p>
-              <div 
-                className="prose prose-invert max-w-none preview-content"
-                dangerouslySetInnerHTML={{ __html: result }}
-              />
-            </div>
-          )}
         </div>
       </div>
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        .preview-content h3 { font-size: 1.1rem; font-weight: 600; color: white; margin-top: 1rem; margin-bottom: 0.5rem; }
-        .preview-content b { font-weight: 700; color: white; }
-        .preview-content i { font-style: italic; color: #a3a3a3; }
-        .preview-content blockquote { border-left: 3px solid #E50914; padding-left: 1rem; margin: 1rem 0; color: #d4d4d4; font-style: italic; }
-        .preview-content .highlight { background-color: rgba(229, 9, 20, 0.2); color: #ff8f95; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-weight: 500; }
-      `}} />
     </div>
   );
 }
