@@ -20,6 +20,8 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'slug',
+            'custom_slug',
+            'seo_keywords',
             'title',
             'description',
             'source_link',

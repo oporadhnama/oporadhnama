@@ -23,6 +23,8 @@ export default function EditNews({ postId }) {
     video_url: '',
     show_video: true,
     is_sensitive_image: false,
+    custom_slug: '',
+    seo_keywords: '',
   });
   const [imageFile, setImageFile] = useState(null);
   const [currentImage, setCurrentImage] = useState(null);
@@ -78,6 +80,8 @@ export default function EditNews({ postId }) {
             video_url: postData.video_url || '',
             show_video: postData.show_video !== false,
             is_sensitive_image: postData.is_sensitive_image || false,
+            custom_slug: postData.custom_slug || '',
+            seo_keywords: postData.seo_keywords || '',
           });
           if (postData.image) {
             setCurrentImage(postData.image.startsWith('http') ? postData.image : `${API_BASE}${postData.image}`);
@@ -138,6 +142,8 @@ export default function EditNews({ postId }) {
     formData.append('video_url', form.video_url);
     formData.append('show_video', form.show_video);
     formData.append('is_sensitive_image', form.is_sensitive_image);
+    formData.append('custom_slug', form.custom_slug);
+    formData.append('seo_keywords', form.seo_keywords);
     if (imageFile) {
       formData.append('image', imageFile);
     }
@@ -358,6 +364,23 @@ export default function EditNews({ postId }) {
           <p className="text-neutral-600 text-[10px] mt-1">
             টগল চালু থাকলে ভিডিওটি বিস্তারিত পেজে শিরোনামের নিচে দেখানো হবে। বন্ধ থাকলে ভিডিও লুকানো থাকবে।
           </p>
+        </div>
+
+        {/* SEO Slug & Keywords Section */}
+        <div className="bg-neutral-800/30 p-5 rounded-xl border border-neutral-850 space-y-4">
+          <h3 className="text-white text-sm font-bold border-b border-neutral-800 pb-2">SEO সেটিংস</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-neutral-400 text-xs font-medium mb-2">কাস্টম SEO স্ল্যাগ (ঐচ্ছিক)</label>
+              <input type="text" name="custom_slug" value={form.custom_slug} onChange={handleChange} placeholder="যেমন: custom-slug-here" className={inputClass} />
+              <p className="text-neutral-500 text-[10px] mt-1">ফাঁকা রাখলে শিরোনাম থেকে স্ল্যাগ জেনারেট হবে।</p>
+            </div>
+            <div>
+              <label className="block text-neutral-400 text-xs font-medium mb-2">SEO কিওয়ার্ডস পুশ (ঐচ্ছিক - কমা দিয়ে আলাদা করুন)</label>
+              <input type="text" name="seo_keywords" value={form.seo_keywords} onChange={handleChange} placeholder="যেমন: drug, arrest, police" className={inputClass} />
+              <p className="text-neutral-500 text-[10px] mt-1">এই কিওয়ার্ডগুলো স্ল্যাগের সাথে যুক্ত হবে।</p>
+            </div>
+          </div>
         </div>
 
         {/* Source Link */}
