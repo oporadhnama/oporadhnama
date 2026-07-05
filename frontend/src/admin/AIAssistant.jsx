@@ -22,11 +22,10 @@ export default function AIAssistant() {
     setCopied(false);
 
     try {
-      const response = await fetch('https://unipy.onrender.com/v1/chat/completions', {
+      const response = await fetch('/api/ai', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer freellmapi-0c47628416d31611c280f7b5db7d9d21315ff1008dc9f363'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: 'gpt-3.5-turbo',
@@ -48,7 +47,8 @@ export default function AIAssistant() {
       }
 
       const data = await response.json();
-      const generatedText = data.choices[0].message.content;
+      const generatedText = data?.choices?.[0]?.message?.content;
+      if (!generatedText) throw new Error('Invalid API response structure');
       setResult(generatedText);
     } catch (err) {
       console.error(err);
