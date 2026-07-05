@@ -1,10 +1,15 @@
 import os
 import django
 import sys
+import io
 
 # Ensure the correct path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+
+# Ensure UTF-8 output for Render logs
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+
 django.setup()
 
 from archive.models import Category, Post

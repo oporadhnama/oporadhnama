@@ -13,5 +13,6 @@ python manage.py migrate
 echo "Running post-migration scripts..."
 python cleanup_db.py
 python setup_admin.py
+python fix_categories.py
 
 echo "Build finished successfully!"
