@@ -88,15 +88,15 @@ function AnimatedCount({ value, className }) {
 
 function StatCard({ label, value, linkTo, hasLink }) {
   const content = (
-    <div className="flex flex-col items-center p-5 md:p-6 rounded-2xl bg-neutral-950/40 border border-neutral-900 hover:border-neutral-800 hover:bg-neutral-900/20 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] w-full text-center">
-      <h3 className="text-3xl sm:text-4xl md:text-5xl font-black font-sans tracking-tight text-white leading-none">
+    <div className="flex flex-col items-center p-4 md:p-5 rounded-xl bg-neutral-950/40 border border-neutral-900 hover:border-[#E50914] hover:bg-[#E50914] transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] w-full text-center group">
+      <h3 className="text-2xl sm:text-3xl md:text-4xl font-black font-sans tracking-tight text-white leading-none">
         <AnimatedCount
           value={value}
           className="inline-block tabular-nums"
         />
-        <span className="text-[#E50914] ml-0.5">+</span>
+        <span className="text-[#E50914] group-hover:text-white ml-0.5 transition-colors duration-300">+</span>
       </h3>
-      <p className="text-neutral-400 mt-2 text-xs sm:text-sm md:text-base font-semibold tracking-wide">
+      <p className="text-neutral-400 group-hover:text-neutral-100 mt-1.5 text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-300">
         {label}
       </p>
     </div>
@@ -210,7 +210,7 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
+    <div className="w-full max-w-4xl mx-auto mt-2 md:mt-4 px-4 flex justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 w-full max-w-3xl">
         <div className="w-full">
           <StatCard

@@ -136,7 +136,7 @@ export default function NewsMarquee({ initialPosts = [] }) {
   const handleTouchEnd = () => { isPaused.current = false; };
 
   return (
-    <section className="mt-6 md:mt-16 w-full relative z-10">
+    <section className="mt-4 md:mt-6 w-full relative z-10">
       {/* ── Section Title Bar ── */}
       <div className="bg-white/95 py-3 px-8 flex items-center gap-3 border-y-2 border-[#E50914]/30 shadow-sm">
         <span className="w-2.5 h-2.5 rounded-full bg-[#E50914] animate-pulse inline-block shadow-sm shadow-[#E50914]/50 flex-shrink-0" />
