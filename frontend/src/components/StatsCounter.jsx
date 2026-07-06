@@ -88,29 +88,29 @@ function AnimatedCount({ value, className }) {
 
 function StatCard({ label, value, linkTo, hasLink }) {
   const content = (
-    <>
-      <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300 leading-none">
+    <div className="flex flex-col items-center p-5 md:p-6 rounded-2xl bg-neutral-950/40 border border-neutral-900 hover:border-neutral-800 hover:bg-neutral-900/20 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.4)] w-full text-center">
+      <h3 className="text-3xl sm:text-4xl md:text-5xl font-black font-sans tracking-tight text-white leading-none">
         <AnimatedCount
           value={value}
-          className="inline-block tabular-nums min-w-[2ch]"
+          className="inline-block tabular-nums"
         />
-        +
+        <span className="text-[#E50914] ml-0.5">+</span>
       </h3>
-      <p className="text-[#E50914] mt-1 text-sm sm:text-base md:text-xl font-semibold group-hover:text-white transition-colors duration-300">
+      <p className="text-neutral-400 mt-2 text-xs sm:text-sm md:text-base font-semibold tracking-wide">
         {label}
       </p>
-    </>
+    </div>
   );
 
   if (hasLink && linkTo) {
     return (
-      <Link href={linkTo} className="block cursor-pointer group">
+      <Link href={linkTo} className="block cursor-pointer group w-full">
         {content}
       </Link>
     );
   }
 
-  return <div className="block">{content}</div>;
+  return <div className="block w-full">{content}</div>;
 }
 
 function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
@@ -210,9 +210,9 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-3 md:mt-10 px-3 md:px-4 flex justify-center">
-      <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-16 bg-black text-white px-4 py-4 md:px-10 md:py-8 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-neutral-900 w-full md:w-auto">
-        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-3 md:pb-0 md:pr-10">
+    <div className="w-full max-w-4xl mx-auto mt-6 md:mt-10 px-4 flex justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 w-full max-w-3xl">
+        <div className="w-full">
           <StatCard
             label="হত্যাকান্ড"
             value={murderCount}
@@ -221,7 +221,7 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
           />
         </div>
 
-        <div className="text-center w-full md:w-auto border-b md:border-b-0 md:border-r border-neutral-800 pb-3 md:pb-0 md:pr-10">
+        <div className="w-full">
           <StatCard
             label="ধর্ষণ"
             value={rapeCount}
@@ -230,19 +230,13 @@ function StatsCounterContent({ initialCounts = {}, initialCategories = [] }) {
           />
         </div>
 
-        <div className="text-center w-full md:w-auto">
-      <Link href="/all-news" className="block cursor-pointer group">
-            <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-sans tracking-tight text-white group-hover:text-[#E50914] transition-colors duration-300 leading-none">
-              <AnimatedCount
-                value={totalNews}
-                className="inline-block tabular-nums min-w-[2ch]"
-              />
-              +
-            </h3>
-            <p className="text-neutral-300 mt-1 text-sm sm:text-base md:text-xl font-semibold group-hover:text-white transition-colors duration-300">
-              সংবাদ আর্কাইভ
-            </p>
-          </Link>
+        <div className="w-full">
+          <StatCard
+            label="সংবাদ আর্কাইভ"
+            value={totalNews}
+            linkTo="/all-news"
+            hasLink={mounted}
+          />
         </div>
       </div>
 

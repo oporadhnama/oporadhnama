@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import SensitiveImage from '../../../src/components/SensitiveImage';
-import { API_BASE } from '../../../lib/api';
+import { API_BASE, fetchPosts } from '../../../lib/api';
 
 const SITE_URL = 'https://oporadhnama.info';
 
@@ -139,6 +138,30 @@ export default async function NewsDetailPage({ params }) {
   if (!post) {
     notFound();
   }
+
+  // Fetch related/other posts for interlinking
+  let relatedPosts = [];
+  try {
+    if (post.category) {
+      const categoryPostsRes = await fetchPosts(`category=${post.category}&limit=10`, { next: { revalidate: 60 } });
+      relatedPosts = (categoryPostsRes.results || [])
+        .filter(p => String(p.id) !== String(post.id) && p.slug !== post.slug);
+    }
+  } catch (err) {
+    console.error('Failed to fetch category posts:', err);
+  }
+
+  if (relatedPosts.length < 4) {
+    try {
+      const latestPostsRes = await fetchPosts('limit=10', { next: { revalidate: 60 } });
+      const additional = (latestPostsRes.results || [])
+        .filter(p => String(p.id) !== String(post.id) && p.slug !== post.slug && !relatedPosts.some(r => r.id === p.id));
+      relatedPosts = [...relatedPosts, ...additional];
+    } catch (err) {
+      console.error('Failed to fetch fallback posts:', err);
+    }
+  }
+  relatedPosts = relatedPosts.slice(0, 4);
 
   const embedUrl = post.show_video !== false ? getEmbedUrl(post.video_url) : null;
   const rawImageUrl = resolveImageUrl(post.image);
@@ -285,15 +308,36 @@ export default async function NewsDetailPage({ params }) {
 
       {/* Source link */}
       {post.source_link ? (
-        <a
-          href={post.source_link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block text-[#E50914] text-sm font-medium hover:underline"
-        >
-          সোর্স লিংক দেখুন →
-        </a>
+        <div className="mb-6">
+          <a
+            href={post.source_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-[#E50914] text-sm font-medium hover:underline"
+          >
+            সোর্স লিংক দেখুন →
+          </a>
+        </div>
       ) : null}
+
+      {/* Interlinking Section */}
+      {relatedPosts && relatedPosts.length > 0 && (
+        <div className="mt-8 pt-6 border-t border-neutral-800">
+          <h3 className="text-lg font-bold text-gray-300 mb-3">আরও পড়ুন:</h3>
+          <ul className="space-y-2">
+            {relatedPosts.map((rPost) => (
+              <li key={rPost.id} className="list-disc list-inside text-neutral-400">
+                <Link
+                  href={`/news/${rPost.slug || rPost.id}`}
+                  className="text-blue-500 hover:text-blue-400 hover:underline text-base font-medium transition-colors inline"
+                >
+                  {rPost.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Feature 5: Enhanced JSON-LD structured data for Google News */}
       <script
