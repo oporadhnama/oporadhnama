@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, MessageCircle } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 export default function Contact() {
   const platforms = [
@@ -44,15 +44,6 @@ export default function Contact() {
       ),
       hoverColor: 'hover:border-[#EA4335]',
       glowColor: '#EA4335',
-    },
-    {
-      name: 'WhatsApp',
-      url: 'https://wa.me/message/37AG7T7GWEKFO1',
-      icon: (
-        <MessageCircle className="w-6 h-6 md:w-8 md:h-8 mb-4 text-[#25D366]" />
-      ),
-      hoverColor: 'hover:border-[#25D366]',
-      glowColor: '#25D366',
     }
   ];
 
