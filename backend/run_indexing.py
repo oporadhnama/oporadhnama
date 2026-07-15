@@ -40,9 +40,9 @@ from google_indexing.indexing_service import GoogleIndexingService  # noqa: E402
 # DEMO URLs — edit these or pass URLs as command-line arguments
 # ─────────────────────────────────────────────────────────────────────────────
 DEMO_URLS = [
-    "https://oporadhnama.com/",
+    "https://oporadhnama.info/",
     # Add more URLs here for batch testing, e.g.:
-    # "https://oporadhnama.com/news/some-article-slug/",
+    # "https://oporadhnama.info/news/some-article-slug/",
 ]
 
 

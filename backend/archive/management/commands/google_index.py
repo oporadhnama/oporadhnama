@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 # Construct absolute URLs — adjust base URL as needed
                 from django.conf import settings
 
-                base_url = getattr(settings, "SITE_BASE_URL", "https://oporadhnama.com")
+                base_url = getattr(settings, "SITE_BASE_URL", "https://oporadhnama.info")
                 post_urls = [f"{base_url.rstrip('/')}/news/{slug}/" for slug in posts]
                 self.stdout.write(
                     self.style.SUCCESS(
