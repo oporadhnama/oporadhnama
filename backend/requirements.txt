@@ -11,3 +11,5 @@ whitenoise==6.5.0
 django-cloudinary-storage==0.3.0
 cloudinary==1.36.0
 python-dotenv==1.0.1
+# Google Indexing API
+google-auth>=2.56.0

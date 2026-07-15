@@ -10,19 +10,33 @@ export const metadata = {
   // metadataBase is required so Next.js can resolve relative OG image URLs
   metadataBase: new URL('https://oporadhnama.info'),
   title: {
-    default: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+    default: 'অপরাধনামা | দেশ ও দশের সংবাদ',
     template: '%s | অপরাধনামা',
   },
   description:
-    'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    'অপরাধনামা — দেশ ও দশের সংবাদ। বাংলাদেশের রাজনীতি, অপরাধ, বিশ্লেষণ ও অনুসন্ধানী সাংবাদিকতার বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।',
   keywords: [
+    // ── Brand ──────────────────────────────────────────────────────────
     'অপরাধনামা',
+    'oporadhnama',
+    'oporadhnama news',
+    'অপরাধনামা সংবাদ',
+    // ── Broad news – competes with Sun News / BD24 etc ─────────────────
+    'বাংলাদেশ সংবাদ',
+    'বাংলাদেশের সর্বশেষ সংবাদ',
+    'bangla news',
+    'bangladesh news',
+    'bd news today',
+    'সর্বশেষ সংবাদ বাংলাদেশ',
+    'আজকের সংবাদ',
+    'দৈনিক সংবাদ',
+    'national news bangladesh',
+    'online news bangladesh',
+    // ── Crime / investigation ───────────────────────────────────────────
     'বাংলাদেশ অপরাধ সংবাদ',
     'crime news bangladesh',
     'bangla crime news',
     'অপরাধ বার্তা',
-    'বাংলাদেশ সংবাদ',
-    'আন্তর্জাতিক',
     'dhaka crime',
     'চট্টগ্রাম অপরাধ',
     'রাজশাহী অপরাধ',
@@ -30,12 +44,21 @@ export const metadata = {
     'হত্যা মামলা',
     'ডাকাতি সংবাদ',
     'মাদক সংবাদ',
+    'bangladesh crime report',
+    'latest crime news bangladesh',
+    'অনুসন্ধানী সাংবাদিকতা',
+    'investigative journalism bangladesh',
+    // ── Politics / current affairs ──────────────────────────────────────
+    'রাজনীতি সংবাদ',
+    'বাংলাদেশ রাজনীতি',
+    'bangladesh politics news',
+    'সরকারি সংবাদ',
+    'সংসদ সংবাদ',
+    // ── July revolution ────────────────────────────────────────────────
     'জুলাই বিপ্লব',
     'শহীদ স্মরণ',
     'গণহত্যা বিচার',
-    'bangladesh crime report',
-    'latest crime news bangladesh',
-    'oporadhnama news',
+    'আন্তর্জাতিক',
   ],
   authors: [{ name: 'অপরাধনামা', url: 'https://oporadhnama.info' }],
   robots: {
@@ -46,15 +69,19 @@ export const metadata = {
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
+      'max-video-preview': -1,
     },
   },
   alternates: {
     canonical: 'https://oporadhnama.info',
+    languages: {
+      'bn-BD': 'https://oporadhnama.info',
+    },
   },
   openGraph: {
-    title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+    title: 'অপরাধনামা | দেশ ও দশের সংবাদ',
     description:
-      'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+      'অপরাধনামা — দেশ ও দশের সংবাদ। বাংলাদেশের রাজনীতি, অপরাধ, বিশ্লেষণ ও অনুসন্ধানী সাংবাদিকতার বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।',
     url: 'https://oporadhnama.info',
     siteName: 'অপরাধনামা',
     images: [
@@ -62,7 +89,7 @@ export const metadata = {
         url: '/og-image.jpg',   // resolved relative to metadataBase
         width: 1200,
         height: 630,
-        alt: 'অপরাধনামা - বাংলাদেশের অপরাধভিত্তিক সংবাদ',
+        alt: 'অপরাধনামা - দেশ ও দশের সংবাদ',
       },
     ],
     locale: 'bn_BD',
@@ -72,9 +99,9 @@ export const metadata = {
     card: 'summary_large_image',
     site: '@oporadhnama',
     creator: '@oporadhnama',
-    title: 'অপরাধনামা | বাংলাদেশের অপরাধ সংবাদ',
+    title: 'অপরাধনামা | দেশ ও দশের সংবাদ',
     description:
-      'অপরাধনামা — বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+      'অপরাধনামা — দেশ ও দশের সংবাদ। বাংলাদেশের রাজনীতি, অপরাধ ও অনুসন্ধানী প্রতিবেদনের বিশ্বস্ত প্ল্যাটফর্ম।',
     images: ['/og-image.jpg'],
   },
   manifest: '/site.webmanifest',
@@ -95,7 +122,7 @@ export default function RootLayout({ children }) {
     '@context': 'https://schema.org',
     '@type': 'NewsMediaOrganization',
     name: 'অপরাধনামা',
-    alternateName: 'Oporadhnama',
+    alternateName: ['Oporadhnama', 'অপরাধনামা নিউজ', 'Oporadhnama News'],
     url: 'https://oporadhnama.info',
     logo: {
       '@type': 'ImageObject',
@@ -103,13 +130,26 @@ export default function RootLayout({ children }) {
       width: 600,
       height: 60,
     },
-    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    description:
+      'অপরাধনামা — দেশ ও দশের সংবাদ। বাংলাদেশের রাজনীতি, অপরাধ, বিচার ও অনুসন্ধানী সাংবাদিকতার বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।',
+    slogan: 'দেশ ও দশের সংবাদ',
     inLanguage: 'bn',
     foundingDate: '2024',
+    publishingPrinciples: 'https://oporadhnama.info/about',
     areaServed: {
       '@type': 'Country',
       name: 'Bangladesh',
     },
+    knowsAbout: [
+      'Bangladesh Crime News',
+      'অপরাধ সংবাদ',
+      'রাজনীতি সংবাদ',
+      'Bangladesh Politics',
+      'Investigative Journalism',
+      'অনুসন্ধানী সাংবাদিকতা',
+      'জুলাই বিপ্লব',
+      'Bangladesh Current Affairs',
+    ],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'editorial',

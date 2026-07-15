@@ -6,6 +6,13 @@ frontend/.env
 frontend/.env.*
 !frontend/.env.example
 
+# Google service account key — NEVER commit this
+service-account.json
+service-account.json.json
+service-accoun.json
+backend/service-account.json
+backend/service-account.json.json
+
 # Python artifacts
 __pycache__/
 *.py[cod]

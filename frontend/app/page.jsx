@@ -42,8 +42,9 @@ export default async function HomePage() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'অপরাধনামা',
+    alternateName: ['Oporadhnama', 'অপরাধনামা নিউজ', 'দেশ ও দশের সংবাদ'],
     url: 'https://oporadhnama.info',
-    description: 'বাংলাদেশের অপরাধভিত্তিক সংবাদ, বিশ্লেষণ ও তথ্যচিত্রের বিশ্বস্ত প্ল্যাটফর্ম।',
+    description: 'অপরাধনামা — দেশ ও দশের সংবাদ। বাংলাদেশের রাজনীতি, অপরাধ, বিশ্লেষণ ও অনুসন্ধানী সাংবাদিকতার বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।',
     inLanguage: 'bn',
     potentialAction: {
       '@type': 'SearchAction',

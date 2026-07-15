@@ -21,7 +21,7 @@ export default function HeroSection() {
       <div className="animate-fade-in-up mb-4">
         <span className="inline-flex items-center gap-2 text-[11px] md:text-xs font-semibold tracking-wider uppercase px-3.5 py-1 rounded-full bg-[#006A4E]/10 border border-[#006A4E]/25 text-[#00A676]">
           <span className="w-2 h-2 rounded-full bg-[#00A676] animate-pulse" />
-          বাংলাদেশের বিশ্বস্ত সংবাদমাধ্যম
+          দেশ ও দশের সংবাদ
         </span>
       </div>
 

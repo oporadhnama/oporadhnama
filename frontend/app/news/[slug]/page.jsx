@@ -95,10 +95,13 @@ export async function generateMetadata({ params }) {
     keywords: [
       post.category_name,
       post.division,
+      post.location_text,
       'অপরাধনামা',
+      'বাংলাদেশ সংবাদ',
       'বাংলাদেশ অপরাধ সংবাদ',
       'crime news bangladesh',
-      post.location_text,
+      'bangladesh news',
+      'oporadhnama',
     ].filter(Boolean),
     authors: [{ name: post.author_name || 'অপরাধনামা' }],
     alternates: {
@@ -198,7 +201,16 @@ export default async function NewsDetailPage({ params }) {
     dateModified: post.updated_at || post.created_at || post.date,
     url: `${SITE_URL}/news/${post.slug || slug}`,
     image: imageUrl ? [imageUrl] : [`${SITE_URL}/og-image.jpg`],
-    keywords: [post.category_name, post.division, 'অপরাধনামা', 'বাংলাদেশ অপরাধ সংবাদ']
+    keywords: [
+      post.category_name,
+      post.division,
+      post.location_text,
+      'অপরাধনামা',
+      'বাংলাদেশ সংবাদ',
+      'বাংলাদেশ অপরাধ সংবাদ',
+      'crime news bangladesh',
+      'bangladesh news',
+    ]
       .filter(Boolean)
       .join(', '),
     author: {
