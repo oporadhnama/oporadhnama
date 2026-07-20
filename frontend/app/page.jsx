@@ -1,9 +1,6 @@
 import HeroSection from '../components/HeroSection';
-import TributeHero from '../components/TributeHero';
-import JulyQuotesBanner from '../components/JulyQuotesBanner';
-import StatsCounter from '../components/StatsCounter';
-import NewsMarquee from '../components/NewsMarquee';
-import { fetchCategories, fetchPosts, fetchPublicStats, fetchActiveCampaign } from '../lib/api';
+import NewsFeed from '../components/NewsFeed';
+import { fetchCategories, fetchPosts } from '../lib/api';
 
 export const revalidate = 60;
 
@@ -15,28 +12,14 @@ export const metadata = {
   },
 };
 
-function normalizeStats(data) {
-  if (!data || typeof data !== 'object' || Array.isArray(data)) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(data).map(([key, value]) => [key, Number.isFinite(Number(value)) ? Number(value) : 0])
-  );
-}
-
 export default async function HomePage() {
-  const [statsResult, categoriesResult, postsResult, campaignResult] = await Promise.allSettled([
-    fetchPublicStats({ next: { revalidate: 60 } }),
+  const [categoriesResult, postsResult] = await Promise.allSettled([
     fetchCategories({ next: { revalidate: 60 } }),
-    fetchPosts('limit=12', { next: { revalidate: 60 } }),
-    fetchActiveCampaign({ next: { revalidate: 60 } }),
+    fetchPosts('limit=13', { next: { revalidate: 60 } }),
   ]);
 
-  const initialStats = statsResult.status === 'fulfilled' ? normalizeStats(statsResult.value) : {};
   const initialCategories = categoriesResult.status === 'fulfilled' ? categoriesResult.value : [];
   const initialPosts = postsResult.status === 'fulfilled' ? postsResult.value.results || [] : [];
-  const activeCampaign = campaignResult.status === 'fulfilled' ? campaignResult.value : { active: false };
 
   const websiteJsonLd = {
     '@context': 'https://schema.org',
@@ -62,19 +45,11 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      {activeCampaign?.active ? (
-        <>
-          <TributeHero campaign={activeCampaign} />
-          <JulyQuotesBanner />
-        </>
-      ) : (
-        <HeroSection />
-      )}
-      <StatsCounter
-        initialCounts={initialStats}
+      <HeroSection />
+      <NewsFeed
+        initialPosts={initialPosts}
         initialCategories={initialCategories}
       />
-      <NewsMarquee initialPosts={initialPosts} />
     </>
   );
 }

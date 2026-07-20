@@ -21,7 +21,7 @@ export default function HeroSection() {
       <div className="animate-fade-in-up mb-4">
         <span className="inline-flex items-center gap-2 text-[11px] md:text-xs font-semibold tracking-wider uppercase px-3.5 py-1 rounded-full bg-[#006A4E]/10 border border-[#006A4E]/25 text-[#00A676]">
           <span className="w-2 h-2 rounded-full bg-[#00A676] animate-pulse" />
-          দেশ ও দশের সংবাদ
+          বাংলাদেশের বিশ্বস্ত সংবাদমাধ্যম
         </span>
       </div>
 
@@ -41,7 +41,7 @@ export default function HeroSection() {
 
       {/* ── Sub-headline ── */}
       <p className="text-[#94A3B8] text-xs md:text-base mt-2 md:mt-3 max-w-2xl leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        অপরাধ বিশ্লেষণ • আন্তর্জাতিক কূটনীতি • পডকাস্ট • বিশেষ প্রতিবেদন — বাংলাদেশের সকল সত্য এক প্ল্যাটফর্মে
+        অপরাধ বিশ্লেষণ • রাজনৈতিক সংবাদ • আন্তর্জাতিক কূটনীতি • অনুসন্ধানী প্রতিবেদন — বাংলাদেশের সকল সত্য এক প্ল্যাটফর্মে
       </p>
 
       {/* ── Search Bar ── */}

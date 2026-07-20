@@ -238,3 +238,183 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* ── Newspaper Portal Styles ─────────────────────────────────────────────── */
+
+/* Dark newsprint textured background */
+.newspaper-bg {
+  background-color: #0d0d0d;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.012) 40px,
+      rgba(255, 255, 255, 0.012) 41px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.008) 40px,
+      rgba(255, 255, 255, 0.008) 41px
+    );
+}
+
+/* Classic newspaper double-line divider */
+.newspaper-divider {
+  position: relative;
+  height: 3px;
+  background: transparent;
+  margin: 0;
+  border: none;
+}
+
+.newspaper-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(229, 9, 20, 0.5) 15%,
+    rgba(229, 9, 20, 0.7) 50%,
+    rgba(229, 9, 20, 0.5) 85%,
+    transparent 100%
+  );
+}
+
+.newspaper-divider::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(229, 9, 20, 0.25) 15%,
+    rgba(229, 9, 20, 0.4) 50%,
+    rgba(229, 9, 20, 0.25) 85%,
+    transparent 100%
+  );
+}
+
+/* Vertical column rule between featured sections */
+.column-rule {
+  position: relative;
+}
+
+.column-rule::after {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  right: 0;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(229, 9, 20, 0.3) 20%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(229, 9, 20, 0.3) 80%,
+    transparent 100%
+  );
+}
+
+/* Section heading with newspaper underline */
+.section-headline {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+.section-headline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    #E50914 0%,
+    #E50914 40%,
+    rgba(229, 9, 20, 0.3) 100%
+  );
+}
+
+/* News card hover lift */
+.news-card {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(229, 9, 20, 0.15);
+}
+
+/* Stagger animation for news grid */
+@keyframes newsCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.news-grid-stagger > * {
+  opacity: 0;
+  animation: newsCardIn 0.5s ease-out forwards;
+}
+
+.news-grid-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.news-grid-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.news-grid-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.news-grid-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.news-grid-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.news-grid-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.news-grid-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.news-grid-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+.news-grid-stagger > *:nth-child(9) { animation-delay: 0.45s; }
+
+/* Category pill active ring */
+.category-pill {
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Thin horizontal rule for news sections */
+.thin-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  );
+}
+
+/* Scrollbar hide for category ribbon */
+.category-ribbon::-webkit-scrollbar {
+  display: none;
+}
+
+.category-ribbon {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
