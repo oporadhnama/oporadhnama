@@ -12,11 +12,14 @@ BEFORE RUNNING:
        .venv/Scripts/python migrate_to_aiven.py
 """
 
+import os
 import psycopg
 
-# ─── FILL THIS IN ─────────────────────────────────────────────────────────────
-NEON_URL  = "postgresql://neondb_owner:npg_yiThNWwDYz37@ep-rough-king-aocecyud-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-AIVEN_URL = "postgres://avnadmin:REDACTED@pg-137778cf-oporadhnamabd-d849.e.aivencloud.com:25387/defaultdb?sslmode=require"
+# ─── CONFIGURATION ────────────────────────────────────────────────────────────
+# Set NEON_URL and AIVEN_URL in your environment or replace placeholders below:
+NEON_URL  = os.environ.get("NEON_URL", "PASTE_YOUR_NEON_DATABASE_URL_HERE")
+AIVEN_URL = os.environ.get("AIVEN_URL", "PASTE_YOUR_AIVEN_DATABASE_URL_HERE")
+
 
 
 
@@ -98,17 +101,18 @@ def sync_sequences(src_conn, dst_conn):
 
 
 def main():
-    if NEON_URL == "PASTE_YOUR_NEON_DATABASE_URL_HERE":
-        print("ERROR: Please paste your Neon DATABASE_URL into the NEON_URL variable in this script.")
+    if NEON_URL == "PASTE_YOUR_NEON_DATABASE_URL_HERE" or AIVEN_URL == "PASTE_YOUR_AIVEN_DATABASE_URL_HERE":
+        print("ERROR: Please set NEON_URL and AIVEN_URL environment variables or update the placeholders in migrate_to_aiven.py.")
         return
+
 
     print("==> Connecting to Neon (source)...")
     src_conn = psycopg.connect(NEON_URL)
-    print("    Connected to Neon ✓")
+    print("    Connected to Neon [OK]")
 
     print("==> Connecting to Aiven (destination)...")
     dst_conn = psycopg.connect(AIVEN_URL)
-    print("    Connected to Aiven ✓\n")
+    print("    Connected to Aiven [OK]\n")
 
     tables = get_tables(src_conn)
     print(f"==> Found {len(tables)} tables to migrate: {tables}\n")
@@ -135,7 +139,7 @@ def main():
     if failed:
         print(f"    Failed tables (retry manually): {failed}")
     else:
-        print(f"    All tables migrated successfully ✓")
+        print(f"    All tables migrated successfully [OK]")
     print(f"{'='*50}")
     print("\nNEXT STEP: Update DATABASE_URL on Render to use your Aiven URL.")
 
