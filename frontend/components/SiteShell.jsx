@@ -4,19 +4,10 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import MaintenanceWall from './MaintenanceWall';
-
 // ── SiteShell ─────────────────────────────────────────────────────────────────
 export default function SiteShell({ children }) {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
-
-  // Maintenance mode active unless NEXT_PUBLIC_MAINTENANCE_MODE is explicitly set to 'false'
-  const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE !== 'false';
-
-  if (isMaintenanceMode && !isAdminRoute) {
-    return <MaintenanceWall />;
-  }
 
   if (isAdminRoute) {
     return <>{children}</>;
