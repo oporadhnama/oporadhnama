@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
+import NewsFeedSkeleton from './NewsFeedSkeleton';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -361,14 +362,7 @@ export default function NewsFeed({ initialPosts = [], initialCategories = [] }) 
   }, [initialCategories]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center py-16 w-full">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-700 border-t-[#E50914]" />
-          <span className="text-neutral-500 text-sm">সংবাদ লোড হচ্ছে...</span>
-        </div>
-      </div>
-    );
+    return <NewsFeedSkeleton />;
   }
 
   if (posts.length === 0) {
