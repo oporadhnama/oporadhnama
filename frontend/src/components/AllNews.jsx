@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
+import { fetchPosts, fetchCategories, resolveImageUrl, stripHtml } from '../api';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -61,16 +61,16 @@ function getCategoryPalette(categoryName, index) {
 
 function SkeletonCard() {
   return (
-    <div className="animate-pulse bg-neutral-900/60 rounded-xl p-6 border border-neutral-800 flex flex-col justify-between min-h-[200px]">
+    <div className="animate-pulse bg-white rounded-xl p-6 border border-gray-100 flex flex-col justify-between min-h-[200px]">
       <div>
-        <div className="h-3 w-16 bg-neutral-800 rounded mb-3" />
-        <div className="h-5 w-full bg-neutral-800 rounded mb-2" />
-        <div className="h-4 w-4/5 bg-neutral-800 rounded mb-1" />
-        <div className="h-4 w-3/5 bg-neutral-800 rounded mb-4" />
+        <div className="h-3 w-16 bg-gray-200 rounded mb-3" />
+        <div className="h-5 w-full bg-gray-200 rounded mb-2" />
+        <div className="h-4 w-4/5 bg-gray-200 rounded mb-1" />
+        <div className="h-4 w-3/5 bg-gray-200 rounded mb-4" />
       </div>
-      <div className="pt-3 border-t border-neutral-800 flex justify-between items-center">
-        <div className="h-3 w-24 bg-neutral-800 rounded" />
-        <div className="h-3 w-20 bg-neutral-800 rounded" />
+      <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
+        <div className="h-3 w-24 bg-gray-200 rounded" />
+        <div className="h-3 w-20 bg-gray-200 rounded" />
       </div>
     </div>
   );
@@ -82,8 +82,8 @@ function EmptyState({ onClear, hasFilters }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <span className="text-6xl mb-4 select-none" aria-hidden="true">🔍</span>
-      <h3 className="text-lg font-semibold text-neutral-300 mb-2">কোনো সংবাদ পাওয়া যায়নি</h3>
-      <p className="text-neutral-500 text-sm max-w-sm leading-relaxed">
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">কোনো সংবাদ পাওয়া যায়নি</h3>
+      <p className="text-gray-500 text-sm max-w-sm leading-relaxed">
         {hasFilters
           ? 'আপনার ফিল্টার পরিবর্তন করে আবার চেষ্টা করুন, অথবা সব ফিল্টার মুছুন।'
           : 'এই মুহূর্তে কোনো সংবাদ নেই।'}
@@ -218,19 +218,19 @@ export default function AllNews() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-6xl mx-auto">
+    <div className="min-h-screen bg-[#FAFAFA] text-gray-900 pt-28 px-6 w-full max-w-6xl mx-auto">
       <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">
         সকল <span className="text-[#E50914]">সংবাদ</span>
       </h1>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-10 p-5 bg-neutral-900/60 rounded-xl border border-neutral-800">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-10 p-5 bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="flex flex-col gap-1">
-          <label className="text-neutral-400 text-xs font-medium">ক্যাটেগরি</label>
+          <label className="text-gray-500 text-xs font-medium">ক্যাটেগরি</label>
           <select
             value={categoryId}
             onChange={(e) => updateSearchParam('category', e.target.value)}
-            className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#E50914] transition-colors min-w-[180px] cursor-pointer"
+            className="bg-white text-gray-900 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#E50914] transition-colors min-w-[180px] cursor-pointer"
           >
             <option value="">সব ক্যাটেগরি</option>
             {categories.map(category => (
@@ -240,11 +240,11 @@ export default function AllNews() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-neutral-400 text-xs font-medium">বিভাগ</label>
+          <label className="text-gray-500 text-xs font-medium">বিভাগ</label>
           <select
             value={division}
             onChange={(e) => updateSearchParam('division', e.target.value)}
-            className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#E50914] transition-colors min-w-[180px] cursor-pointer"
+            className="bg-white text-gray-900 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#E50914] transition-colors min-w-[180px] cursor-pointer"
           >
             <option value="">সকল বিভাগ</option>
             {divisions.map(div => (
@@ -254,12 +254,12 @@ export default function AllNews() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-neutral-400 text-xs font-medium">তারিখ</label>
+          <label className="text-gray-500 text-xs font-medium">তারিখ</label>
           <input
             type="date"
             value={date}
             onChange={(e) => updateSearchParam('date', e.target.value)}
-            className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#E50914] transition-colors min-w-[180px] cursor-pointer"
+            className="bg-white text-gray-900 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#E50914] transition-colors min-w-[180px] cursor-pointer"
           />
         </div>
 
@@ -275,7 +275,7 @@ export default function AllNews() {
 
       {/* Results count */}
       {!loading && !error && posts.length > 0 && (
-        <p className="text-neutral-500 text-sm mb-6 text-center">
+        <p className="text-gray-500 text-sm mb-6 text-center">
           {totalCount.toLocaleString('bn-BD')}টি সংবাদ পাওয়া গেছে
         </p>
       )}
@@ -319,24 +319,21 @@ export default function AllNews() {
               <Link
                 key={post.id}
                 href={`/news/${post.slug || post.id}`}
-                className="bg-neutral-900/60 rounded-xl overflow-hidden border hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between group"
+                className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between group"
                 aria-label={`সংবাদ পড়ুন: ${post.title}`}
                 style={{
                   borderLeft: `4px solid ${palette.border}`,
-                  borderTop: '1px solid rgba(255,255,255,0.08)',
-                  borderRight: '1px solid rgba(255,255,255,0.08)',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
                 {imgUrl ? (
-                  <div className="relative aspect-[16/9] overflow-hidden bg-neutral-950">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
                     <img
                       src={imgUrl}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   </div>
                 ) : null}
 
@@ -351,19 +348,19 @@ export default function AllNews() {
                       </span>
                     )}
 
-                    <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2 group-hover:text-[#D62828] transition-colors">
+                    <h3 className="text-gray-900 font-bold text-base leading-snug line-clamp-2 mb-2 group-hover:text-[#D62828] transition-colors">
                       {post.title}
                     </h3>
 
-                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4">
-                      {post.description}
+                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-4">
+                      {stripHtml(post.description)}
                     </p>
                   </div>
 
-                <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
                   <div className="flex flex-col">
-                    <span className="text-neutral-500 text-xs">{formatBengaliDate(post.date)}</span>
-                    <span className="text-neutral-600 text-[10px]">{(post.location_text || post.division) && `স্থান: ${[post.location_text, post.division].filter(Boolean).join(', ')}`}</span>
+                    <span className="text-gray-500 text-xs">{formatBengaliDate(post.date)}</span>
+                    <span className="text-gray-400 text-[10px]">{(post.location_text || post.division) && `স্থান: ${[post.location_text, post.division].filter(Boolean).join(', ')}`}</span>
                   </div>
                   <span className="text-xs font-bold hover:underline transition-all duration-200" style={{ color: palette.color }}>
                     বিস্তারিত পড়ুন →
@@ -380,7 +377,7 @@ export default function AllNews() {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-600 disabled:opacity-40 disabled:hover:border-neutral-800 disabled:cursor-not-allowed text-neutral-300 hover:text-white transition-all duration-200"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-white border border-gray-200 hover:border-gray-400 disabled:opacity-40 disabled:hover:border-gray-200 disabled:cursor-not-allowed text-gray-700 hover:text-gray-900 transition-all duration-200"
             >
               ← পূর্ববর্তী
             </button>
@@ -388,7 +385,7 @@ export default function AllNews() {
             {getPageNumbers().map((pageNum, idx) => {
               if (pageNum === '...') {
                 return (
-                  <span key={`ellipse-${idx}`} className="px-3 py-2 text-neutral-500 select-none">
+                  <span key={`ellipse-${idx}`} className="px-3 py-2 text-gray-500 select-none">
                     ...
                   </span>
                 );
@@ -400,7 +397,7 @@ export default function AllNews() {
                   className={`w-10 h-10 text-sm font-bold rounded-lg transition-all duration-200 ${
                     page === pageNum
                       ? 'bg-[#E50914] text-white shadow-lg shadow-[#E50914]/25'
-                      : 'bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-400'
                   }`}
                 >
                   {pageNum.toLocaleString('bn-BD', { useGrouping: false })}
@@ -411,7 +408,7 @@ export default function AllNews() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-600 disabled:opacity-40 disabled:hover:border-neutral-800 disabled:cursor-not-allowed text-neutral-300 hover:text-white transition-all duration-200"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-white border border-gray-200 hover:border-gray-400 disabled:opacity-40 disabled:hover:border-gray-200 disabled:cursor-not-allowed text-gray-700 hover:text-gray-900 transition-all duration-200"
             >
               পরবর্তী →
             </button>

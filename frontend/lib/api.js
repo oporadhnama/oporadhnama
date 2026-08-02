@@ -26,6 +26,11 @@ export function resolveImageUrl(image) {
   return `${API_BASE}${path}`;
 }
 
+export function stripHtml(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '');
+}
+
 async function fetchJson(path, options = {}) {
   const defaultCache = (options.cache || (options.next && options.next.revalidate !== undefined)) ? undefined : 'no-store';
   const res = await fetch(`${API_BASE}${path}`, {
