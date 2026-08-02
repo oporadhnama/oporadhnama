@@ -17,8 +17,8 @@ import psycopg
 
 # ─── CONFIGURATION ────────────────────────────────────────────────────────────
 # Set NEON_URL and AIVEN_URL in your environment or replace placeholders below:
-NEON_URL  = os.environ.get("NEON_URL", "PASTE_YOUR_NEON_DATABASE_URL_HERE")
-AIVEN_URL = os.environ.get("AIVEN_URL", "PASTE_YOUR_AIVEN_DATABASE_URL_HERE")
+NEON_URL  = os.environ.get("NEON_URL", "postgresql://neondb_owner:npg_yiThNWwDYz37@ep-rough-king-aocecyud-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+AIVEN_URL = os.environ.get("AIVEN_URL", "postgres://avnadmin:REDACTED@pg-137778cf-oporadhnamabd-d849.e.aivencloud.com:25387/defaultdb?sslmode=require")
 
 
 
