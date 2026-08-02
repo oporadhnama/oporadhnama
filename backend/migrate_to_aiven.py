@@ -22,7 +22,6 @@ AIVEN_URL = os.environ.get("AIVEN_URL", "postgres://avnadmin:REDACTED@pg-137778c
 
 
 
-
 def get_tables(conn):
     """Return all user table names in the public schema, sorted by dependency."""
     with conn.cursor() as cur:
