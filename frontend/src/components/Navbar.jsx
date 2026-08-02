@@ -52,7 +52,7 @@ export default function Navbar() {
   const isActive = (path) => pathname === path;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex flex-col bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 flex flex-col bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/80 shadow-lg">
       <nav className="flex items-center justify-between px-4 md:px-8 py-3 max-w-7xl mx-auto w-full">
         {/* Main Logo with public/favicon.svg */}
         <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export default function Navbar() {
               className="w-8 h-8 md:w-9 md:h-9 object-contain group-hover:scale-105 transition-transform duration-200"
             />
             <div className="flex items-center">
-              <span className="text-gray-900 font-extrabold">অপরাধ</span>
+              <span className="text-white font-extrabold">অপরাধ</span>
               <span className="text-[#D62828] font-black">নামা</span>
             </div>
           </Link>
@@ -82,7 +82,7 @@ export default function Navbar() {
                 className={`font-semibold transition-colors duration-200 text-sm md:text-base cursor-pointer px-3 py-1.5 border-b-2 flex items-center gap-1.5 ${
                   isActive(link.path)
                     ? 'text-[#D62828] border-[#D62828]'
-                    : 'text-gray-600 hover:text-[#D62828] border-transparent hover:border-[#D62828]/40'
+                    : 'text-neutral-200 hover:text-[#D62828] border-transparent hover:border-[#D62828]/40'
                 }`}
               >
                 {link.label}
@@ -96,7 +96,7 @@ export default function Navbar() {
           {/* Quick Search Button */}
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg text-neutral-300 hover:text-white hover:bg-neutral-800/60 transition-colors"
             aria-label="সংবাদ অনুসন্ধান করুন"
           >
             <Search className="w-5 h-5" />
@@ -105,7 +105,7 @@ export default function Navbar() {
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg text-gray-500 hover:text-amber-500 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg text-neutral-300 hover:text-amber-400 hover:bg-neutral-800/60 transition-colors"
             aria-label="থিম পরিবর্তন করুন"
           >
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -114,7 +114,7 @@ export default function Navbar() {
           {/* Mobile Hamburger */}
           <button
             ref={buttonRef}
-            className="md:hidden p-2 rounded-lg text-gray-900 focus:outline-none hover:bg-gray-100"
+            className="md:hidden p-2 rounded-lg text-white focus:outline-none hover:bg-neutral-800/60"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="নেভিগেশন মেনু"
             aria-expanded={isOpen}
@@ -134,7 +134,7 @@ export default function Navbar() {
 
       {/* Expandable Quick Search Bar */}
       {isSearchOpen && (
-        <div className="bg-gray-50 border-t border-b border-gray-200 px-4 py-3 animate-fadeIn">
+        <div className="bg-neutral-900 border-t border-b border-neutral-800 px-4 py-3 animate-fadeIn">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -144,13 +144,13 @@ export default function Navbar() {
             }}
             className="max-w-3xl mx-auto flex items-center gap-2"
           >
-            <Search className="w-5 h-5 text-gray-400" />
+            <Search className="w-5 h-5 text-neutral-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="সংবাদ, ঘটনা বা স্থান খুঁজুন..."
-              className="w-full bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-sm md:text-base px-2 py-1"
+              className="w-full bg-transparent text-white placeholder-neutral-500 focus:outline-none text-sm md:text-base px-2 py-1"
               autoFocus
             />
             <button
@@ -172,7 +172,7 @@ export default function Navbar() {
           />
           <div
             ref={menuRef}
-            className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 z-40 shadow-xl animate-[slideDown_0.2s_ease-out]"
+            className="md:hidden absolute top-full left-0 right-0 bg-neutral-950 border-b border-neutral-800 z-40 shadow-2xl animate-[slideDown_0.2s_ease-out]"
           >
             <ul className="flex flex-col py-3 px-4 gap-1">
               {links.map((link, idx) => {
@@ -184,7 +184,7 @@ export default function Navbar() {
                       className={`flex items-center gap-3 py-3 px-4 rounded-lg font-medium text-sm transition-colors ${
                         isActive(link.path)
                           ? 'text-[#D62828] bg-[#D62828]/10 font-bold'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                       }`}
                       onClick={() => setIsOpen(false)}
                     >

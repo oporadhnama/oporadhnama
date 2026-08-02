@@ -17,7 +17,7 @@ export default function SiteShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-gray-900 flex flex-col justify-between overflow-x-hidden relative">
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between overflow-x-hidden relative">
       <Navbar />
       
       {/* Ticker on Home Page Only, or all pages? Usually news sites have it on all public pages. */}

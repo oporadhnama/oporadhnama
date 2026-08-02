@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { fetchPosts, fetchCategories, resolveImageUrl, stripHtml } from '../api';
+import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
 import NewsFeedSkeleton from './NewsFeedSkeleton';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ function FeaturedCard({ post }) {
       className="group block h-full"
       aria-label={`পড়ুন: ${post.title || ''}`}
     >
-      <article className="news-card h-full flex flex-col bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <article className="news-card h-full flex flex-col bg-neutral-900/60 rounded-xl border border-neutral-800/60 overflow-hidden">
         {/* Image area */}
         {resolveImageUrl(post.image) ? (
           <div className="relative overflow-hidden aspect-[16/9]">
@@ -140,7 +140,7 @@ function FeaturedCard({ post }) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="eager"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             {post.category_name && (
               <span
                 className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-sm"
@@ -150,13 +150,13 @@ function FeaturedCard({ post }) {
               </span>
             )}
             {/* Time badge */}
-            <span className="absolute bottom-4 left-4 text-[11px] text-white font-medium shadow-sm">
+            <span className="absolute bottom-4 left-4 text-[11px] text-neutral-300 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full">
               {formatRelativeTime(post.date || post.created_at)}
             </span>
           </div>
         ) : (
           <div className="relative aspect-[16/9] bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center">
-            <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-12 h-12 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
             {post.category_name && (
@@ -172,15 +172,15 @@ function FeaturedCard({ post }) {
 
         {/* Content */}
         <div className="flex flex-col flex-grow p-5 md:p-6">
-          <h3 className="text-lg md:text-xl font-bold text-gray-900 leading-snug mb-3 group-hover:text-[#D62828] transition-colors duration-200 line-clamp-3">
+          <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3 group-hover:text-[#D62828] transition-colors duration-200 line-clamp-3">
             {post.title || ''}
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-4 flex-grow">
-            {stripHtml(post.description || '')}
+          <p className="text-sm text-neutral-400 leading-relaxed line-clamp-3 mb-4 flex-grow">
+            {post.description || ''}
           </p>
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between pt-3 border-t border-neutral-800/60">
             <div className="flex flex-col gap-0.5">
-              <span className="text-gray-500 text-xs">
+              <span className="text-neutral-500 text-xs">
                 {formatBengaliDate(post.date || post.created_at)}
               </span>
               {(post.location_text || post.division) && (
@@ -215,7 +215,7 @@ function SideCard({ post, index }) {
       className="group block"
       aria-label={`পড়ুন: ${post.title || ''}`}
     >
-      <article className="news-card flex gap-4 p-4 rounded-lg bg-white border border-gray-100 hover:border-gray-300 hover:shadow-sm">
+      <article className="news-card flex gap-4 p-4 rounded-lg bg-neutral-900/40 border border-neutral-800/40 hover:border-neutral-700/60">
         {/* Thumbnail */}
         {imgUrl ? (
           <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg overflow-hidden">
@@ -227,8 +227,8 @@ function SideCard({ post, index }) {
             />
           </div>
         ) : (
-          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg bg-gray-100 flex items-center justify-center">
-            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg bg-neutral-800/60 flex items-center justify-center">
+            <svg className="w-6 h-6 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
           </div>
@@ -244,10 +244,10 @@ function SideCard({ post, index }) {
               {post.category_name}
             </span>
           )}
-          <h4 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-[#D62828] transition-colors">
+          <h4 className="text-sm font-bold text-neutral-200 leading-snug line-clamp-2 group-hover:text-white transition-colors">
             {post.title || ''}
           </h4>
-          <span className="text-[11px] text-gray-500 mt-1.5">
+          <span className="text-[11px] text-neutral-500 mt-1.5">
             {formatRelativeTime(post.date || post.created_at)}
           </span>
         </div>
@@ -268,7 +268,7 @@ function GridCard({ post, index }) {
       className="group block h-full"
       aria-label={`পড়ুন: ${post.title || ''}`}
     >
-      <article className="news-card h-full flex flex-col bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md">
+      <article className="news-card h-full flex flex-col bg-neutral-900/50 rounded-xl border border-neutral-800/50 overflow-hidden">
         {/* Thumbnail */}
         {post.image ? (
           <div className="relative overflow-hidden aspect-[16/10]">
@@ -278,7 +278,7 @@ function GridCard({ post, index }) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             {post.category_name && (
               <span
                 className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full backdrop-blur-sm"
@@ -289,8 +289,8 @@ function GridCard({ post, index }) {
             )}
           </div>
         ) : (
-          <div className="relative aspect-[16/10] bg-gray-100 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="relative aspect-[16/10] bg-gradient-to-br from-neutral-800/60 to-neutral-900/60 flex items-center justify-center">
+            <svg className="w-8 h-8 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
             {post.category_name && (
@@ -306,14 +306,14 @@ function GridCard({ post, index }) {
 
         {/* Content */}
         <div className="flex flex-col flex-grow p-4">
-          <h4 className="text-sm md:text-base font-bold text-gray-900 leading-snug line-clamp-2 mb-2 group-hover:text-[#D62828] transition-colors">
+          <h4 className="text-sm md:text-base font-bold text-neutral-200 leading-snug line-clamp-2 mb-2 group-hover:text-white transition-colors">
             {post.title || ''}
           </h4>
-          <p className="text-xs text-gray-600 line-clamp-2 mb-3 flex-grow leading-relaxed">
-            {stripHtml(post.description || '')}
+          <p className="text-xs text-neutral-500 line-clamp-2 mb-3 flex-grow leading-relaxed">
+            {post.description || ''}
           </p>
-          <div className="flex items-center justify-between pt-2.5 border-t border-gray-100">
-            <span className="text-[11px] text-gray-500">
+          <div className="flex items-center justify-between pt-2.5 border-t border-neutral-800/40">
+            <span className="text-[11px] text-neutral-500">
               {formatRelativeTime(post.date || post.created_at)}
             </span>
             <span
@@ -368,7 +368,7 @@ export default function NewsFeed({ initialPosts = [], initialCategories = [] }) 
   if (posts.length === 0) {
     return (
       <div className="flex justify-center py-16 w-full">
-        <p className="text-gray-500 text-sm">কোনো সংবাদ পাওয়া যায়নি।</p>
+        <p className="text-neutral-500 text-sm">কোনো সংবাদ পাওয়া যায়নি।</p>
       </div>
     );
   }
@@ -397,7 +397,7 @@ export default function NewsFeed({ initialPosts = [], initialCategories = [] }) 
         <div className="flex items-center gap-3 mb-6">
           <span className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" />
           <h2 className="section-headline font-bold text-lg md:text-xl tracking-wide">
-            <span className="text-gray-900">প্রধান </span>
+            <span className="text-white">প্রধান </span>
             <span className="text-[#E50914]">সংবাদ</span>
           </h2>
         </div>
@@ -428,13 +428,13 @@ export default function NewsFeed({ initialPosts = [], initialCategories = [] }) 
             <div className="flex items-center gap-3">
               <span className="w-2 h-2 rounded-full bg-[#E50914]" />
               <h2 className="section-headline font-bold text-lg md:text-xl tracking-wide">
-                <span className="text-gray-900">সর্বশেষ </span>
+                <span className="text-white">সর্বশেষ </span>
                 <span className="text-[#E50914]">সংবাদ</span>
               </h2>
             </div>
             <Link
               href="/all-news"
-              className="text-xs md:text-sm text-gray-500 hover:text-[#E50914] font-medium transition-colors duration-200 flex items-center gap-1"
+              className="text-xs md:text-sm text-neutral-400 hover:text-[#E50914] font-medium transition-colors duration-200 flex items-center gap-1"
             >
               সব দেখুন
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -456,7 +456,7 @@ export default function NewsFeed({ initialPosts = [], initialCategories = [] }) 
       <div className="max-w-6xl mx-auto px-4 md:px-6 pb-8 pt-2 flex justify-center">
         <Link
           href="/all-news"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700 hover:text-[#E50914] hover:border-[#E50914]/50 hover:bg-[#E50914]/5 transition-all duration-300 shadow-sm hover:shadow-md"
+          className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-sm font-semibold bg-neutral-900/80 border border-neutral-700 text-neutral-300 hover:text-white hover:border-[#E50914]/50 hover:bg-[#E50914]/10 transition-all duration-300 shadow-lg shadow-black/30"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
