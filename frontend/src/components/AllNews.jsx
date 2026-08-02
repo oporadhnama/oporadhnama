@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
+import { fetchPosts, fetchCategories, resolveImageUrl, stripHtml } from '../api';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -356,7 +356,7 @@ export default function AllNews() {
                     </h3>
 
                     <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4">
-                      {post.description}
+                      {stripHtml(post.description)}
                     </p>
                   </div>
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { fetchPosts, fetchCategories } from '../api';
+import { fetchPosts, fetchCategories, stripHtml } from '../api';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -299,7 +299,7 @@ export default function NewsArchive() {
                   {post.title}
                 </h3>
                 <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-grow">
-                  {post.description}
+                  {stripHtml(post.description)}
                 </p>
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
                   <div className="flex flex-col">

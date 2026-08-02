@@ -26,6 +26,11 @@ export function resolveImageUrl(image) {
   return `${API_BASE}${path}`;
 }
 
+export function stripHtml(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '');
+}
+
 /**
  * Core fetch wrapper that injects JWT auth header when available.
  */

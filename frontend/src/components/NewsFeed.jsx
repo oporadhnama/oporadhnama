@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
+import { fetchPosts, fetchCategories, resolveImageUrl, stripHtml } from '../api';
 import NewsFeedSkeleton from './NewsFeedSkeleton';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@ function FeaturedCard({ post }) {
             {post.title || ''}
           </h3>
           <p className="text-sm text-neutral-400 leading-relaxed line-clamp-3 mb-4 flex-grow">
-            {post.description || ''}
+            {stripHtml(post.description || '')}
           </p>
           <div className="flex items-center justify-between pt-3 border-t border-neutral-800/60">
             <div className="flex flex-col gap-0.5">
@@ -310,7 +310,7 @@ function GridCard({ post, index }) {
             {post.title || ''}
           </h4>
           <p className="text-xs text-neutral-500 line-clamp-2 mb-3 flex-grow leading-relaxed">
-            {post.description || ''}
+            {stripHtml(post.description || '')}
           </p>
           <div className="flex items-center justify-between pt-2.5 border-t border-neutral-800/40">
             <span className="text-[11px] text-neutral-500">
