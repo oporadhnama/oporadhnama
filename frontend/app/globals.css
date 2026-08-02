@@ -418,3 +418,45 @@ body {
   scrollbar-width: none;
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Light mode overrides */
+html.light-mode body {
+  background-color: #FFFDF7 !important;
+  color: #1A1A1A !important;
+}
+
+html.light-mode header,
+html.light-mode nav,
+html.light-mode footer {
+  background-color: #F8F5EE !important;
+  border-color: #E2DDD0 !important;
+  color: #1A1A1A !important;
+}
+
+html.light-mode .text-white {
+  color: #1A1A1A !important;
+}
+
+html.light-mode .bg-black {
+  background-color: #FFFDF7 !important;
+}
+
+html.light-mode .bg-neutral-900,
+html.light-mode .bg-neutral-950 {
+  background-color: #F4F0E6 !important;
+}
+
+html.light-mode .border-neutral-800,
+html.light-mode .border-neutral-900 {
+  border-color: #E2DDD0 !important;
+}
+

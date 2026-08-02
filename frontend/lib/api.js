@@ -1,6 +1,31 @@
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://oporadhnama.onrender.com';
 export const API_BASE = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
 
+export function resolveImageUrl(image) {
+  if (!image) return null;
+  if (typeof image !== 'string') return null;
+  const clean = image.trim();
+  if (!clean) return null;
+
+  // Full URL (Cloudinary, S3, or external)
+  if (clean.startsWith('http://') || clean.startsWith('https://')) {
+    return clean;
+  }
+
+  // Cloudinary relative path (e.g. image/upload/... or /image/upload/...)
+  if (clean.startsWith('image/upload/') || clean.startsWith('/image/upload/')) {
+    const rel = clean.startsWith('/') ? clean : `/${clean}`;
+    return `https://res.cloudinary.com${rel}`;
+  }
+
+  // Standard media relative path (e.g. /media/posts/... or posts/...)
+  const path = clean.startsWith('/') ? clean : `/${clean}`;
+  if (!path.startsWith('/media/')) {
+    return `${API_BASE}/media${path}`;
+  }
+  return `${API_BASE}${path}`;
+}
+
 async function fetchJson(path, options = {}) {
   const defaultCache = (options.cache || (options.next && options.next.revalidate !== undefined)) ? undefined : 'no-store';
   const res = await fetch(`${API_BASE}${path}`, {

@@ -4,6 +4,28 @@ const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'htt
 const API_BASE = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
 const isBrowser = typeof window !== 'undefined';
 
+export function resolveImageUrl(image) {
+  if (!image) return null;
+  if (typeof image !== 'string') return null;
+  const clean = image.trim();
+  if (!clean) return null;
+
+  if (clean.startsWith('http://') || clean.startsWith('https://')) {
+    return clean;
+  }
+
+  if (clean.startsWith('image/upload/') || clean.startsWith('/image/upload/')) {
+    const rel = clean.startsWith('/') ? clean : `/${clean}`;
+    return `https://res.cloudinary.com${rel}`;
+  }
+
+  const path = clean.startsWith('/') ? clean : `/${clean}`;
+  if (!path.startsWith('/media/')) {
+    return `${API_BASE}/media${path}`;
+  }
+  return `${API_BASE}${path}`;
+}
+
 /**
  * Core fetch wrapper that injects JWT auth header when available.
  */

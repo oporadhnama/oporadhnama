@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { fetchPosts, fetchCategories } from '../api';
+import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -314,11 +314,12 @@ export default function AllNews() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post, index) => {
               const palette = getCategoryPalette(post.category_name, index);
+              const imgUrl = resolveImageUrl(post.image);
               return (
               <Link
                 key={post.id}
                 href={`/news/${post.slug || post.id}`}
-                className="bg-neutral-900/60 rounded-xl p-6 border hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
+                className="bg-neutral-900/60 rounded-xl overflow-hidden border hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between group"
                 aria-label={`সংবাদ পড়ুন: ${post.title}`}
                 style={{
                   borderLeft: `4px solid ${palette.border}`,
@@ -327,22 +328,37 @@ export default function AllNews() {
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                {post.category_name && (
-                  <span 
-                    className="self-start text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded mb-3"
-                    style={{ color: palette.color, backgroundColor: palette.bg }}
-                  >
-                    {post.category_name}
-                  </span>
-                )}
+                {imgUrl ? (
+                  <div className="relative aspect-[16/9] overflow-hidden bg-neutral-950">
+                    <img
+                      src={imgUrl}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+                  </div>
+                ) : null}
 
-                <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2 hover:text-neutral-200 transition-colors">
-                  {post.title}
-                </h3>
+                <div className="p-5 flex flex-col flex-grow justify-between">
+                  <div>
+                    {post.category_name && (
+                      <span 
+                        className="self-start text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded mb-3 inline-block"
+                        style={{ color: palette.color, backgroundColor: palette.bg }}
+                      >
+                        {post.category_name}
+                      </span>
+                    )}
 
-                <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-grow">
-                  {post.description}
-                </p>
+                    <h3 className="text-white font-bold text-base leading-snug line-clamp-2 mb-2 group-hover:text-[#D62828] transition-colors">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                      {post.description}
+                    </p>
+                  </div>
 
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-neutral-800">
                   <div className="flex flex-col">
@@ -353,9 +369,11 @@ export default function AllNews() {
                     বিস্তারিত পড়ুন →
                   </span>
                 </div>
-              </Link>
-            )})}
-          </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
 
           {/* Pagination Controls */}
           <div className="flex flex-wrap justify-center items-center gap-2 mt-12 py-8 select-none">

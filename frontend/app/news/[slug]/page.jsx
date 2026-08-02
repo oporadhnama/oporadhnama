@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import SensitiveImage from '../../../src/components/SensitiveImage';
-import { API_BASE, fetchPosts } from '../../../lib/api';
+import ArticleShareAndReactions from '../../../src/components/ArticleShareAndReactions';
+import { API_BASE, fetchPosts, resolveImageUrl } from '../../../lib/api';
 
 const SITE_URL = 'https://oporadhnama.info';
 
-// ভিডিও এমবেড ইউআরএল জেনারেটর
 function getEmbedUrl(url) {
   if (!url) return null;
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -16,32 +16,18 @@ function getEmbedUrl(url) {
   return null;
 }
 
-// ইমেজ ইউআরএল জেনারেটর
-function resolveImageUrl(image) {
-  if (!image) return null;
-  return image.startsWith('http') ? image : `${API_BASE}${image}`;
-}
-
-/**
- * Resilient fetch: tries by slug first, falls back to numeric ID if slug is all-digits.
- * This ensures backward-compatibility with old /news/42 links.
- */
 async function getPost(slug) {
   const API = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, '').replace(/\/$/, '')
     || 'https://oporadhnama.onrender.com';
 
-  // Try slug-based endpoint first
   try {
     const res = await fetch(`${API}/api/posts/${slug}/`, { next: { revalidate: 300 } });
     if (res.ok) {
       const post = await res.json();
       if (post && post.title) return post;
     }
-  } catch (_) {
-    // fall through
-  }
+  } catch (_) {}
 
-  // Fallback: if slug looks like a numeric ID, try /api/posts/{id}/
   if (/^\d+$/.test(slug)) {
     try {
       const res = await fetch(`${API}/api/posts/${slug}/`, { next: { revalidate: 300 } });
@@ -49,12 +35,9 @@ async function getPost(slug) {
         const post = await res.json();
         if (post && post.title) return post;
       }
-    } catch (_) {
-      // fall through
-    }
+    } catch (_) {}
   }
 
-  // Last resort: scan the list
   try {
     const listRes = await fetch(`${API}/api/posts/`, { next: { revalidate: 60 } });
     if (listRes.ok) {
@@ -64,16 +47,11 @@ async function getPost(slug) {
         (item) => item.slug === slug || String(item.id) === String(slug)
       ) || null;
     }
-  } catch (_) {
-    // all attempts failed
-  }
+  } catch (_) {}
 
   return null;
 }
 
-// ────────────────────────────────────────────────
-// SEO metadata — dynamic per article
-// ────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await getPost(slug);
@@ -83,7 +61,6 @@ export async function generateMetadata({ params }) {
   }
 
   const imageUrl = resolveImageUrl(post.image);
-  // Rich description: first 155 chars + ellipsis
   const rawDesc = (post.description || '').trim();
   const description = rawDesc.length > 155 ? rawDesc.slice(0, 155) + '…' : rawDesc || 'অপরাধনামার সংবাদ';
   const canonicalSlug = post.slug || slug;
@@ -103,7 +80,7 @@ export async function generateMetadata({ params }) {
       'bangladesh news',
       'oporadhnama',
     ].filter(Boolean),
-    authors: [{ name: post.author_name || 'অপরাধনামা' }],
+    authors: [{ name: post.author_name || 'অপরাধনামা প্রতিবেদক' }],
     alternates: {
       canonical: canonicalUrl,
     },
@@ -131,9 +108,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// ────────────────────────────────────────────────
-// Page component
-// ────────────────────────────────────────────────
 export default async function NewsDetailPage({ params }) {
   const { slug } = await params;
   const post = await getPost(slug);
@@ -142,7 +116,6 @@ export default async function NewsDetailPage({ params }) {
     notFound();
   }
 
-  // Fetch related/other posts for interlinking
   let relatedPosts = [];
   try {
     if (post.category) {
@@ -169,25 +142,19 @@ export default async function NewsDetailPage({ params }) {
   const embedUrl = post.show_video !== false ? getEmbedUrl(post.video_url) : null;
   const rawImageUrl = resolveImageUrl(post.image);
 
-  // Feature 3: Cloudinary CDN optimisation — inject transformation params
-  // w_1200  → resize to 1200 px wide (max detail width)
-  // f_auto  → serve WebP/AVIF where the browser supports it
-  // q_auto  → Cloudinary picks the optimal quality level automatically
-  // Non-Cloudinary URLs (local dev, legacy S3) are returned unchanged.
   function applyCloudinaryTransform(url, transform = 'w_1200,f_auto,q_auto') {
     if (!url || !url.includes('res.cloudinary.com')) return url;
     const marker = '/upload/';
     const idx = url.indexOf(marker);
     if (idx === -1) return url;
     const after = url.slice(idx + marker.length);
-    if (/^(w_|h_|f_|q_|c_)/.test(after)) return url; // already transformed
+    if (/^(w_|h_|f_|q_|c_)/.test(after)) return url;
     return url.slice(0, idx + marker.length) + transform + '/' + after;
   }
 
   const imageUrl = applyCloudinaryTransform(rawImageUrl);
   const isCloudinaryImage = rawImageUrl && rawImageUrl.includes('res.cloudinary.com');
 
-  // Feature 5: Enhanced JSON-LD — NewsArticle schema
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -201,21 +168,9 @@ export default async function NewsDetailPage({ params }) {
     dateModified: post.updated_at || post.created_at || post.date,
     url: `${SITE_URL}/news/${post.slug || slug}`,
     image: imageUrl ? [imageUrl] : [`${SITE_URL}/og-image.jpg`],
-    keywords: [
-      post.category_name,
-      post.division,
-      post.location_text,
-      'অপরাধনামা',
-      'বাংলাদেশ সংবাদ',
-      'বাংলাদেশ অপরাধ সংবাদ',
-      'crime news bangladesh',
-      'bangladesh news',
-    ]
-      .filter(Boolean)
-      .join(', '),
     author: {
       '@type': 'Person',
-      name: post.author_name || 'অপরাধনামা',
+      name: post.author_name || 'অপরাধনামা প্রতিবেদক',
       url: SITE_URL,
     },
     publisher: {
@@ -224,64 +179,62 @@ export default async function NewsDetailPage({ params }) {
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo-publisher.png`,
-        width: 600,
-        height: 60,
+        url: `${SITE_URL}/favicon.svg`,
+        width: 120,
+        height: 120,
       },
     },
     articleSection: post.category_name || 'সংবাদ',
     inLanguage: 'bn',
   };
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'হোম',
-        item: SITE_URL,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'সকল সংবাদ',
-        item: `${SITE_URL}/all-news`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: post.title,
-        item: `${SITE_URL}/news/${post.slug || slug}`,
-      },
-    ],
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white pt-28 px-6 w-full max-w-4xl mx-auto pb-16">
+    <div className="min-h-screen bg-black text-white pt-28 px-4 md:px-6 w-full max-w-4xl mx-auto pb-16">
       {/* Back link */}
-      <Link href="/all-news" className="text-neutral-500 hover:text-[#E50914] text-sm mb-6 inline-block transition-colors">
+      <Link href="/all-news" className="text-neutral-400 hover:text-[#D62828] text-sm mb-6 inline-flex items-center gap-1 transition-colors">
         ← সকল সংবাদে ফিরে যান
       </Link>
 
+      {/* Category Pill */}
+      {post.category_name && (
+        <div className="mb-3">
+          <span className="text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-[#D62828]/15 border border-[#D62828]/40 text-[#D62828]">
+            {post.category_name}
+          </span>
+        </div>
+      )}
+
       {/* Article heading */}
-      <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4">
+      <h1 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
         {post.title}
       </h1>
 
-      {/* Meta row */}
-      <div className="flex flex-wrap gap-4 text-sm text-neutral-500 mb-8 pb-6 border-b border-neutral-800">
-        <span>✍️ {post.author_name || 'অপরাধনামা'}</span>
-        <span>📅 {post.date}</span>
-        <span>📂 {post.category_name}</span>
-        {post.division ? <span>📍 {post.division}</span> : null}
-        {post.location_text ? <span>🏷️ {post.location_text}</span> : null}
+      {/* Meta row & Reporter Profile */}
+      <div className="flex flex-wrap items-center justify-between gap-4 text-xs md:text-sm text-neutral-400 mb-6 pb-6 border-b border-neutral-800">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white font-bold text-xs border border-neutral-700">
+            অ
+          </div>
+          <div>
+            <span className="font-bold text-neutral-200 block">
+              {post.author_name || 'অপরাধনামা প্রতিবেদক'}
+            </span>
+            <span className="text-neutral-500 text-[11px]">অনুসন্ধানী ডেক্স</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-neutral-400">
+          <span>📅 {post.date}</span>
+          {post.division ? <span>📍 {post.division}</span> : null}
+          {post.location_text ? <span>🏷️ {post.location_text}</span> : null}
+        </div>
       </div>
 
-      {/* Feature 3: Featured image — Next.js <Image> for Cloudinary, plain <img> fallback */}
+      {/* Article Share & Reactions Component */}
+      <ArticleShareAndReactions title={post.title} description={post.description} slug={post.slug || slug} />
+
+      {/* Featured image */}
       {imageUrl ? (
-        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800 relative">
+        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800 relative shadow-2xl">
           <SensitiveImage
             src={imageUrl}
             alt={post.title}
@@ -298,7 +251,7 @@ export default async function NewsDetailPage({ params }) {
 
       {/* Embedded video */}
       {embedUrl ? (
-        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800">
+        <div className="mb-8 rounded-xl overflow-hidden border border-neutral-800 shadow-2xl">
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             <iframe
               src={embedUrl}
@@ -314,51 +267,51 @@ export default async function NewsDetailPage({ params }) {
 
       {/* Article body */}
       <div 
-        className="text-neutral-300 text-base leading-relaxed whitespace-pre-line mb-8 article-body"
+        className="text-neutral-200 text-base md:text-lg leading-relaxed whitespace-pre-line mb-8 article-body font-normal"
         dangerouslySetInnerHTML={{ __html: post.description }}
       />
 
       {/* Source link */}
       {post.source_link ? (
-        <div className="mb-6">
+        <div className="mb-8 p-4 rounded-lg bg-neutral-900/60 border border-neutral-800">
           <a
             href={post.source_link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-[#E50914] text-sm font-medium hover:underline"
+            className="inline-flex items-center gap-1.5 text-[#D62828] text-sm font-bold hover:underline"
           >
-            সোর্স লিংক দেখুন →
+            মূল প্রতিবেদন / সোর্স লিংক দেখুন →
           </a>
         </div>
       ) : null}
 
-      {/* Interlinking Section */}
+      {/* Related Posts Section */}
       {relatedPosts && relatedPosts.length > 0 && (
-        <div className="mt-8 pt-6 border-t border-neutral-800">
-          <h3 className="text-lg font-bold text-gray-300 mb-3">আরও পড়ুন:</h3>
-          <ul className="space-y-2">
+        <div className="mt-12 pt-8 border-t border-neutral-800">
+          <h3 className="text-xl font-black text-white mb-4 flex items-center gap-2">
+            <span className="w-2 h-5 bg-[#D62828] rounded-full inline-block"></span>
+            আরও সংবা‌দ:
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {relatedPosts.map((rPost) => (
-              <li key={rPost.id} className="list-disc list-inside text-neutral-400">
-                <Link
-                  href={`/news/${rPost.slug || rPost.id}`}
-                  className="text-blue-500 hover:text-blue-400 hover:underline text-base font-medium transition-colors inline"
-                >
+              <Link
+                key={rPost.id}
+                href={`/news/${rPost.slug || rPost.id}`}
+                className="p-4 rounded-xl bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition-colors group"
+              >
+                <h4 className="text-sm font-bold text-neutral-200 group-hover:text-[#D62828] transition-colors line-clamp-2 mb-2">
                   {rPost.title}
-                </Link>
-              </li>
+                </h4>
+                <span className="text-xs text-neutral-500">{rPost.date}</span>
+              </Link>
             ))}
-          </ul>
+          </div>
         </div>
       )}
 
-      {/* Feature 5: Enhanced JSON-LD structured data for Google News */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </div>
   );

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { fetchPosts, fetchCategories } from '../api';
+import { fetchPosts, fetchCategories, resolveImageUrl } from '../api';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -131,10 +131,10 @@ function FeaturedCard({ post }) {
     >
       <article className="news-card h-full flex flex-col bg-neutral-900/60 rounded-xl border border-neutral-800/60 overflow-hidden">
         {/* Image area */}
-        {post.image ? (
+        {resolveImageUrl(post.image) ? (
           <div className="relative overflow-hidden aspect-[16/9]">
             <img
-              src={post.image}
+              src={resolveImageUrl(post.image)}
               alt={post.title || ''}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="eager"
@@ -171,7 +171,7 @@ function FeaturedCard({ post }) {
 
         {/* Content */}
         <div className="flex flex-col flex-grow p-5 md:p-6">
-          <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3 group-hover:text-[#E50914] transition-colors duration-200 line-clamp-3">
+          <h3 className="text-lg md:text-xl font-bold text-white leading-snug mb-3 group-hover:text-[#D62828] transition-colors duration-200 line-clamp-3">
             {post.title || ''}
           </h3>
           <p className="text-sm text-neutral-400 leading-relaxed line-clamp-3 mb-4 flex-grow">
@@ -206,6 +206,7 @@ function FeaturedCard({ post }) {
 function SideCard({ post, index }) {
   if (!post) return null;
   const palette = getCategoryPalette(post.category_name, index);
+  const imgUrl = resolveImageUrl(post.image);
 
   return (
     <Link
@@ -215,10 +216,10 @@ function SideCard({ post, index }) {
     >
       <article className="news-card flex gap-4 p-4 rounded-lg bg-neutral-900/40 border border-neutral-800/40 hover:border-neutral-700/60">
         {/* Thumbnail */}
-        {post.image ? (
+        {imgUrl ? (
           <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg overflow-hidden">
             <img
-              src={post.image}
+              src={imgUrl}
               alt=""
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               loading="lazy"
