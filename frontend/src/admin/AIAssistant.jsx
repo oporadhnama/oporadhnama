@@ -115,7 +115,7 @@ export default function AIAssistant() {
       router.push('/admin/dashboard/add-news');
     } catch (err) {
       console.error(err);
-      setError('দুঃখিত, অটো ড্রাফট তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      setError('অটো ড্রাফট তৈরি করতে সমস্যা হয়েছে: ' + err.message);
     } finally {
       setIsAutoDrafting(false);
     }
