@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bot, Sparkles, Copy, CheckCircle, AlertCircle, RefreshCw, Send } from 'lucide-react';
+import { fetchCategories } from '../api';
 
 export default function AIAssistant() {
   const [inputText, setInputText] = useState('');
@@ -11,7 +12,14 @@ export default function AIAssistant() {
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isAutoDrafting, setIsAutoDrafting] = useState(false);
+  const [categories, setCategories] = useState([]);
   const router = useRouter();
+
+  useEffect(() => {
+    fetchCategories().then(data => {
+      setCategories(Array.isArray(data) ? data : []);
+    }).catch(console.error);
+  }, []);
 
   const generateNews = async () => {
     if (!inputText.trim()) {
