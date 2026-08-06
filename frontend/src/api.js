@@ -203,8 +203,15 @@ export async function createPost(formData) {
     body: formData,
   });
   if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.detail || JSON.stringify(data));
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await res.json();
+      throw new Error(data.detail || JSON.stringify(data));
+    } else {
+      const text = await res.text();
+      console.error('Server HTML Error:', text);
+      throw new Error('সার্ভার থেকে সঠিক তথ্য পাওয়া যায়নি। সমস্যাটি হচ্ছে: ' + res.status + ' ' + res.statusText);
+    }
   }
   return res.json();
 }
