@@ -140,7 +140,7 @@ export default async function NewsDetailPage({ params }) {
   relatedPosts = relatedPosts.slice(0, 4);
 
   const embedUrl = post.show_video !== false ? getEmbedUrl(post.video_url) : null;
-  const rawImageUrl = resolveImageUrl(post.image);
+  const rawImageUrl = resolveImageUrl(post.image) || '/og-image.jpg';
 
   function applyCloudinaryTransform(url, transform = 'w_1200,f_auto,q_auto') {
     if (!url || !url.includes('res.cloudinary.com')) return url;

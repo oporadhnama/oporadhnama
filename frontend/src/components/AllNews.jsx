@@ -314,7 +314,7 @@ export default function AllNews() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post, index) => {
               const palette = getCategoryPalette(post.category_name, index);
-              const imgUrl = resolveImageUrl(post.image);
+              const imgUrl = resolveImageUrl(post.image) || '/og-image.jpg';
               return (
               <Link
                 key={post.id}
@@ -328,17 +328,15 @@ export default function AllNews() {
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                {imgUrl ? (
-                  <div className="relative aspect-[16/9] overflow-hidden bg-neutral-950">
-                    <img
-                      src={imgUrl}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
-                  </div>
-                ) : null}
+                <div className="relative aspect-[16/9] overflow-hidden bg-neutral-950">
+                  <img
+                    src={imgUrl}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+                </div>
 
                 <div className="p-5 flex flex-col flex-grow justify-between">
                   <div>

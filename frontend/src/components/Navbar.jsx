@@ -43,7 +43,7 @@ export default function Navbar() {
   const links = [
     { label: 'সকল সংবাদ', path: '/all-news', icon: Newspaper },
     { label: 'গ্রাফ', path: '/graphs', icon: BarChart2 },
-    { label: 'পডকাস্ট', path: '/podcast', icon: Radio },
+
     { label: 'তথ্য দিন', path: '/submit', icon: Send },
     { label: 'আমাদের সম্পর্কে', path: '/about', icon: Info },
     { label: 'যোগাযোগ', path: '/contact', icon: Phone },

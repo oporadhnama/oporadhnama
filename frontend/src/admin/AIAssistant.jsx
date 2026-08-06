@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bot, Sparkles, Copy, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Bot, Sparkles, Copy, CheckCircle, AlertCircle, RefreshCw, Send } from 'lucide-react';
 
 export default function AIAssistant() {
   const [inputText, setInputText] = useState('');
@@ -9,6 +10,8 @@ export default function AIAssistant() {
   const [result, setResult] = useState('');
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isAutoDrafting, setIsAutoDrafting] = useState(false);
+  const router = useRouter();
 
   const generateNews = async () => {
     if (!inputText.trim()) {
@@ -58,6 +61,59 @@ export default function AIAssistant() {
     }
   };
 
+  const generateAutoDraft = async () => {
+    if (!inputText.trim()) {
+      setError('দয়া করে কিছু টেক্সট দিন।');
+      return;
+    }
+
+    setIsAutoDrafting(true);
+    setError(null);
+    setResult('');
+    setCopied(false);
+
+    try {
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'auto',
+          messages: [
+            {
+              role: 'system',
+              content: 'তুমি একজন "অপরাধনামা নিউজ এক্সপার্ট"। তোমার কাজ হলো সাধারণ নিউজ থেকে সম্পূর্ণ একটি নিউজ অবজেক্ট JSON ফরম্যাটে তৈরি করা। JSON এ নিচের ফিল্ডগুলো থাকতে হবে:\n- "title": একটি আকর্ষণীয় শিরোনাম\n- "description": কপিরাইট মুক্ত, আকর্ষণীয় নিউজ বিবরণ। লেখায় অবশ্যই HTML ট্যাগ (<b>, <i>, <h3>, <blockquote>, <span class="highlight">) ইন্ডিকেটর হিসেবে ব্যবহার করবে।\n- "category_name": সংবাদের ক্যাটেগরি (যেমন: জাতীয়, আন্তর্জাতিক, রাজনীতি, অপরাধ, ইত্যাদি)\n- "location_text": ঘটনার স্থান\n- "division": বিভাগ (ঢাকা, চট্টগ্রাম, রাজশাহী, খুলনা, বরিশাল, সিলেট, রংপুর, ময়মনসিংহ, বা আন্তর্জাতিক)\n- "seo_keywords": কমা দিয়ে আলাদা করা কিছু গুরুত্বপূর্ণ কিওয়ার্ড (ইংরেজিতে)'
+            },
+            {
+              role: 'user',
+              content: `নিচের নিউজটি বিস্তারিত পড়ে নির্দিষ্ট JSON ফরম্যাটে নিউজ তৈরি করো:\n\n${inputText}`
+            }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+
+      const data = await response.json();
+      let generatedText = data?.choices?.[0]?.message?.content;
+      if (!generatedText) throw new Error('Invalid API response structure');
+      
+      generatedText = generatedText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsedData = JSON.parse(generatedText);
+      
+      sessionStorage.setItem('aiGeneratedNews', JSON.stringify(parsedData));
+      router.push('/admin/dashboard/add-news');
+    } catch (err) {
+      console.error(err);
+      setError('দুঃখিত, অটো ড্রাফট তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    } finally {
+      setIsAutoDrafting(false);
+    }
+  };
+
   const copyToClipboard = () => {
     if (result) {
       navigator.clipboard.writeText(result);
@@ -98,23 +154,42 @@ export default function AIAssistant() {
               <p>{error}</p>
             </div>
           )}
-          <button
-            onClick={generateNews}
-            disabled={loading}
-            className="mt-4 w-full bg-[#E50914] hover:bg-[#E50914]/90 text-white font-medium py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="w-5 h-5 animate-spin" />
-                জেনারেট হচ্ছে...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                নিউজ তৈরি করুন
-              </>
-            )}
-          </button>
+          <div className="flex gap-3 mt-4">
+            <button
+              onClick={generateNews}
+              disabled={loading || isAutoDrafting}
+              className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-medium py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  লিখছে...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  সাধারণ নিউজ
+                </>
+              )}
+            </button>
+            <button
+              onClick={generateAutoDraft}
+              disabled={loading || isAutoDrafting}
+              className="flex-[2] bg-[#E50914] hover:bg-[#E50914]/90 text-white font-medium py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#E50914]/20"
+            >
+              {isAutoDrafting ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  ম্যাজিক ড্রাফট হচ্ছে...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  ওয়ান-ক্লিক অটো ড্রাফট
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex flex-col h-[600px]">

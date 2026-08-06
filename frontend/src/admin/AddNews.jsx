@@ -64,7 +64,47 @@ export default function AddNews() {
   useEffect(() => {
     fetchCategories()
       .then(data => {
-        setCategories(Array.isArray(data) ? data : []);
+        const fetchedCategories = Array.isArray(data) ? data : [];
+        setCategories(fetchedCategories);
+
+        const aiDataStr = sessionStorage.getItem('aiGeneratedNews');
+        if (aiDataStr) {
+          try {
+            const aiData = JSON.parse(aiDataStr);
+            let categoryId = '';
+            let newCatName = '';
+            
+            if (aiData.category_name) {
+              const matchedCat = fetchedCategories.find(
+                c => c.name.trim().toLowerCase() === aiData.category_name.trim().toLowerCase()
+              );
+              if (matchedCat) {
+                categoryId = matchedCat.id;
+              } else {
+                categoryId = 'new_custom';
+                newCatName = aiData.category_name;
+              }
+            }
+
+            setForm(prev => ({
+              ...prev,
+              title: aiData.title || prev.title,
+              description: aiData.description || prev.description,
+              category: categoryId || prev.category,
+              location_text: aiData.location_text || prev.location_text,
+              division: aiData.division || prev.division,
+              seo_keywords: aiData.seo_keywords || prev.seo_keywords,
+            }));
+            
+            if (newCatName) {
+              setNewCategoryName(newCatName);
+            }
+          } catch (e) {
+            console.error('Failed to parse AI generated news', e);
+          } finally {
+            sessionStorage.removeItem('aiGeneratedNews');
+          }
+        }
       })
       .catch(() => {});
   }, []);

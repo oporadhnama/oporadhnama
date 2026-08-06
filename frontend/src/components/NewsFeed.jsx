@@ -132,43 +132,27 @@ function FeaturedCard({ post }) {
     >
       <article className="news-card h-full flex flex-col bg-neutral-900/60 rounded-xl border border-neutral-800/60 overflow-hidden">
         {/* Image area */}
-        {resolveImageUrl(post.image) ? (
-          <div className="relative overflow-hidden aspect-[16/9]">
-            <img
-              src={resolveImageUrl(post.image)}
-              alt={post.title || ''}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="eager"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-            {post.category_name && (
-              <span
-                className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-sm"
-                style={{ color: palette.color, backgroundColor: `${palette.bg}`, border: `1px solid ${palette.border}44` }}
-              >
-                {post.category_name}
-              </span>
-            )}
-            {/* Time badge */}
-            <span className="absolute bottom-4 left-4 text-[11px] text-neutral-300 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full">
-              {formatRelativeTime(post.date || post.created_at)}
+        <div className="relative overflow-hidden aspect-[16/9]">
+          <img
+            src={resolveImageUrl(post.image) || '/og-image.jpg'}
+            alt={post.title || ''}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+          {post.category_name && (
+            <span
+              className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-sm"
+              style={{ color: palette.color, backgroundColor: `${palette.bg}`, border: `1px solid ${palette.border}44` }}
+            >
+              {post.category_name}
             </span>
-          </div>
-        ) : (
-          <div className="relative aspect-[16/9] bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center">
-            <svg className="w-12 h-12 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-            {post.category_name && (
-              <span
-                className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full"
-                style={{ color: palette.color, backgroundColor: palette.bg }}
-              >
-                {post.category_name}
-              </span>
-            )}
-          </div>
-        )}
+          )}
+          {/* Time badge */}
+          <span className="absolute bottom-4 left-4 text-[11px] text-neutral-300 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full">
+            {formatRelativeTime(post.date || post.created_at)}
+          </span>
+        </div>
 
         {/* Content */}
         <div className="flex flex-col flex-grow p-5 md:p-6">
@@ -217,22 +201,14 @@ function SideCard({ post, index }) {
     >
       <article className="news-card flex gap-4 p-4 rounded-lg bg-neutral-900/40 border border-neutral-800/40 hover:border-neutral-700/60">
         {/* Thumbnail */}
-        {imgUrl ? (
-          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg overflow-hidden">
-            <img
-              src={imgUrl}
-              alt=""
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-            />
-          </div>
-        ) : (
-          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg bg-neutral-800/60 flex items-center justify-center">
-            <svg className="w-6 h-6 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-          </div>
-        )}
+        <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-20 rounded-lg overflow-hidden">
+          <img
+            src={imgUrl || '/og-image.jpg'}
+            alt=""
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            loading="lazy"
+          />
+        </div>
 
         {/* Text */}
         <div className="flex flex-col flex-grow min-w-0 justify-center">
@@ -270,39 +246,23 @@ function GridCard({ post, index }) {
     >
       <article className="news-card h-full flex flex-col bg-neutral-900/50 rounded-xl border border-neutral-800/50 overflow-hidden">
         {/* Thumbnail */}
-        {post.image ? (
-          <div className="relative overflow-hidden aspect-[16/10]">
-            <img
-              src={post.image}
-              alt=""
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            {post.category_name && (
-              <span
-                className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full backdrop-blur-sm"
-                style={{ color: palette.color, backgroundColor: palette.bg, border: `1px solid ${palette.border}33` }}
-              >
-                {post.category_name}
-              </span>
-            )}
-          </div>
-        ) : (
-          <div className="relative aspect-[16/10] bg-gradient-to-br from-neutral-800/60 to-neutral-900/60 flex items-center justify-center">
-            <svg className="w-8 h-8 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-            {post.category_name && (
-              <span
-                className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
-                style={{ color: palette.color, backgroundColor: palette.bg }}
-              >
-                {post.category_name}
-              </span>
-            )}
-          </div>
-        )}
+        <div className="relative overflow-hidden aspect-[16/10]">
+          <img
+            src={post.image ? resolveImageUrl(post.image) : '/og-image.jpg'}
+            alt=""
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          {post.category_name && (
+            <span
+              className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full backdrop-blur-sm"
+              style={{ color: palette.color, backgroundColor: palette.bg, border: `1px solid ${palette.border}33` }}
+            >
+              {post.category_name}
+            </span>
+          )}
+        </div>
 
         {/* Content */}
         <div className="flex flex-col flex-grow p-4">

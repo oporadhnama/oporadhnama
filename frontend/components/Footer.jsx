@@ -43,11 +43,7 @@ export default function Footer() {
                   অপরাধ গ্রাফ ও বিশ্লেষণ
                 </Link>
               </li>
-              <li>
-                <Link href="/podcast" className="hover:text-[#D62828] transition-colors">
-                  অপরাধনামা পডকাস্ট
-                </Link>
-              </li>
+
               <li>
                 <Link href="/submit" className="hover:text-[#D62828] transition-colors">
                   তথ্য ও রিপোর্ট দিন (গোপনীয়)
