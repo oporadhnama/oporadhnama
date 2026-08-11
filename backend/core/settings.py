@@ -90,14 +90,19 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database Configuration
 db_url = os.environ.get("DATABASE_URL", "").replace('"', "").replace("'", "").strip()
 if db_url:
-    DATABASES = {
-        "default": dj_database_url.parse(
-            db_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True,
-        )
-    }
+    # NOTE: ssl_require=True is NOT used here because we use psycopg v3 (psycopg[binary]).
+    # With psycopg3, SSL is controlled via sslmode= in the DATABASE_URL itself.
+    # Aiven URLs should include ?sslmode=require at the end.
+    parsed_db = dj_database_url.parse(
+        db_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+    # Ensure sslmode is set for psycopg3 if not already in the URL
+    if 'sslmode' not in db_url:
+        parsed_db.setdefault('OPTIONS', {})
+        parsed_db['OPTIONS']['sslmode'] = 'require'
+    DATABASES = {"default": parsed_db}
 elif DEBUG:
     DATABASES = {
         "default": {
