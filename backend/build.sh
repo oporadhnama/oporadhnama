@@ -15,4 +15,7 @@ python cleanup_db.py
 python setup_admin.py
 python fix_categories.py
 
+echo "Resetting PostgreSQL sequences (fixes new-insert 500s after DB migration)..."
+python reset_sequences.py
+
 echo "Build finished successfully!"
