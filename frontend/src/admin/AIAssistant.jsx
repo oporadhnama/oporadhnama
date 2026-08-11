@@ -12,6 +12,7 @@ export default function AIAssistant() {
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isAutoDrafting, setIsAutoDrafting] = useState(false);
+  const [draftStep, setDraftStep] = useState('');
   const [categories, setCategories] = useState([]);
   const router = useRouter();
 
@@ -79,6 +80,7 @@ export default function AIAssistant() {
     setError(null);
     setResult('');
     setCopied(false);
+    setDraftStep('AI প্রসেস করছে...');
 
     try {
       const catNames = categories.map(c => c.name).join(', ');
@@ -109,8 +111,13 @@ export default function AIAssistant() {
       }
 
       if (!response.ok) {
+        if (response.status === 504) {
+          throw new Error('TIMEOUT');
+        }
         throw new Error('API request failed');
       }
+
+      setDraftStep('ডেটা পার্স করছে...');
 
       const data = await response.json();
       let generatedText = data?.choices?.[0]?.message?.content;
@@ -123,9 +130,14 @@ export default function AIAssistant() {
       router.push('/admin/dashboard/add-news');
     } catch (err) {
       console.error(err);
-      setError('অটো ড্রাফট তৈরি করতে সমস্যা হয়েছে: ' + err.message);
+      if (err.message === 'TIMEOUT') {
+        setError('AI সার্ভার সময়মতো সাড়া দেয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      } else {
+        setError('অটো ড্রাফট তৈরি করতে সমস্যা হয়েছে: ' + err.message);
+      }
     } finally {
       setIsAutoDrafting(false);
+      setDraftStep('');
     }
   };
 
@@ -193,10 +205,13 @@ export default function AIAssistant() {
               className="flex-[2] bg-[#E50914] hover:bg-[#E50914]/90 text-white font-medium py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#E50914]/20"
             >
               {isAutoDrafting ? (
-                <>
-                  <RefreshCw className="w-5 h-5 animate-spin" />
-                  ম্যাজিক ড্রাফট হচ্ছে...
-                </>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    ম্যাজিক ড্রাফট হচ্ছে...
+                  </span>
+                  {draftStep && <span className="text-xs opacity-70">{draftStep} (এটি কিছুটা সময় নিতে পারে)</span>}
+                </div>
               ) : (
                 <>
                   <Send className="w-5 h-5" />
