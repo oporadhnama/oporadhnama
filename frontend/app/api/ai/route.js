@@ -14,7 +14,7 @@ export async function POST(request) {
 
     let response;
     try {
-      response = await fetch('https://unipy.onrender.com/v1/chat/completions', {
+      response = await fetch('https://unipy-tng4.onrender.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
