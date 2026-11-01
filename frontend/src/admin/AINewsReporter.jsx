@@ -30,6 +30,11 @@ const PRESET_INSTRUCTIONS = [
   'সংক্ষিপ্ত, তীক্ষ্ণ এবং ব্রেকিং নিউজ ফরম্যাটে লিখুন',
 ];
 
+const CACHE_KEY_ITEMS = 'oporadhnama_radar_cached_items';
+const CACHE_KEY_FEEDS = 'oporadhnama_radar_cached_feeds';
+const CACHE_KEY_TIME = 'oporadhnama_radar_last_scanned';
+const CACHE_KEY_LOOP = 'oporadhnama_radar_loop_state';
+
 export default function AINewsReporter() {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
@@ -60,16 +65,112 @@ export default function AINewsReporter() {
   const loopTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
 
+  // Helper to persist fetched items to localStorage safely
+  const saveRadarCache = (newItems, newFeeds, scanTime) => {
+    try {
+      localStorage.setItem(CACHE_KEY_ITEMS, JSON.stringify(newItems));
+      if (newFeeds) {
+        localStorage.setItem(CACHE_KEY_FEEDS, JSON.stringify(newFeeds));
+      }
+      if (scanTime) {
+        localStorage.setItem(CACHE_KEY_TIME, scanTime.toISOString());
+      }
+    } catch (e) {
+      console.warn('Could not save radar cache to localStorage:', e);
+    }
+  };
+
+  // Clear all fetched items & free browser storage
+  const clearAllFetched = () => {
+    setItems([]);
+    setLastScannedAt(null);
+    setError(null);
+    try {
+      localStorage.removeItem(CACHE_KEY_ITEMS);
+      localStorage.removeItem(CACHE_KEY_TIME);
+      sessionStorage.removeItem('aiGeneratedNews');
+    } catch (_) {}
+  };
+
+  // Remove a single card from the list & storage
+  const dismissSingleItem = (id) => {
+    setItems((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      try {
+        localStorage.setItem(CACHE_KEY_ITEMS, JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
+  };
+
+  // Load categories + cached items/settings on mount (NO auto-scan on page entry!)
   useEffect(() => {
     fetchCategories()
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(console.error);
 
     try {
-      const saved = localStorage.getItem('oporadhnama_custom_rss');
-      if (saved) setCustomFeeds(JSON.parse(saved));
+      const savedCustomRss = localStorage.getItem('oporadhnama_custom_rss');
+      if (savedCustomRss) setCustomFeeds(JSON.parse(savedCustomRss));
+
+      const cachedItems = localStorage.getItem(CACHE_KEY_ITEMS);
+      if (cachedItems) {
+        const parsed = JSON.parse(cachedItems);
+        if (Array.isArray(parsed)) setItems(parsed);
+      }
+
+      const cachedFeeds = localStorage.getItem(CACHE_KEY_FEEDS);
+      if (cachedFeeds) {
+        const parsedFeeds = JSON.parse(cachedFeeds);
+        if (Array.isArray(parsedFeeds)) setAvailableFeeds(parsedFeeds);
+      }
+
+      const cachedTime = localStorage.getItem(CACHE_KEY_TIME);
+      if (cachedTime) {
+        const dt = new Date(cachedTime);
+        if (!isNaN(dt.getTime())) setLastScannedAt(dt);
+      }
+
+      const savedLoop = localStorage.getItem(CACHE_KEY_LOOP);
+      if (savedLoop) {
+        const parsedLoop = JSON.parse(savedLoop);
+        if (typeof parsedLoop.isRunning === 'boolean') {
+          setIsLoopRunning(parsedLoop.isRunning);
+        }
+        if (parsedLoop.intervalSec) {
+          setLoopIntervalSec(Number(parsedLoop.intervalSec));
+        }
+      }
     } catch (_) {}
   }, []);
+
+  // Persist loop state changes
+  const toggleLoop = () => {
+    setIsLoopRunning((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(
+          CACHE_KEY_LOOP,
+          JSON.stringify({ isRunning: next, intervalSec: loopIntervalSec })
+        );
+      } catch (_) {}
+      // If user turns ON the loop and there are no items yet, run an initial scan immediately
+      if (next && items.length === 0 && !scanning) {
+        scanFeeds();
+      }
+      return next;
+    });
+  };
+
+  const handleIntervalChange = (newSec) => {
+    setLoopIntervalSec(newSec);
+    try {
+      localStorage.setItem(
+        CACHE_KEY_LOOP,
+        JSON.stringify({ isRunning: isLoopRunning, intervalSec: newSec })
+      );
+    } catch (_) {}
+  };
 
   const addCustomFeed = () => {
     const trimmed = customFeedUrl.trim();
@@ -112,9 +213,14 @@ export default function AINewsReporter() {
         });
         if (!res.ok) throw new Error('RSS ফিড স্ক্যান ব্যর্থ হয়েছে');
         const data = await res.json();
-        setItems(Array.isArray(data.items) ? data.items : []);
-        if (Array.isArray(data.feeds)) setAvailableFeeds(data.feeds);
-        setLastScannedAt(new Date());
+        const fetchedItems = Array.isArray(data.items) ? data.items : [];
+        const fetchedFeeds = Array.isArray(data.feeds) ? data.feeds : null;
+        const now = new Date();
+
+        setItems(fetchedItems);
+        if (fetchedFeeds) setAvailableFeeds(fetchedFeeds);
+        setLastScannedAt(now);
+        saveRadarCache(fetchedItems, fetchedFeeds, now);
       } catch (err) {
         console.error(err);
         setError('সংবাদ রাডার স্ক্যান করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
@@ -125,13 +231,7 @@ export default function AINewsReporter() {
     [customSearchQuery, customFeeds, onlySerious]
   );
 
-  // Auto-scan once on mount
-  useEffect(() => {
-    scanFeeds('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Manage the continuous radar loop
+  // Manage the continuous radar loop (ONLY scans when isLoopRunning is true)
   useEffect(() => {
     if (!isLoopRunning) {
       if (loopTimerRef.current) clearInterval(loopTimerRef.current);
@@ -214,6 +314,7 @@ export default function AINewsReporter() {
         });
         updated.sort((a, b) => b.seriousnessScore - a.seriousnessScore);
         setItems(updated);
+        saveRadarCache(updated, null, null);
       }
     } catch (err) {
       console.error(err);
@@ -358,16 +459,16 @@ export default function AINewsReporter() {
                 </span>
               </div>
               <p className="text-neutral-400 text-sm mt-1">
-                প্রথম আলো, সমকাল, জাগোনিউজ, বাংলাদেশ প্রতিদিন, সান নিউজ, আমার বাংলা, BD24Live, Daily Star, Al Jazeera ও Middle East Eye থেকে গুরুত্বপূর্ণ অপরাধ ও রাজনীতির খবর খুঁজে বের করে।
+                স্ক্যান করা সংবাদগুলো এখানে সংরক্ষিত থাকবে যতক্ষণ না আপনি পুনরায় স্ক্যান করেন বা মুছে ফেলেন। অটো-লুপ চালু থাকলেই কেবল স্বয়ংক্রিয় স্ক্যান চলবে।
               </p>
             </div>
           </div>
 
           {/* Loop Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <select
               value={loopIntervalSec}
-              onChange={(e) => setLoopIntervalSec(Number(e.target.value))}
+              onChange={(e) => handleIntervalChange(Number(e.target.value))}
               className="bg-neutral-950 border border-neutral-800 text-neutral-300 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#E50914]"
               title="লুপ ইন্টারভ্যাল"
             >
@@ -378,8 +479,8 @@ export default function AINewsReporter() {
             </select>
 
             <button
-              onClick={() => setIsLoopRunning((prev) => !prev)}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+              onClick={toggleLoop}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                 isLoopRunning
                   ? 'bg-green-600/20 border-green-500/40 text-green-400 hover:bg-red-600/20 hover:border-red-500/40 hover:text-red-400'
                   : 'bg-neutral-800 hover:bg-neutral-700 border-neutral-700 text-white'
@@ -388,7 +489,7 @@ export default function AINewsReporter() {
               {isLoopRunning ? (
                 <>
                   <Square className="w-3.5 h-3.5 fill-current" />
-                  লুপ চালু আছে ({countdown}s) — থামান
+                  লুপ চালু ({countdown}s) — থামান
                 </>
               ) : (
                 <>
@@ -401,21 +502,34 @@ export default function AINewsReporter() {
             <button
               onClick={() => scanFeeds()}
               disabled={scanning}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#E50914] hover:bg-[#c40812] text-white transition-all shadow-lg shadow-[#E50914]/20 disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#E50914] hover:bg-[#c40812] text-white transition-all shadow-lg shadow-[#E50914]/20 disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${scanning ? 'animate-spin' : ''}`} />
-              {scanning ? 'স্ক্যান হচ্ছে...' : 'এখনই স্ক্যান করুন'}
+              {scanning ? 'স্ক্যান হচ্ছে...' : items.length > 0 ? 'পুনরায় স্ক্যান করুন' : 'স্ক্যান শুরু করুন'}
             </button>
 
             <button
               onClick={runAiSeriousnessFilter}
               disabled={aiFiltering || scanning || items.length === 0}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 transition-all disabled:opacity-50 cursor-pointer"
               title="AI দিয়ে সবচেয়ে সিরিয়াস ও গুরুত্বপূর্ণ খবরগুলো উপরে নিয়ে আসুন"
             >
               <Sparkles className={`w-3.5 h-3.5 ${aiFiltering ? 'animate-spin' : ''}`} />
               {aiFiltering ? 'AI বাছাই করছে...' : 'AI সেরা খবর বাছাই'}
             </button>
+
+            {items.length > 0 && (
+              <button
+                type="button"
+                onClick={clearAllFetched}
+                disabled={scanning}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-red-950/60 hover:bg-red-900/70 border border-red-800/60 text-red-300 hover:text-white transition-all cursor-pointer"
+                title="স্টোরেজ খালি করতে সব সংগৃহীত সংবাদ মুছে ফেলুন"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                সব মুছুন ({items.length})
+              </button>
+            )}
           </div>
         </div>
 
@@ -473,14 +587,14 @@ export default function AINewsReporter() {
               <button
                 type="button"
                 onClick={() => scanFeeds()}
-                className="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-semibold"
+                className="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-semibold cursor-pointer"
               >
-                ফিল্টার
+                ফিল্টার স্ক্যান
               </button>
               <button
                 type="button"
                 onClick={() => setShowCustomFeedBox((p) => !p)}
-                className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-xl"
+                className="p-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-xl cursor-pointer"
                 title="ফিড তালিকা ও কাস্টম RSS"
               >
                 <Sliders className="w-4 h-4" />
@@ -565,7 +679,7 @@ export default function AINewsReporter() {
             <button
               key={tab.key}
               onClick={() => setSelectedCategoryFilter(tab.key)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
                 selectedCategoryFilter === tab.key
                   ? 'bg-[#E50914] border-[#E50914] text-white shadow-md shadow-[#E50914]/20'
                   : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
@@ -600,13 +714,13 @@ export default function AINewsReporter() {
             onClick={() => {
               const next = !onlySerious;
               setOnlySerious(next);
-              scanFeeds(customSearchQuery, next);
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
               onlySerious
                 ? 'bg-red-950/40 border-red-800/50 text-red-300'
                 : 'bg-neutral-900 border-neutral-800 text-neutral-400'
             }`}
+            title="পরবর্তী স্ক্যানের জন্য মোড পরিবর্তন করুন"
           >
             {onlySerious ? '🎯 মোড: শুধু সিরিয়াস খবর' : '📰 মোড: ফিডের সব খবর'}
           </button>
@@ -614,7 +728,7 @@ export default function AINewsReporter() {
           {lastScannedAt && (
             <span className="text-xs text-neutral-500 flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
-              {lastScannedAt.toLocaleTimeString('bn-BD')}
+              সর্বশেষ স্ক্যান: {lastScannedAt.toLocaleTimeString('bn-BD')}
             </span>
           )}
         </div>
@@ -661,11 +775,32 @@ export default function AINewsReporter() {
             </div>
           ))}
         </div>
+      ) : items.length === 0 ? (
+        <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-12 text-center space-y-4">
+          <Radio className="w-12 h-12 text-neutral-600 mx-auto" />
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-neutral-200">
+              সংরক্ষিত কোনো সংবাদ নেই (স্টোরেজ খালি)
+            </h3>
+            <p className="text-neutral-400 text-xs max-w-md mx-auto">
+              নতুন সংবাদ খুঁজতে উপরের &ldquo;স্ক্যান শুরু করুন&rdquo; বাটনে ক্লিক করুন অথবা স্বয়ংক্রিয়ভাবে স্ক্যান চালাতে &ldquo;অটো-লুপ চালু করুন&rdquo; বাটনটি অন করুন।
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => scanFeeds()}
+            disabled={scanning}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#E50914] hover:bg-[#c40812] text-white transition-all shadow-lg shadow-[#E50914]/20 cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 ${scanning ? 'animate-spin' : ''}`} />
+            এখনই ফিড স্ক্যান করুন
+          </button>
+        </div>
       ) : filteredItems.length === 0 ? (
         <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-12 text-center">
           <Radio className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
           <p className="text-neutral-400 text-sm">
-            এই ফিল্টারে কোনো সংবাদ পাওয়া যায়নি। অন্য ট্যাব নির্বাচন করুন বা &ldquo;এখনই স্ক্যান করুন&rdquo; বাটনে ক্লিক করুন।
+            এই ফিল্টারে কোনো সংবাদ পাওয়া যায়নি। অন্য ট্যাব নির্বাচন করুন।
           </p>
         </div>
       ) : (
@@ -721,9 +856,19 @@ export default function AINewsReporter() {
                         )}
                       </div>
 
-                      <span className="text-[11px] text-neutral-500 font-medium">
-                        {formatTimeAgo(item.pubDate)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-neutral-500 font-medium">
+                          {formatTimeAgo(item.pubDate)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => dismissSingleItem(item.id)}
+                          className="text-neutral-500 hover:text-red-400 transition-colors p-1 rounded hover:bg-neutral-800 cursor-pointer"
+                          title="এই কার্ডটি তালিকা থেকে মুছুন"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Source */}
