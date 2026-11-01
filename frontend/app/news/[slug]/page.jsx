@@ -265,6 +265,42 @@ export default async function NewsDetailPage({ params }) {
         </div>
       ) : null}
 
+      {/* Investigative Quick Fact Box (ঘটনার সংক্ষেপ) */}
+      {(post.category_name || post.division || post.location_text || post.date) && (
+        <div className="mb-8 rounded-2xl bg-neutral-900/60 border border-neutral-800/90 p-5 shadow-lg">
+          <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#D62828] mb-3 pb-2 border-b border-neutral-800">
+            <span className="w-2 h-2 rounded-full bg-[#D62828] animate-pulse" />
+            ঘটনার সংক্ষেপ (Case Dossier)
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            {post.category_name && (
+              <div>
+                <span className="text-neutral-500 block mb-0.5">ধরন / ক্যাটেগরি</span>
+                <span className="text-white font-bold">{post.category_name}</span>
+              </div>
+            )}
+            {post.division && (
+              <div>
+                <span className="text-neutral-500 block mb-0.5">বিভাগ</span>
+                <span className="text-white font-bold">{post.division}</span>
+              </div>
+            )}
+            {post.location_text && (
+              <div>
+                <span className="text-neutral-500 block mb-0.5">ঘটনাস্থল</span>
+                <span className="text-white font-bold">{post.location_text}</span>
+              </div>
+            )}
+            {post.date && (
+              <div>
+                <span className="text-neutral-500 block mb-0.5">তারিখ</span>
+                <span className="text-white font-bold">{post.date}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Article body */}
       <div 
         className="text-neutral-200 text-base md:text-lg leading-relaxed whitespace-pre-line mb-8 article-body font-normal"

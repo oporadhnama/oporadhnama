@@ -3,6 +3,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchCategories, createPost, createCategory } from '../api';
 
+function dataUrlToFile(dataUrl, filename = 'scraped-news-image.jpg') {
+  try {
+    const arr = dataUrl.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const ext = mime.split('/')[1] || 'jpg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], `news-image.${ext}`, { type: mime });
+  } catch (err) {
+    console.error('Failed to convert scraped dataUrl to File:', err);
+    return null;
+  }
+}
+
 export default function AddNews() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,10 +44,21 @@ export default function AddNews() {
     seo_keywords: '',
   });
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
 
   const [isDragging, setIsDragging] = useState(false);
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview(null);
+      return;
+    }
+    const objUrl = URL.createObjectURL(imageFile);
+    setImagePreview(objUrl);
+    return () => URL.revokeObjectURL(objUrl);
+  }, [imageFile]);
 
   const insertFormatting = (startTag, endTag) => {
     const textarea = textareaRef.current;
@@ -45,7 +75,6 @@ export default function AddNews() {
     const newText = `${before}${startTag}${selected}${endTag}${after}`;
     setForm({ ...form, description: newText });
 
-    // Set cursor position back inside the tags
     setTimeout(() => {
       textarea.focus();
       if (selected) {
@@ -73,7 +102,7 @@ export default function AddNews() {
             const aiData = JSON.parse(aiDataStr);
             let categoryId = '';
             let newCatName = '';
-            
+
             if (aiData.category_name) {
               const matchedCat = fetchedCategories.find(
                 c => c.name.trim().toLowerCase() === aiData.category_name.trim().toLowerCase()
@@ -94,10 +123,19 @@ export default function AddNews() {
               location_text: aiData.location_text || prev.location_text,
               division: aiData.division || prev.division,
               seo_keywords: aiData.seo_keywords || prev.seo_keywords,
+              source_link: aiData.source_link || prev.source_link,
             }));
-            
+
             if (newCatName) {
               setNewCategoryName(newCatName);
+            }
+
+            // Automatically attach scraped image file if present
+            if (aiData.image_data_url) {
+              const file = dataUrlToFile(aiData.image_data_url);
+              if (file) {
+                setImageFile(file);
+              }
             }
           } catch (e) {
             console.error('Failed to parse AI generated news', e);
@@ -210,7 +248,7 @@ export default function AddNews() {
         {/* Description */}
         <div>
           <label className="block text-neutral-400 text-xs font-medium mb-2">বিস্তারিত বিবরণ *</label>
-          
+
           {/* Formatting Toolbar */}
           <div className="flex flex-wrap gap-2 mb-2 p-2 bg-neutral-800 rounded-lg border border-neutral-700">
             <button type="button" onClick={() => insertFormatting('<b>', '</b>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm font-bold text-white transition-colors" title="Bold">B</button>
@@ -221,15 +259,15 @@ export default function AddNews() {
             <button type="button" onClick={() => insertFormatting('<span class="highlight">', '</span>')} className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm font-medium text-[#ff4d55] transition-colors" title="Highlight">HL</button>
           </div>
 
-          <textarea 
+          <textarea
             ref={textareaRef}
-            name="description" 
-            value={form.description} 
-            onChange={handleChange} 
-            required 
-            rows={8} 
-            placeholder="সংবাদের বিবরণ লিখুন (উপরের টুলবার ব্যবহার করে টেক্সট ডিজাইন করতে পারেন)" 
-            className={inputClass + ' resize-y'} 
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            required
+            rows={8}
+            placeholder="সংবাদের বিবরণ লিখুন (উপরের টুলবার ব্যবহার করে টেক্সট ডিজাইন করতে পারেন)"
+            className={inputClass + ' resize-y'}
           />
         </div>
 
@@ -289,7 +327,7 @@ export default function AddNews() {
         {/* Image Upload Drag & Drop */}
         <div>
           <label className="block text-neutral-400 text-xs font-medium mb-2">স্থির চিত্র (ছবি আপলোড)</label>
-          <div 
+          <div
             className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${isDragging ? 'border-[#E50914] bg-[#E50914]/10' : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-800'}`}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
@@ -304,6 +342,13 @@ export default function AddNews() {
           >
             {imageFile ? (
               <div className="flex flex-col items-center justify-center space-y-2">
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="max-h-44 rounded-lg border border-neutral-700 object-contain mb-2"
+                  />
+                )}
                 <span className="text-green-400 text-sm">✅ ছবি নির্বাচন করা হয়েছে</span>
                 <span className="text-neutral-400 text-xs">{imageFile.name}</span>
                 <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); }} className="text-[#E50914] text-xs hover:underline mt-2">ছবি বাতিল করুন</button>
@@ -351,7 +396,6 @@ export default function AddNews() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-neutral-400 text-xs font-medium">ইউটিউব বা ফেসবুক ভিডিও লিংক</label>
-            {/* On/Off Toggle */}
             <div className="flex items-center gap-2">
               <span className="text-neutral-500 text-[10px] uppercase tracking-wider font-medium">
                 {form.show_video ? 'দৃশ্যমান' : 'লুকানো'}

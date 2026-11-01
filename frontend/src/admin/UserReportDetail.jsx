@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, ExternalLink, Trash2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Trash2, Sparkles, FileEdit } from 'lucide-react';
 import { fetchUserReportById, deleteUserReport } from '../api';
 import AddNews from './AddNews';
 import { readStoredJSON } from '../storage';
@@ -33,6 +33,41 @@ export default function UserReportDetail() {
       });
   }, [id]);
 
+  const handleSendToAiAssistant = () => {
+    if (!report) return;
+    const text = [
+      report.title,
+      report.location_text ? `স্থান: ${report.location_text}` : '',
+      report.description,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    sessionStorage.setItem(
+      'aiAssistantPrefill',
+      JSON.stringify({
+        text,
+        source_link: report.source_link || '',
+      })
+    );
+    router.push('/admin/dashboard/ai-assistant');
+  };
+
+  const handleDirectPromoteToDraft = () => {
+    if (!report) return;
+    sessionStorage.setItem(
+      'aiGeneratedNews',
+      JSON.stringify({
+        title: report.title || '',
+        description: report.description || '',
+        location_text: report.location_text || '',
+        category_name: report.category_name || '',
+        source_link: report.source_link || '',
+      })
+    );
+    router.push('/admin/dashboard/add-news');
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -44,23 +79,44 @@ export default function UserReportDetail() {
             <ArrowLeft className="w-4 h-4" strokeWidth={2} />
             ফিরে যান
           </button>
-           {isSuperAdmin && (
-             <button
-               type="button"
-               onClick={() => setPendingDelete(true)}
-               className="inline-flex items-center gap-2 rounded-full border border-red-700 bg-red-900/30 px-4 py-2 text-sm font-medium text-red-300 transition hover:border-red-500 hover:text-red-200"
-             >
-               <Trash2 className="w-4 h-4" strokeWidth={2} />
-               প্রতিবেদন মুছুন
-             </button>
-           )}
+          {isSuperAdmin && (
+            <button
+              type="button"
+              onClick={() => setPendingDelete(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-red-700 bg-red-900/30 px-4 py-2 text-sm font-medium text-red-300 transition hover:border-red-500 hover:text-red-200"
+            >
+              <Trash2 className="w-4 h-4" strokeWidth={2} />
+              প্রতিবেদন মুছুন
+            </button>
+          )}
         </div>
-        <button
-          onClick={() => setShowSplitScreen((prev) => !prev)}
-          className="inline-flex items-center justify-center rounded-full border border-neutral-700 bg-neutral-900/70 px-4 py-2 text-sm font-medium text-white transition hover:border-[#E50914] hover:text-[#E50914]"
-        >
-          {showSplitScreen ? 'এক কলাম মোড' : 'স্প্লিট স্ক্রিন'}
-        </button>
+
+        {report && (
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleSendToAiAssistant}
+              className="inline-flex items-center gap-2 rounded-full bg-[#E50914] hover:bg-[#c40812] px-4 py-2 text-xs font-bold text-white transition shadow-lg shadow-[#E50914]/20"
+            >
+              <Sparkles className="w-4 h-4" />
+              AI দিয়ে সংবাদ তৈরি করুন
+            </button>
+            <button
+              type="button"
+              onClick={handleDirectPromoteToDraft}
+              className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 px-4 py-2 text-xs font-bold text-white transition"
+            >
+              <FileEdit className="w-4 h-4" />
+              সরাসরি ড্রাফটে নিন
+            </button>
+            <button
+              onClick={() => setShowSplitScreen((prev) => !prev)}
+              className="inline-flex items-center justify-center rounded-full border border-neutral-700 bg-neutral-900/70 px-4 py-2 text-xs font-medium text-white transition hover:border-[#E50914] hover:text-[#E50914]"
+            >
+              {showSplitScreen ? 'এক কলাম মোড' : 'স্প্লিট স্ক্রিন'}
+            </button>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -163,51 +219,51 @@ export default function UserReportDetail() {
             </div>
           )}
 
-      {pendingDelete && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] modal-backdrop">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl modal-content">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
-                <Trash2 className="w-5 h-5 text-red-400" strokeWidth={1.8} />
+          {pendingDelete && (
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] modal-backdrop">
+              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl modal-content">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                    <Trash2 className="w-5 h-5 text-red-400" strokeWidth={1.8} />
+                  </div>
+                  <h3 className="text-white font-bold text-lg">আপনি কি প্রতিবেদনটি মুছে ফেলতে চান?</h3>
+                </div>
+                <p className="text-neutral-400 text-sm mb-4 leading-relaxed">
+                  আপনি কি অপরাধনামা ব্যবহারকারীর এই প্রতিবেদনটি ডিলিট করতে চাইছেন?
+                </p>
+                <p className="text-white text-sm font-medium bg-neutral-800/60 px-4 py-3 rounded-lg mb-6 line-clamp-3">
+                  "{report.title}"
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPendingDelete(false)}
+                    className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
+                  >
+                    বাতিল
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setDeleting(true);
+                      try {
+                        await deleteUserReport(id);
+                        router.push('/admin/dashboard/user-reports');
+                      } catch (err) {
+                        setError(err.message || 'রিপোর্ট মুছতে সমস্যা হয়েছে');
+                      } finally {
+                        setDeleting(false);
+                      }
+                    }}
+                    disabled={deleting}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition-colors text-sm disabled:opacity-50"
+                  >
+                    {deleting ? 'মুছছে...' : 'হ্যাঁ, মুছুন'}
+                  </button>
+                </div>
               </div>
-              <h3 className="text-white font-bold text-lg">আপনি কি প্রতিবেদনটি মুছে ফেলতে চান?</h3>
             </div>
-            <p className="text-neutral-400 text-sm mb-4 leading-relaxed">
-              আপনি কি অপরাধনামা ব্যবহারকারীর এই প্রতিবেদনটি ডিলিট করতে চাইছেন?
-            </p>
-            <p className="text-white text-sm font-medium bg-neutral-800/60 px-4 py-3 rounded-lg mb-6 line-clamp-3">
-              "{report.title}"
-            </p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setPendingDelete(false)}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
-              >
-                বাতিল
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  setDeleting(true);
-                  try {
-                    await deleteUserReport(id);
-                    router.push('/admin/dashboard/user-reports');
-                  } catch (err) {
-                    setError(err.message || 'রিপোর্ট মুছতে সমস্যা হয়েছে');
-                  } finally {
-                    setDeleting(false);
-                  }
-                }}
-                disabled={deleting}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition-colors text-sm disabled:opacity-50"
-              >
-                {deleting ? 'মুছছে...' : 'হ্যাঁ, মুছুন'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
         </div>
       )}
     </div>

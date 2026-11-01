@@ -1,0 +1,25 @@
+name: Database & Render Keep-Alive
+
+on:
+  schedule:
+    # Runs every 12 minutes, 24/7 (safely within Render's 15 min idle timeout and Aiven inactivity rules)
+    - cron: '*/12 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  ping-keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Keep-Alive Ping
+        run: |
+          python keep_alive.py --once --url "https://oporadhnama.onrender.com/api/health/"
+

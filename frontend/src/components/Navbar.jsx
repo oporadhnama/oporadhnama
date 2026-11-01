@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Radio, Send, BarChart2, Info, Phone, Newspaper, Sun, Moon } from 'lucide-react';
+import { Search, Send, BarChart2, Info, Phone, Newspaper, Sun, Moon, Archive, Flame } from 'lucide-react';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +13,16 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    try {
+      const savedTheme = localStorage.getItem('oporadhnama_theme');
+      if (savedTheme === 'light') {
+        setTheme('light');
+        document.documentElement.classList.add('light-mode');
+      }
+    } catch (_) {}
+  }, []);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -38,12 +48,16 @@ export default function Navbar() {
     } else {
       document.documentElement.classList.remove('light-mode');
     }
+    try {
+      localStorage.setItem('oporadhnama_theme', nextTheme);
+    } catch (_) {}
   };
 
   const links = [
     { label: 'সকল সংবাদ', path: '/all-news', icon: Newspaper },
+    { label: 'আর্কাইভ', path: '/archive', icon: Archive },
     { label: 'গ্রাফ', path: '/graphs', icon: BarChart2 },
-
+    { label: 'জুলাই বিপ্লব', path: '/july-stats', icon: Flame },
     { label: 'তথ্য দিন', path: '/submit', icon: Send },
     { label: 'আমাদের সম্পর্কে', path: '/about', icon: Info },
     { label: 'যোগাযোগ', path: '/contact', icon: Phone },
@@ -74,12 +88,12 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Navigation Links */}
-        <ul className="hidden md:flex items-center gap-6">
+        <ul className="hidden lg:flex items-center gap-5">
           {links.map((link, idx) => (
             <li key={idx}>
               <Link
                 href={link.path}
-                className={`font-semibold transition-colors duration-200 text-sm md:text-base cursor-pointer px-3 py-1.5 border-b-2 flex items-center gap-1.5 ${
+                className={`font-semibold transition-colors duration-200 text-sm cursor-pointer px-2.5 py-1.5 border-b-2 flex items-center gap-1.5 ${
                   isActive(link.path)
                     ? 'text-[#D62828] border-[#D62828]'
                     : 'text-neutral-200 hover:text-[#D62828] border-transparent hover:border-[#D62828]/40'
@@ -114,7 +128,7 @@ export default function Navbar() {
           {/* Mobile Hamburger */}
           <button
             ref={buttonRef}
-            className="md:hidden p-2 rounded-lg text-white focus:outline-none hover:bg-neutral-800/60"
+            className="lg:hidden p-2 rounded-lg text-white focus:outline-none hover:bg-neutral-800/60"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="নেভিগেশন মেনু"
             aria-expanded={isOpen}
@@ -167,12 +181,12 @@ export default function Navbar() {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
             onClick={() => setIsOpen(false)}
           />
           <div
             ref={menuRef}
-            className="md:hidden absolute top-full left-0 right-0 bg-neutral-950 border-b border-neutral-800 z-40 shadow-2xl animate-[slideDown_0.2s_ease-out]"
+            className="lg:hidden absolute top-full left-0 right-0 bg-neutral-950 border-b border-neutral-800 z-40 shadow-2xl animate-[slideDown_0.2s_ease-out]"
           >
             <ul className="flex flex-col py-3 px-4 gap-1">
               {links.map((link, idx) => {

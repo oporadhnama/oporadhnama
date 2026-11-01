@@ -1,4 +1,6 @@
 import datetime
+import time
+import threading
 from rest_framework import viewsets, status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters import rest_framework as filters
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import connection
 from archive.models import Post, Category, ActivityLog, Campaign, CampaignDay
 from django.db.models import Count
 from archive.serializers import (
@@ -35,6 +38,25 @@ def log_activity(user, action, target_label='', details=''):
         target_label=target_label[:300],
         details=details,
     )
+
+
+def _trigger_google_indexing(post):
+    """Fire-and-forget Google Indexing API notification when a post is published/updated."""
+    if getattr(post, 'is_user_report', False) or not getattr(post, 'slug', None):
+        return
+
+    def _worker(slug):
+        try:
+            from google_indexing.indexing_service import GoogleIndexingService
+            service = GoogleIndexingService()
+            service.notify([
+                f"https://oporadhnama.info/news/{slug}",
+                "https://oporadhnama.info/",
+            ])
+        except Exception:
+            pass
+
+    threading.Thread(target=_worker, args=(post.slug,), daemon=True).start()
 
 
 # ─── Filters ────────────────────────────────────────────────────────────────
@@ -110,6 +132,7 @@ class PostViewSet(viewsets.ModelViewSet):
             target_label=post.title,
             details=f"Category: {post.category.name}, Division: {post.division}",
         )
+        _trigger_google_indexing(post)
 
     def perform_destroy(self, instance):
         title = instance.title
@@ -127,6 +150,7 @@ class PostViewSet(viewsets.ModelViewSet):
             action='post_updated',
             target_label=post.title,
         )
+        _trigger_google_indexing(post)
 
 
 
@@ -455,4 +479,48 @@ class CampaignActiveView(APIView):
             }
 
         return Response(data)
+
+
+# ── Health Check / Database Keep-Alive ──────────────────────────────────────
+
+class HealthCheckView(APIView):
+    """
+    Lightweight health check and database keep-alive endpoint.
+    Performs a live SELECT 1 query against the database (Aiven PostgreSQL or SQLite)
+    to keep both Render awake and prevent Aiven free-tier databases from powering down
+    due to inactivity.
+    """
+    permission_classes = [AllowAny]
+    throttle_classes = []  # Bypass rate limiting so uptime bots can poll freely
+
+    def get(self, request):
+        start_time = time.time()
+        db_status = "ok"
+        db_error = None
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1;")
+                cursor.fetchone()
+        except Exception as e:
+            db_status = "error"
+            db_error = str(e)
+
+        latency_ms = round((time.time() - start_time) * 1000, 2)
+        vendor = connection.vendor
+
+        payload = {
+            "status": "healthy" if db_status == "ok" else "unhealthy",
+            "database": db_status,
+            "engine": vendor,
+            "latency_ms": latency_ms,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+
+        if db_error:
+            payload["error"] = db_error
+            return Response(payload, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        return Response(payload, status=status.HTTP_200_OK)
+
 

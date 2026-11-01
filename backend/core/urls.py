@@ -11,7 +11,7 @@ from archive.views import (
     PostViewSet, CategoryViewSet, SubmitPostView, UserReportListView, UserReportDetailView,
     LoginView, RegisterModeratorView, ModeratorsListView, DashboardStatsView,
     PublicStatsView, DeleteModeratorView, ActivityLogView, CampaignActiveView,
-    AdminCampaignViewSet, AdminCampaignDayViewSet
+    AdminCampaignViewSet, AdminCampaignDayViewSet, HealthCheckView
 )
 from archive.feeds import LatestPostsFeed
 
@@ -25,6 +25,8 @@ router.register(r'admin-campaign-days', AdminCampaignDayViewSet, basename='admin
 admin_url_path = os.environ.get("ADMIN_URL_PATH", "admin").strip().strip("/")
 
 urlpatterns = [
+    path('healthz/', HealthCheckView.as_view(), name='healthz'),
+    path('api/health/', HealthCheckView.as_view(), name='api-health'),
     path(f'{admin_url_path}/', admin.site.urls),
     path('api/', include(router.urls)),
     # Auth endpoints
