@@ -533,8 +533,7 @@ html.light-mode .public-shell .bg-neutral-900\/60,
 html.light-mode .public-shell .bg-neutral-900\/70,
 html.light-mode .public-shell .bg-neutral-900\/80,
 html.light-mode .public-shell .glass-card,
-html.light-mode .public-shell .news-card,
-html.light-mode .public-shell .july-stat-card {
+html.light-mode .public-shell .news-card {
   background: #FFFFFF !important;
   background-color: #FFFFFF !important;
   border-color: #E2DDD5 !important;

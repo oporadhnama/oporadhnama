@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Send, BarChart2, Info, Phone, Newspaper, Sun, Moon, Archive, Flame } from 'lucide-react';
+import { Search, Send, BarChart2, Info, Phone, Newspaper, Sun, Moon, Archive } from 'lucide-react';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +57,6 @@ export default function Navbar() {
     { label: 'সকল সংবাদ', path: '/all-news', icon: Newspaper },
     { label: 'আর্কাইভ', path: '/archive', icon: Archive },
     { label: 'গ্রাফ', path: '/graphs', icon: BarChart2 },
-    { label: 'জুলাই বিপ্লব', path: '/july-stats', icon: Flame },
     { label: 'তথ্য দিন', path: '/submit', icon: Send },
     { label: 'আমাদের সম্পর্কে', path: '/about', icon: Info },
     { label: 'যোগাযোগ', path: '/contact', icon: Phone },
