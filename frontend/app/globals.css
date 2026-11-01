@@ -418,45 +418,264 @@ body {
   scrollbar-width: none;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ── Smart Editorial Light Mode Overrides (Scoped to Public Shell) ──────── */
+html.light-mode {
+  color-scheme: light;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+html.light-mode body:has(.public-shell),
+html.light-mode .public-shell,
+html.light-mode .public-shell .bg-black,
+html.light-mode .public-shell .bg-\[\#0B0F14\],
+html.light-mode .public-shell .bg-\[\#08080a\] {
+  background-color: #F8F7F3 !important;
+  color: #0F172A !important;
 }
 
-/* Light mode overrides */
-html.light-mode body {
-  background-color: #FFFDF7 !important;
-  color: #1A1A1A !important;
+/* Scrollbar in Light Mode */
+html.light-mode::-webkit-scrollbar-track {
+  background: #F1EFEA;
 }
 
-html.light-mode header,
-html.light-mode nav,
-html.light-mode footer {
-  background-color: #F8F5EE !important;
-  border-color: #E2DDD0 !important;
-  color: #1A1A1A !important;
+html.light-mode::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
 }
 
-html.light-mode .text-white {
-  color: #1A1A1A !important;
+html.light-mode::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
 
-html.light-mode .bg-black {
-  background-color: #FFFDF7 !important;
+/* Header, Navigation & Footer */
+html.light-mode .public-shell header,
+html.light-mode .public-shell nav {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #E2DDD5 !important;
+  color: #0F172A !important;
 }
 
-html.light-mode .bg-neutral-900,
-html.light-mode .bg-neutral-950 {
-  background-color: #F4F0E6 !important;
+html.light-mode .public-shell header {
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.05) !important;
 }
 
-html.light-mode .border-neutral-800,
-html.light-mode .border-neutral-900 {
-  border-color: #E2DDD0 !important;
+html.light-mode .public-shell footer,
+html.light-mode .public-shell .bg-neutral-950,
+html.light-mode .public-shell .bg-neutral-950\/90 {
+  background-color: #F2EFE9 !important;
+  border-color: #DED8CE !important;
+  color: #0F172A !important;
 }
 
+/* Breaking News Ticker */
+html.light-mode .public-shell .breaking-ticker,
+html.light-mode .public-shell .bg-\[\#111\] {
+  background-color: #EFECE6 !important;
+  border-color: #DFD9CE !important;
+}
+
+html.light-mode .public-shell .ticker-fade-right {
+  background: linear-gradient(to left, #EFECE6, transparent) !important;
+}
+
+/* Newspaper Textured Background & Dividers */
+html.light-mode .public-shell .newspaper-bg {
+  background-color: #F8F7F3 !important;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(15, 23, 42, 0.025) 40px,
+      rgba(15, 23, 42, 0.025) 41px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(15, 23, 42, 0.018) 40px,
+      rgba(15, 23, 42, 0.018) 41px
+    ) !important;
+}
+
+html.light-mode .public-shell .ribbon-fade-left {
+  background: linear-gradient(to right, #F8F7F3, transparent) !important;
+}
+
+html.light-mode .public-shell .ribbon-fade-right {
+  background: linear-gradient(to left, #F8F7F3, transparent) !important;
+}
+
+html.light-mode .public-shell .thin-rule {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(15, 23, 42, 0.1) 20%,
+    rgba(15, 23, 42, 0.1) 80%,
+    transparent 100%
+  ) !important;
+}
+
+html.light-mode .public-shell .column-rule::after {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(229, 9, 20, 0.35) 20%,
+    rgba(15, 23, 42, 0.12) 50%,
+    rgba(229, 9, 20, 0.35) 80%,
+    transparent 100%
+  ) !important;
+}
+
+/* Surfaces & Editorial Cards */
+html.light-mode .public-shell .bg-neutral-900,
+html.light-mode .public-shell .bg-neutral-900\/40,
+html.light-mode .public-shell .bg-neutral-900\/50,
+html.light-mode .public-shell .bg-neutral-900\/60,
+html.light-mode .public-shell .bg-neutral-900\/70,
+html.light-mode .public-shell .bg-neutral-900\/80,
+html.light-mode .public-shell .glass-card,
+html.light-mode .public-shell .news-card,
+html.light-mode .public-shell .july-stat-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border-color: #E2DDD5 !important;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light-mode .public-shell .news-card:hover,
+html.light-mode .public-shell .glass-card:hover {
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(214, 40, 40, 0.2) !important;
+}
+
+/* Secondary Surfaces, Form Controls, Pills & Buttons */
+html.light-mode .public-shell .bg-neutral-800,
+html.light-mode .public-shell .bg-neutral-800\/30,
+html.light-mode .public-shell .bg-neutral-800\/40,
+html.light-mode .public-shell .bg-neutral-800\/50,
+html.light-mode .public-shell .bg-neutral-800\/60,
+html.light-mode .public-shell .bg-neutral-800\/70,
+html.light-mode .public-shell .bg-neutral-800\/80,
+html.light-mode .public-shell .bg-white\/5 {
+  background-color: #F1EFEA !important;
+  border-color: #D6D1C7 !important;
+  color: #1E293B !important;
+}
+
+html.light-mode .public-shell input:not([type="file"]),
+html.light-mode .public-shell select,
+html.light-mode .public-shell textarea {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+html.light-mode .public-shell input::placeholder,
+html.light-mode .public-shell textarea::placeholder {
+  color: #64748B !important;
+}
+
+/* Borders */
+html.light-mode .public-shell .border-neutral-700,
+html.light-mode .public-shell .border-neutral-700\/50,
+html.light-mode .public-shell .border-neutral-700\/60,
+html.light-mode .public-shell .border-neutral-800,
+html.light-mode .public-shell .border-neutral-800\/40,
+html.light-mode .public-shell .border-neutral-800\/50,
+html.light-mode .public-shell .border-neutral-800\/60,
+html.light-mode .public-shell .border-neutral-800\/80,
+html.light-mode .public-shell .border-neutral-800\/90,
+html.light-mode .public-shell .border-neutral-900,
+html.light-mode .public-shell .border-white\/10,
+html.light-mode .public-shell .border-\[\#0B0F14\] {
+  border-color: #E2DDD5 !important;
+}
+
+/* Typography Hierarchy */
+html.light-mode .public-shell .text-white,
+html.light-mode .public-shell .text-\[\#F1F5F9\] {
+  color: #0F172A !important;
+}
+
+html.light-mode .public-shell .text-neutral-200,
+html.light-mode .public-shell .text-neutral-300,
+html.light-mode .public-shell .text-gray-300 {
+  color: #1E293B !important;
+}
+
+html.light-mode .public-shell .text-neutral-400,
+html.light-mode .public-shell .text-\[\#94A3B8\] {
+  color: #475569 !important;
+}
+
+html.light-mode .public-shell .text-neutral-500,
+html.light-mode .public-shell .text-neutral-600,
+html.light-mode .public-shell .text-\[\#64748B\] {
+  color: #64748B !important;
+}
+
+html.light-mode .public-shell .hover\:text-white:hover {
+  color: #D62828 !important;
+}
+
+/* Preserve Crisp White Text on Brand Red / Accent Buttons & Dark Image Overlays */
+html.light-mode .public-shell .bg-\[\#E50914\],
+html.light-mode .public-shell .bg-\[\#E50914\] *,
+html.light-mode .public-shell .bg-\[\#D62828\],
+html.light-mode .public-shell .bg-\[\#D62828\] *,
+html.light-mode .public-shell .bg-red-600,
+html.light-mode .public-shell .bg-red-600 *,
+html.light-mode .public-shell .keep-white,
+html.light-mode .public-shell .keep-white *,
+html.light-mode .public-shell .hover\:bg-\[\#E50914\]:hover,
+html.light-mode .public-shell .hover\:bg-\[\#D62828\]:hover,
+html.light-mode .public-shell .hover\:bg-\[\#1877F2\]:hover,
+html.light-mode .public-shell .hover\:bg-\[\#25D366\]:hover {
+  color: #FFFFFF !important;
+}
+
+html.light-mode .public-shell .keep-dark-pill {
+  background-color: rgba(15, 23, 42, 0.78) !important;
+  color: #FFFFFF !important;
+}
+
+/* Article Body Editorial Rich Text in Light Mode */
+html.light-mode .public-shell .article-body {
+  color: #1E293B !important;
+}
+
+html.light-mode .public-shell .article-body p,
+html.light-mode .public-shell .article-body li,
+html.light-mode .public-shell .article-body span:not(.highlight) {
+  color: #1E293B;
+}
+
+html.light-mode .public-shell .article-body b,
+html.light-mode .public-shell .article-body strong {
+  color: #0F172A !important;
+  font-weight: 700;
+}
+
+html.light-mode .public-shell .article-body h1,
+html.light-mode .public-shell .article-body h2,
+html.light-mode .public-shell .article-body h3,
+html.light-mode .public-shell .article-body h4 {
+  color: #0F172A !important;
+  border-bottom-color: rgba(214, 40, 40, 0.4) !important;
+}
+
+html.light-mode .public-shell .article-body i,
+html.light-mode .public-shell .article-body em {
+  color: #334155 !important;
+}
+
+html.light-mode .public-shell .article-body blockquote {
+  color: #334155 !important;
+  background-color: #F1EFEA !important;
+  border-left-color: #D62828 !important;
+}
+
+html.light-mode .public-shell .article-body .highlight {
+  background-color: rgba(214, 40, 40, 0.12) !important;
+  color: #B91C1C !important;
+  font-weight: 600;
+}

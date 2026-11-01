@@ -102,10 +102,10 @@ const PieTooltip = ({ active, payload }) => {
   );
 };
 
-/* ─── UI Components ──────────────────────────────────────────────────────── */
+  /* ─── UI Components ──────────────────────────────────────────────────────── */
 function Card({ children, style = {} }) {
   return (
-    <div style={{
+    <div className="graphs-card" style={{
       background: 'rgba(15, 15, 18, 0.65)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
@@ -533,7 +533,7 @@ export default function Graphs() {
 
   /* ── JSX ──────────────────────────────────────────────────────────────── */
   return (
-    <div style={{
+    <div className="graphs-page" style={{
       minHeight: '100vh',
       background: '#08080a',
       color: '#fff',
@@ -545,6 +545,11 @@ export default function Graphs() {
     }}>
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display:none }
+        html.light-mode .graphs-page { background: #F8F7F3 !important; color: #0F172A !important; }
+        html.light-mode .graphs-page h1, html.light-mode .graphs-page h2 { color: #0F172A !important; }
+        html.light-mode .graphs-card, html.light-mode .graphs-kpi-card { background: #FFFFFF !important; border-color: #E2DDD5 !important; box-shadow: 0 2px 12px rgba(15,23,42,0.05) !important; }
+        html.light-mode .graphs-kpi-card .kpi-val, html.light-mode .graphs-card .widget-title { color: #0F172A !important; }
+        html.light-mode .graphs-kpi-card .kpi-label { color: #475569 !important; }
         @keyframes slideUp {
           from { transform: translateY(100%); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
@@ -593,7 +598,7 @@ export default function Graphs() {
             {kpis.map((k, i) => {
               const up = k.delta > 0;
               return (
-                <div key={i} style={{
+                <div key={i} className="graphs-kpi-card" style={{
                   background: 'linear-gradient(145deg, rgba(20,20,24,0.8), rgba(12,12,15,0.9))',
                   border: `1px solid ${k.color}40`,
                   borderRadius: isMobile ? 12 : 16,
@@ -604,8 +609,8 @@ export default function Graphs() {
                   animation: `fadeIn 0.3s ease-out ${i * 0.05}s both`,
                 }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, transparent, ${k.color}, transparent)` }} />
-                  <p style={{ color: '#aaa', fontSize: isMobile ? 10.5 : 12, marginBottom: 4, fontWeight: 600, letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{k.label}</p>
-                  <p style={{ color: '#fff', fontSize: isMobile ? 18 : 24, fontWeight: 900, lineHeight: 1, marginBottom: 6 }}>{k.value?.toLocaleString()}</p>
+                  <p className="kpi-label" style={{ color: '#aaa', fontSize: isMobile ? 10.5 : 12, marginBottom: 4, fontWeight: 600, letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{k.label}</p>
+                  <p className="kpi-val" style={{ color: '#fff', fontSize: isMobile ? 18 : 24, fontWeight: 900, lineHeight: 1, marginBottom: 6 }}>{k.value?.toLocaleString()}</p>
                   {k.delta !== undefined && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: up ? 'rgba(239,83,80,0.1)' : 'rgba(102,187,106,0.1)', width: 'fit-content', padding: '2px 6px', borderRadius: 6 }}>
                       <span style={{ color: up ? '#ef5350' : '#66bb6a', fontSize: isMobile ? 10 : 11, fontWeight: 800 }}>{up ? '↑' : '↓'} {Math.abs(k.delta)}</span>
@@ -829,7 +834,7 @@ export default function Graphs() {
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 24, marginBottom: 40 }}>
           <Card style={{ padding: isMobile ? '12px' : '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 10 : 16 }}>
-              <p style={{ color: '#fff', fontSize: isMobile ? 13.5 : 16, fontWeight: 800, margin: 0 }}>মোট মামলা (মাসিক)</p>
+              <p className="widget-title" style={{ color: '#fff', fontSize: isMobile ? 13.5 : 16, fontWeight: 800, margin: 0 }}>মোট মামলা (মাসিক)</p>
               <span style={{ background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: 10, padding: '3px 8px', borderRadius: 8, fontWeight: 700 }}>TREND</span>
             </div>
             <div style={{ width: '100%', overflow: 'hidden' }}>
@@ -855,7 +860,7 @@ export default function Graphs() {
 
           <Card style={{ padding: isMobile ? '12px' : '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? 10 : 16 }}>
-              <p style={{ color: '#fff', fontSize: isMobile ? 13.5 : 16, fontWeight: 800, margin: 0 }}>অপরাধ বিভাজন</p>
+              <p className="widget-title" style={{ color: '#fff', fontSize: isMobile ? 13.5 : 16, fontWeight: 800, margin: 0 }}>অপরাধ বিভাজন</p>
               <span style={{ background: 'rgba(255,255,255,0.05)', color: '#aaa', fontSize: 10, padding: '3px 8px', borderRadius: 8, fontWeight: 700 }}>TOP 6</span>
             </div>
             <div style={{ width: '100%', overflow: 'hidden' }}>

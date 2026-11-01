@@ -104,19 +104,19 @@ export default function JulyStatsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-[#1e0f0f] to-[#0f0a0a] border border-[#ff4500]/50 rounded-2xl p-8 text-center shadow-[0_8px_32px_-8px_rgba(255,69,0,0.3)] relative overflow-hidden backdrop-blur-md">
+          <div className="july-stat-card bg-gradient-to-br from-[#1e0f0f] to-[#0f0a0a] border border-[#ff4500]/50 rounded-2xl p-8 text-center shadow-[0_8px_32px_-8px_rgba(255,69,0,0.3)] relative overflow-hidden backdrop-blur-md">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff4500] to-transparent"></div>
             <p className="text-gray-300 text-lg font-bold mb-4">শহিদের সংখ্যা</p>
             <p className="text-white text-4xl md:text-5xl font-black drop-shadow-[0_2px_15px_rgba(255,69,0,0.6)]">১৪০০ জন</p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#1e0f0f] to-[#0f0a0a] border border-[#ff8c00]/50 rounded-2xl p-8 text-center shadow-[0_8px_32px_-8px_rgba(255,140,0,0.3)] relative overflow-hidden backdrop-blur-md">
+          <div className="july-stat-card bg-gradient-to-br from-[#1e0f0f] to-[#0f0a0a] border border-[#ff8c00]/50 rounded-2xl p-8 text-center shadow-[0_8px_32px_-8px_rgba(255,140,0,0.3)] relative overflow-hidden backdrop-blur-md">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff8c00] to-transparent"></div>
             <p className="text-gray-300 text-lg font-bold mb-4">আহতের সংখ্যা</p>
             <p className="text-white text-4xl md:text-5xl font-black drop-shadow-[0_2px_15px_rgba(255,140,0,0.6)]">১৩৮১১ জন</p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#1e0f0f] to-[#0f0a0a] border border-[#E50914]/50 rounded-2xl p-8 text-center shadow-[0_8px_32px_-8px_rgba(229,9,20,0.3)] relative overflow-hidden backdrop-blur-md">
+          <div className="july-stat-card bg-gradient-to-br from-[#1e0f0f] to-[#0f0a0a] border border-[#E50914]/50 rounded-2xl p-8 text-center shadow-[0_8px_32px_-8px_rgba(229,9,20,0.3)] relative overflow-hidden backdrop-blur-md">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#E50914] to-transparent"></div>
             <p className="text-gray-300 text-lg font-bold mb-4">গ্রেফতারের সংখ্যা</p>
             <p className="text-white text-4xl md:text-5xl font-black drop-shadow-[0_2px_15px_rgba(229,9,20,0.6)]">প্রায় ৩৫ হাজারের ও বেশি</p>

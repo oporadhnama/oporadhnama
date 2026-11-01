@@ -77,9 +77,9 @@ function CategoryRibbon({ categories }) {
   return (
     <div className="relative w-full">
       {/* Left fade */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#0d0d0d] to-transparent z-10 pointer-events-none" />
+      <div className="ribbon-fade-left absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#0d0d0d] to-transparent z-10 pointer-events-none" />
       {/* Right fade */}
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0d0d0d] to-transparent z-10 pointer-events-none" />
+      <div className="ribbon-fade-right absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0d0d0d] to-transparent z-10 pointer-events-none" />
 
       <div
         ref={ribbonRef}
@@ -149,7 +149,7 @@ function FeaturedCard({ post }) {
             </span>
           )}
           {/* Time badge */}
-          <span className="absolute bottom-4 left-4 text-[11px] text-neutral-300 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full">
+          <span className="keep-dark-pill absolute bottom-4 left-4 text-[11px] text-neutral-200 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full">
             {formatRelativeTime(post.date || post.created_at)}
           </span>
         </div>

@@ -319,7 +319,7 @@ export default function AllNews() {
               <Link
                 key={post.id}
                 href={`/news/${post.slug || post.id}`}
-                className="bg-neutral-900/60 rounded-xl overflow-hidden border hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between group"
+                className="news-card bg-neutral-900/60 rounded-xl overflow-hidden border border-neutral-800/80 hover:border-neutral-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between group"
                 aria-label={`সংবাদ পড়ুন: ${post.title}`}
                 style={{
                   borderLeft: `4px solid ${palette.border}`,
