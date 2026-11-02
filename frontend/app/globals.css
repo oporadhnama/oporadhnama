@@ -428,57 +428,59 @@ html.light-mode .public-shell,
 html.light-mode .public-shell .bg-black,
 html.light-mode .public-shell .bg-\[\#0B0F14\],
 html.light-mode .public-shell .bg-\[\#08080a\] {
-  background-color: #F8F7F3 !important;
+  background-color: #F4F0E6 !important;
   color: #0F172A !important;
 }
 
 /* Scrollbar in Light Mode */
 html.light-mode::-webkit-scrollbar-track {
-  background: #F1EFEA;
+  background: #EDE7DA;
 }
 
 html.light-mode::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #C4BBA8;
 }
 
 html.light-mode::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #A39882;
 }
 
-/* Header, Navigation & Footer */
-html.light-mode .public-shell header,
-html.light-mode .public-shell nav {
-  background-color: rgba(255, 255, 255, 0.96) !important;
-  border-color: #E2DDD5 !important;
-  color: #0F172A !important;
-}
-
+/* Header, Navigation & Footer — Unified Warm Newspaper Masthead */
 html.light-mode .public-shell header {
-  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.05) !important;
+  background-color: #EFE9DC !important;
+  border-bottom: 2px solid #D8CFC0 !important;
+  color: #0F172A !important;
+  box-shadow: 0 3px 16px rgba(15, 23, 42, 0.06) !important;
+}
+
+html.light-mode .public-shell header nav {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: #0F172A !important;
 }
 
 html.light-mode .public-shell footer,
 html.light-mode .public-shell .bg-neutral-950,
 html.light-mode .public-shell .bg-neutral-950\/90 {
-  background-color: #F2EFE9 !important;
-  border-color: #DED8CE !important;
+  background-color: #ECE6D8 !important;
+  border-color: #D8CFC0 !important;
   color: #0F172A !important;
 }
 
 /* Breaking News Ticker */
 html.light-mode .public-shell .breaking-ticker,
 html.light-mode .public-shell .bg-\[\#111\] {
-  background-color: #EFECE6 !important;
-  border-color: #DFD9CE !important;
+  background-color: #EAE3D5 !important;
+  border-color: #D8CFC0 !important;
 }
 
 html.light-mode .public-shell .ticker-fade-right {
-  background: linear-gradient(to left, #EFECE6, transparent) !important;
+  background: linear-gradient(to left, #EAE3D5, transparent) !important;
 }
 
 /* Newspaper Textured Background & Dividers */
 html.light-mode .public-shell .newspaper-bg {
-  background-color: #F8F7F3 !important;
+  background-color: #F4F0E6 !important;
   background-image:
     repeating-linear-gradient(
       0deg,
@@ -497,11 +499,11 @@ html.light-mode .public-shell .newspaper-bg {
 }
 
 html.light-mode .public-shell .ribbon-fade-left {
-  background: linear-gradient(to right, #F8F7F3, transparent) !important;
+  background: linear-gradient(to right, #F4F0E6, transparent) !important;
 }
 
 html.light-mode .public-shell .ribbon-fade-right {
-  background: linear-gradient(to left, #F8F7F3, transparent) !important;
+  background: linear-gradient(to left, #F4F0E6, transparent) !important;
 }
 
 html.light-mode .public-shell .thin-rule {

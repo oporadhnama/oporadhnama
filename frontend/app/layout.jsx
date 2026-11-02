@@ -162,8 +162,13 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="bn">
+    <html lang="bn" className="light-mode" suppressHydrationWarning>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('oporadhnama_theme');if(t==='dark'){document.documentElement.classList.remove('light-mode');}else{document.documentElement.classList.add('light-mode');}}catch(e){}`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
