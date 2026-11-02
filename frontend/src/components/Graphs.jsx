@@ -53,6 +53,138 @@ const CATEGORIES = [
 
 const MONTH_ORDER = RAW_DATA.map(d => d.month);
 
+/* ─── Bangladesh Division Crime Heatmap Dataset (2026) ───────────────────── */
+const DIVISION_HEATMAP_DATA = [
+  {
+    id: 'dhaka',
+    rank: 1,
+    name: 'ঢাকা বিভাগ',
+    enName: 'Dhaka Division',
+    murders: 411,
+    sharePct: 23.8,
+    severity: 'সর্বোচ্চ ঝুঁকি (Critical)',
+    heatColor: '#E50914',
+    bgTint: 'rgba(229, 9, 20, 0.22)',
+    summaryBn: 'ঘনবসতিপূর্ণ ঢাকা মহানগরীর প্রভাবে দেশের সর্বোচ্চ অপরাধ প্রবণ অঞ্চল। ২০২৬ সালের প্রথমার্ধেই ৪১১টি হত্যাকাণ্ড (দেশের মোট খুনের ২৩%-এর বেশি), ব্যাপক মাদক বিস্তার, চাঁদাবাজি এবং সশস্ত্র ছিনতাইয়ের শীর্ষে।',
+    drivers: ['মাদক নেটওয়ার্ক', 'চাঁদাবাজি', 'সশস্ত্র ছিনতাই', 'মহানগর অপরাধ'],
+    path: 'M 155 152 L 210 148 L 232 182 L 222 238 L 185 262 L 152 242 L 138 196 Z',
+    cx: 184,
+    cy: 204,
+  },
+  {
+    id: 'chattogram',
+    rank: 2,
+    name: 'চট্টগ্রাম বিভাগ',
+    enName: 'Chattogram Division',
+    murders: 363,
+    sharePct: 21.0,
+    severity: 'অতি উচ্চ ঝুঁকি (Severe)',
+    heatColor: '#FF4500',
+    bgTint: 'rgba(255, 69, 0, 0.20)',
+    summaryBn: 'দেশের দ্বিতীয় বৃহত্তম অর্থনৈতিক ও নগর কেন্দ্র হিসেবে সহিংস অপরাধে ঢাকার ঠিক পরেই (প্রথমার্ধে ৩৬৩টি হত্যাকাণ্ড)। রাজনৈতিক উপদলীয় সংঘাত এবং অরক্ষিত সীমান্ত পথে অবৈধ অস্ত্র ও মাদক চোরাচালান প্রধান কারণ।',
+    drivers: ['রাজনৈতিক সংঘাত', 'সীমান্ত অস্ত্র চোরাচালান', 'মাদক রুট'],
+    path: 'M 232 182 L 278 176 L 308 228 L 328 310 L 342 398 L 308 412 L 284 345 L 238 308 L 212 272 L 222 238 Z',
+    cx: 278,
+    cy: 288,
+  },
+  {
+    id: 'rajshahi',
+    rank: 3,
+    name: 'রাজশাহী বিভাগ',
+    enName: 'Rajshahi Division',
+    murders: 183,
+    sharePct: 10.6,
+    severity: 'উচ্চ ঝুঁকি (High)',
+    heatColor: '#FF7A00',
+    bgTint: 'rgba(255, 122, 0, 0.18)',
+    summaryBn: '২০২৬ সালের প্রথমার্ধে ১৮৩টি হত্যাকাণ্ড রেকর্ড হয়েছে। মূলত জমিজমা সংক্রান্ত বিরোধ, আঞ্চলিক আধিপত্য বিস্তার এবং চুরির উচ্চ হারের কারণে তৃতীয় অবস্থানে রয়েছে।',
+    drivers: ['ভূমি বিরোধ', 'আঞ্চলিক আধিপত্য', 'চুরি ও দস্যুতা'],
+    path: 'M 48 128 L 132 124 L 155 152 L 138 196 L 72 208 L 38 168 Z',
+    cx: 96,
+    cy: 165,
+  },
+  {
+    id: 'khulna',
+    rank: 4,
+    name: 'খুলনা বিভাগ',
+    enName: 'Khulna Division',
+    murders: 173,
+    sharePct: 10.0,
+    severity: 'মাঝারি-উচ্চ ঝুঁকি (Elevated)',
+    heatColor: '#FFA000',
+    bgTint: 'rgba(255, 160, 0, 0.17)',
+    summaryBn: 'প্রথমার্ধে ১৭৩টি হত্যাকাণ্ডসহ মাঝারি থেকে উচ্চ অপরাধ প্রবণতা লক্ষ্য করা গেছে। কিশোর গ্যাং ও সন্ত্রাসী গোষ্ঠীর এলাকা নিয়ন্ত্রণ এবং আন্তঃসীমান্ত চোরাচালান এখানকার প্রধান অপরাধ উৎস।',
+    drivers: ['গ্যাং আধিপত্য', 'সীমান্ত চোরাচালান', 'চাঁদাবাজি'],
+    path: 'M 72 208 L 138 196 L 152 242 L 146 346 L 86 356 L 64 278 Z',
+    cx: 112,
+    cy: 278,
+  },
+  {
+    id: 'rangpur',
+    rank: 5,
+    name: 'রংপুর বিভাগ',
+    enName: 'Rangpur Division',
+    murders: 110,
+    sharePct: 6.4,
+    severity: 'মাঝারি ঝুঁকি (Moderate)',
+    heatColor: '#FFC107',
+    bgTint: 'rgba(255, 193, 7, 0.15)',
+    summaryBn: 'বছরের প্রথমার্ধে ১১০টি হত্যাকাণ্ডসহ নিম্ন-মধ্যম অপরাধ বলয়ে অবস্থান করছে। সম্পত্তি সংক্রান্ত বিরোধ এবং পারিবারিক সহিংসতাই এখানকার পরিসংখ্যানের প্রধান অংশ।',
+    drivers: ['সম্পত্তি বিরোধ', 'পারিবারিক সহিংসতা', 'সীমান্ত মাদক'],
+    path: 'M 55 34 L 138 30 L 154 92 L 132 124 L 48 128 L 38 78 Z',
+    cx: 96,
+    cy: 80,
+  },
+  {
+    id: 'sylhet',
+    rank: 6,
+    name: 'সিলেট বিভাগ',
+    enName: 'Sylhet Division',
+    murders: 108,
+    sharePct: 6.2,
+    severity: 'মাঝারি ঝুঁকি (Moderate)',
+    heatColor: '#26C6DA',
+    bgTint: 'rgba(38, 198, 218, 0.15)',
+    summaryBn: 'মোট সংখ্যায় ৬ষ্ঠ স্থানে (১০৮টি হত্যাকাণ্ড) থাকলেও জনসংখ্যার অনুপাতে ডাকাতি, রাহাজানি এবং ভূমি মালিকানা সংক্রান্ত সহিংসতায় উচ্চ ঝুঁকি দেখা যায়।',
+    drivers: ['ভূমি মালিকানা সংঘাত', 'ডাকাতি ও রাহাজানি', 'চোরাচালান'],
+    path: 'M 232 98 L 326 102 L 336 168 L 278 176 L 232 182 L 210 148 Z',
+    cx: 276,
+    cy: 142,
+  },
+  {
+    id: 'mymensingh',
+    rank: 7,
+    name: 'ময়মনসিংহ বিভাগ',
+    enName: 'Mymensingh Division',
+    murders: 105,
+    sharePct: 6.1,
+    severity: 'নিম্ন-মাঝারি ঝুঁকি (Low-Mod)',
+    heatColor: '#66BB6A',
+    bgTint: 'rgba(102, 187, 106, 0.15)',
+    summaryBn: 'পূর্বপরিকল্পিত সহিংসতা ও সংঘবদ্ধ গ্যাং অপরাধের দিক থেকে তুলনামূলক কম ঝুঁকিপূর্ণ অঞ্চল। প্রথমার্ধে ১০৫টি প্রধান হত্যাকাণ্ডের ঘটনা নথিভুক্ত হয়েছে।',
+    drivers: ['গ্রামীণ বিরোধ', 'স্থানীয় সংঘর্ষ'],
+    path: 'M 132 92 L 232 98 L 210 148 L 155 152 L 132 124 Z',
+    cx: 178,
+    cy: 122,
+  },
+  {
+    id: 'barisal',
+    rank: 8,
+    name: 'বরিশাল বিভাগ',
+    enName: 'Barisal Division',
+    murders: 78,
+    sharePct: 4.5,
+    severity: 'সর্বনিম্ন ঝুঁকি (Lowest)',
+    heatColor: '#10B981',
+    bgTint: 'rgba(16, 185, 129, 0.14)',
+    summaryBn: 'সারাদেশের মধ্যে সর্বনিম্ন মোট অপরাধ প্রবণ বিভাগ (#৮)। বড় ধরনের সংঘবদ্ধ অপরাধ কম হলেও নদীপথ ও স্থানীয় বিরোধকেন্দ্রিক বিচ্ছিন্ন ঘটনা ঘটে।',
+    drivers: ['স্থানীয় বিরোধ', 'নৌপথ অপরাধ'],
+    path: 'M 152 242 L 185 262 L 212 272 L 208 352 L 146 346 Z',
+    cx: 178,
+    cy: 306,
+  },
+];
+
 const CHART_TYPES = [
   { id: 'bar', label: 'বার', icon: '▌▌' },
   { id: 'area', label: 'এরিয়া', icon: '◿' },
@@ -174,6 +306,7 @@ export default function Graphs() {
     new Set(['murder', 'rape', 'dacoity'])
   );
   const [selectedMonth, setSelectedMonth] = useState('all');
+  const [selectedDivisionId, setSelectedDivisionId] = useState('dhaka');
   const [hl, setHl] = useState(null);
   const [activeMobileData, setActiveMobileData] = useState(null);
   const [catsOpen, setCatsOpen] = useState(false);
@@ -901,6 +1034,269 @@ export default function Graphs() {
             </div>
           </Card>
         </div>
+
+        {/* Bangladesh Division Crime Heatmap Section */}
+        <Card style={{ marginBottom: isMobile ? 28 : 44, padding: isMobile ? '14px' : '28px' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: 10, marginBottom: isMobile ? 16 : 24 }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 6, padding: '3px 10px', borderRadius: 20, background: 'rgba(229,9,20,0.12)', border: '1px solid rgba(229,9,20,0.28)' }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#E50914', display: 'inline-block' }} />
+                <span style={{ color: '#E50914', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                  DIVISIONAL CRIME HEATMAP • ২০২৬
+                </span>
+              </div>
+              <h2 className="widget-title" style={{ fontSize: isMobile ? 17 : 22, fontWeight: 900, color: '#fff', margin: 0 }}>
+                বাংলাদেশের বিভাগীয় অপরাধ হিটম্যাপ ও র‍্যাঙ্কিং
+              </h2>
+              <p style={{ color: '#888', fontSize: isMobile ? 11.5 : 13, margin: '4px 0 0' }}>
+                বিভাগগুলোর উপর ক্লিক বা হোভার করে ২০২৬ সালের হত্যাকাণ্ডের পরিসংখ্যান, ঝুঁকি মাত্রা ও প্রধান অপরাধের ধরন দেখুন
+              </p>
+            </div>
+
+            {/* Heat Intensity Scale Legend */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+              <span style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>সর্বনিম্ন (#৮)</span>
+              <div style={{ width: 90, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #10B981, #66BB6A, #26C6DA, #FFC107, #FFA000, #FF7A00, #FF4500, #E50914)' }} />
+              <span style={{ fontSize: 11, color: '#E50914', fontWeight: 800 }}>সর্বোচ্চ (#১)</span>
+            </div>
+          </div>
+
+          {(() => {
+            const activeDiv = DIVISION_HEATMAP_DATA.find(d => d.id === selectedDivisionId) || DIVISION_HEATMAP_DATA[0];
+            const maxMurders = DIVISION_HEATMAP_DATA[0].murders;
+
+            return (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1.05fr 1.25fr',
+                gap: isMobile ? 16 : 28,
+                alignItems: 'stretch',
+              }}>
+                {/* Left Column: Interactive SVG Cartogram Map + Selected Division Dossier */}
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  background: 'rgba(10,10,14,0.45)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: 14,
+                  padding: isMobile ? 12 : 18,
+                }} className="graphs-card">
+                  <div style={{ position: 'relative', width: '100%', maxWidth: 380, margin: '0 auto' }}>
+                    <svg viewBox="20 15 340 410" style={{ width: '100%', height: 'auto', display: 'block', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.35))' }}>
+                      {DIVISION_HEATMAP_DATA.map((div) => {
+                        const isSelected = div.id === activeDiv.id;
+                        return (
+                          <g
+                            key={div.id}
+                            onClick={() => setSelectedDivisionId(div.id)}
+                            style={{ cursor: 'pointer', transition: 'all 0.25s ease' }}
+                          >
+                            <path
+                              d={div.path}
+                              fill={div.heatColor}
+                              fillOpacity={isSelected ? 0.92 : 0.58}
+                              stroke={isSelected ? '#ffffff' : '#111318'}
+                              strokeWidth={isSelected ? 2.8 : 1.5}
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx={div.cx}
+                              cy={div.cy - 10}
+                              r={isSelected ? 12 : 10}
+                              fill="rgba(10,10,14,0.82)"
+                              stroke={div.heatColor}
+                              strokeWidth={1.5}
+                            />
+                            <text
+                              x={div.cx}
+                              y={div.cy - 6}
+                              textAnchor="middle"
+                              fill="#ffffff"
+                              fontSize="10"
+                              fontWeight="900"
+                            >
+                              #{div.rank}
+                            </text>
+                            <text
+                              x={div.cx}
+                              y={div.cy + 12}
+                              textAnchor="middle"
+                              fill="#ffffff"
+                              fontSize="11"
+                              fontWeight="800"
+                              style={{ paintOrder: 'stroke', stroke: 'rgba(0,0,0,0.85)', strokeWidth: 3 }}
+                            >
+                              {div.name.replace(' বিভাগ', '')}
+                            </text>
+                            <text
+                              x={div.cx}
+                              y={div.cy + 25}
+                              textAnchor="middle"
+                              fill="#ffd700"
+                              fontSize="9.5"
+                              fontWeight="700"
+                              style={{ paintOrder: 'stroke', stroke: 'rgba(0,0,0,0.85)', strokeWidth: 2.5 }}
+                            >
+                              {div.murders} খুন
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+
+                  {/* Active Division Spotlight Box */}
+                  <div style={{
+                    marginTop: 12,
+                    padding: isMobile ? 12 : 16,
+                    borderRadius: 12,
+                    background: activeDiv.bgTint,
+                    border: `1px solid ${activeDiv.heatColor}66`,
+                    transition: 'all 0.25s ease',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{
+                          background: activeDiv.heatColor,
+                          color: '#fff',
+                          fontWeight: 900,
+                          fontSize: 12,
+                          padding: '3px 9px',
+                          borderRadius: 8,
+                        }}>
+                          র‍্যাঙ্ক #{activeDiv.rank}
+                        </span>
+                        <h3 className="widget-title" style={{ margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 900, color: '#fff' }}>
+                          {activeDiv.name}
+                        </h3>
+                        <span style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>({activeDiv.enName})</span>
+                      </div>
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: activeDiv.heatColor,
+                        background: 'rgba(0,0,0,0.35)',
+                        padding: '3px 10px',
+                        borderRadius: 20,
+                        border: `1px solid ${activeDiv.heatColor}55`,
+                      }}>
+                        {activeDiv.severity}
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: isMobile ? 12 : 13, lineHeight: 1.6, color: '#ddd', margin: '0 0 10px' }} className="kpi-label">
+                      {activeDiv.summaryBn}
+                    </p>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {activeDiv.drivers.map((drv, idx) => (
+                        <span
+                          key={idx}
+                          style={{
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            padding: '3px 9px',
+                            borderRadius: 6,
+                            background: 'rgba(0,0,0,0.35)',
+                            color: '#fff',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                          }}
+                        >
+                          • {drv}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Ranked Heatmap Matrix of All 8 Divisions */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {DIVISION_HEATMAP_DATA.map((div) => {
+                    const isSelected = div.id === activeDiv.id;
+                    const barWidthPct = Math.round((div.murders / maxMurders) * 100);
+                    return (
+                      <div
+                        key={div.id}
+                        onClick={() => setSelectedDivisionId(div.id)}
+                        className="graphs-card"
+                        style={{
+                          padding: isMobile ? '10px 12px' : '12px 16px',
+                          borderRadius: 12,
+                          cursor: 'pointer',
+                          background: isSelected ? div.bgTint : 'rgba(255,255,255,0.025)',
+                          border: `1px solid ${isSelected ? div.heatColor : 'rgba(255,255,255,0.06)'}`,
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 6,
+                              background: div.heatColor,
+                              color: '#fff',
+                              fontWeight: 900,
+                              fontSize: 11,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}>
+                              #{div.rank}
+                            </span>
+                            <div>
+                              <span className="widget-title" style={{ fontWeight: 800, fontSize: isMobile ? 13.5 : 14.5, color: '#fff' }}>
+                                {div.name}
+                              </span>
+                              <span style={{ fontSize: 11, color: '#888', marginLeft: 6 }}>
+                                {div.enName}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <span style={{ color: div.heatColor, fontWeight: 900, fontSize: isMobile ? 13.5 : 15 }}>
+                              {div.murders}টি খুন
+                            </span>
+                            <span style={{ color: '#888', fontSize: 10.5, marginLeft: 5 }}>
+                              ({div.sharePct}%)
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Heat Progress Bar */}
+                        <div style={{ width: '100%', height: 6, borderRadius: 4, background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginBottom: 6 }}>
+                          <div style={{
+                            width: `${barWidthPct}%`,
+                            height: '100%',
+                            background: `linear-gradient(90deg, ${div.heatColor}99, ${div.heatColor})`,
+                            borderRadius: 4,
+                            transition: 'width 0.4s ease',
+                          }} />
+                        </div>
+
+                        <p className="kpi-label" style={{
+                          margin: 0,
+                          fontSize: 11.5,
+                          color: '#aaa',
+                          lineHeight: 1.45,
+                          display: isSelected ? 'block' : '-webkit-box',
+                          WebkitLineClamp: isSelected ? 'unset' : 1,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}>
+                          {div.summaryBn}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+        </Card>
 
       </div>
 
