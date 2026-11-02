@@ -46,10 +46,10 @@ const CATEGORY_PALETTES = {
   'জাতীয়': { color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: '#10B981' },
   'আন্তর্জাতিক': { color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)', border: '#38BDF8' },
   'বিশ্লেষণ': { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)', border: '#A78BFA' },
-  'পডকাস্ট': { color: '#FCD34D', bg: 'rgba(252, 211, 77, 0.15)', border: '#FCD34D' },
+  'পডকাস্ট': { color: '#D97706', bg: 'rgba(217, 119, 6, 0.15)', border: '#D97706' },
   'কূটনীতি': { color: '#0EA5E9', bg: 'rgba(14, 165, 233, 0.15)', border: '#0EA5E9' },
   'মধ্যপ্রাচ্য সংকট': { color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.15)', border: '#06B6D4' },
-  'অন্যান্য': { color: '#94A3B8', bg: 'rgba(148, 163, 184, 0.15)', border: '#94A3B8' },
+  'অন্যান্য': { color: '#475569', bg: 'rgba(71, 85, 105, 0.15)', border: '#475569' },
 };
 
 const DEFAULT_PALETTES = [
@@ -142,7 +142,7 @@ function FeaturedCard({ post }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
           {post.category_name && (
             <span
-              className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-sm"
+              className="keep-dark-pill absolute top-4 left-4 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-sm"
               style={{ color: palette.color, backgroundColor: `${palette.bg}`, border: `1px solid ${palette.border}44` }}
             >
               {post.category_name}
@@ -256,7 +256,7 @@ function GridCard({ post, index }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           {post.category_name && (
             <span
-              className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full backdrop-blur-sm"
+              className="keep-dark-pill absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full backdrop-blur-sm"
               style={{ color: palette.color, backgroundColor: palette.bg, border: `1px solid ${palette.border}33` }}
             >
               {post.category_name}

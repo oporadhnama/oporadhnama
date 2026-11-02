@@ -36,10 +36,10 @@ const CATEGORY_PALETTES = {
   'জাতীয়': { color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: '#10B981' },
   'আন্তর্জাতিক': { color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)', border: '#38BDF8' },
   'বিশ্লেষণ': { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)', border: '#A78BFA' },
-  'পডকাস্ট': { color: '#FCD34D', bg: 'rgba(252, 211, 77, 0.15)', border: '#FCD34D' },
+  'পডকাস্ট': { color: '#D97706', bg: 'rgba(217, 119, 6, 0.15)', border: '#D97706' },
   'কূটনীতি': { color: '#0EA5E9', bg: 'rgba(14, 165, 233, 0.15)', border: '#0EA5E9' },
   'মধ্যপ্রাচ্য সংকট': { color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.15)', border: '#06B6D4' },
-  'অন্যান্য': { color: '#94A3B8', bg: 'rgba(148, 163, 184, 0.15)', border: '#94A3B8' },
+  'অন্যান্য': { color: '#475569', bg: 'rgba(71, 85, 105, 0.15)', border: '#475569' },
 };
 
 const DEFAULT_PALETTES = [
@@ -323,9 +323,9 @@ export default function AllNews() {
                 aria-label={`সংবাদ পড়ুন: ${post.title}`}
                 style={{
                   borderLeft: `4px solid ${palette.border}`,
-                  borderTop: '1px solid rgba(255,255,255,0.08)',
-                  borderRight: '1px solid rgba(255,255,255,0.08)',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  borderTop: '',
+                  borderRight: '',
+                  borderBottom: '',
                 }}
               >
                 <div className="relative aspect-[16/9] overflow-hidden bg-neutral-950">

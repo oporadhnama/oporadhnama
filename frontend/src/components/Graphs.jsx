@@ -389,6 +389,7 @@ export default function Graphs() {
       <div
         role="dialog"
         aria-label="বিস্তারিত তথ্য"
+        className="graphs-mobile-sheet"
         style={{
           position: 'fixed',
           bottom: 0, left: 0, right: 0,
@@ -423,10 +424,10 @@ export default function Graphs() {
 
         <div style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {isRadarRow ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="sheet-item" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: activeMobileData.color, flexShrink: 0, boxShadow: `0 0 8px ${activeMobileData.color}88` }} />
-              <span style={{ color: '#fff', fontWeight: 800, fontSize: 20 }}>{activeMobileData.value}</span>
-              <span style={{ color: '#888', fontSize: 12 }}>গড় মাসিক মামলা</span>
+              <span className="sheet-val" style={{ color: '#fff', fontWeight: 800, fontSize: 20 }}>{activeMobileData.value}</span>
+              <span className="sheet-label" style={{ color: '#888', fontSize: 12 }}>গড় মাসিক মামলা</span>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -434,11 +435,11 @@ export default function Graphs() {
                 const val = activeMobileData[cat.label];
                 if (val === undefined) return null;
                 return (
-                  <div key={cat.key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div key={cat.key} className="sheet-item" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
                     <span style={{ width: 10, height: 10, borderRadius: '50%', background: cat.color, flexShrink: 0, boxShadow: `0 0 8px ${cat.color}88` }} />
                     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-                      <span style={{ color: '#aaa', fontSize: 11, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cat.label}</span>
-                      <span style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>{val}</span>
+                      <span className="sheet-label" style={{ color: '#aaa', fontSize: 11, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cat.label}</span>
+                      <span className="sheet-val" style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>{val}</span>
                     </div>
                   </div>
                 );
@@ -670,8 +671,14 @@ export default function Graphs() {
         html.light-mode .graphs-page { background: #F4F0E6 !important; color: #0F172A !important; }
         html.light-mode .graphs-page h1, html.light-mode .graphs-page h2, html.light-mode .graphs-page h3 { color: #0F172A !important; }
         html.light-mode .graphs-card, html.light-mode .graphs-kpi-card { background: #FAF8F3 !important; border-color: #DCD3C2 !important; box-shadow: 0 3px 14px rgba(15,23,42,0.06) !important; }
-        html.light-mode .graphs-kpi-card .kpi-val, html.light-mode .graphs-card .widget-title { color: #0F172A !important; }
-        html.light-mode .graphs-kpi-card .kpi-label { color: #334155 !important; }
+        html.light-mode .graphs-page .kpi-val, html.light-mode .graphs-page .widget-title { color: #0F172A !important; }
+        html.light-mode .graphs-page .kpi-label { color: #1E293B !important; font-weight: 500; }
+        html.light-mode .graphs-spotlight-box { background: #FFFDF9 !important; box-shadow: 0 4px 16px rgba(15,23,42,0.06) !important; }
+        html.light-mode .graphs-spotlight-box .kpi-label { color: #0F172A !important; }
+        html.light-mode .graphs-mobile-sheet { background: rgba(250, 248, 243, 0.98) !important; border-top-color: #D62828 !important; color: #0F172A !important; box-shadow: 0 -10px 40px rgba(15,23,42,0.18) !important; }
+        html.light-mode .graphs-mobile-sheet h3, html.light-mode .graphs-mobile-sheet .sheet-val { color: #0F172A !important; }
+        html.light-mode .graphs-mobile-sheet .sheet-item { background: #EFE9DC !important; border-color: #D8CFC0 !important; }
+        html.light-mode .graphs-mobile-sheet .sheet-label { color: #334155 !important; }
 
         /* Light Mode Month Filter Pills */
         html.light-mode .graphs-month-pill {
@@ -1175,7 +1182,7 @@ export default function Graphs() {
                   </div>
 
                   {/* Active Division Spotlight Box */}
-                  <div style={{
+                  <div className="graphs-spotlight-box" style={{
                     marginTop: 14,
                     padding: isMobile ? 12 : 16,
                     borderRadius: 12,
