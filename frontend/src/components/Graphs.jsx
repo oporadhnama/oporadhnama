@@ -61,15 +61,12 @@ const DIVISION_HEATMAP_DATA = [
     name: 'ঢাকা বিভাগ',
     enName: 'Dhaka Division',
     murders: 411,
-    sharePct: 23.8,
+    sharePct: 23.0,
     severity: 'সর্বোচ্চ ঝুঁকি (Critical)',
     heatColor: '#E50914',
-    bgTint: 'rgba(229, 9, 20, 0.22)',
+    bgTint: 'rgba(229, 9, 20, 0.16)',
     summaryBn: 'ঘনবসতিপূর্ণ ঢাকা মহানগরীর প্রভাবে দেশের সর্বোচ্চ অপরাধ প্রবণ অঞ্চল। ২০২৬ সালের প্রথমার্ধেই ৪১১টি হত্যাকাণ্ড (দেশের মোট খুনের ২৩%-এর বেশি), ব্যাপক মাদক বিস্তার, চাঁদাবাজি এবং সশস্ত্র ছিনতাইয়ের শীর্ষে।',
     drivers: ['মাদক নেটওয়ার্ক', 'চাঁদাবাজি', 'সশস্ত্র ছিনতাই', 'মহানগর অপরাধ'],
-    path: 'M 155 152 L 210 148 L 232 182 L 222 238 L 185 262 L 152 242 L 138 196 Z',
-    cx: 184,
-    cy: 204,
   },
   {
     id: 'chattogram',
@@ -77,15 +74,12 @@ const DIVISION_HEATMAP_DATA = [
     name: 'চট্টগ্রাম বিভাগ',
     enName: 'Chattogram Division',
     murders: 363,
-    sharePct: 21.0,
+    sharePct: 20.3,
     severity: 'অতি উচ্চ ঝুঁকি (Severe)',
     heatColor: '#FF4500',
-    bgTint: 'rgba(255, 69, 0, 0.20)',
-    summaryBn: 'দেশের দ্বিতীয় বৃহত্তম অর্থনৈতিক ও নগর কেন্দ্র হিসেবে সহিংস অপরাধে ঢাকার ঠিক পরেই (প্রথমার্ধে ৩৬৩টি হত্যাকাণ্ড)। রাজনৈতিক উপদলীয় সংঘাত এবং অরক্ষিত সীমান্ত পথে অবৈধ অস্ত্র ও মাদক চোরাচালান প্রধান কারণ।',
+    bgTint: 'rgba(255, 69, 0, 0.15)',
+    summaryBn: 'দেশের দ্বিতীয় বৃহত্তম অর্থনৈতিক ও নগর কেন্দ্র হিসেবে সহিংস অপরাধে ঢাকার ঠিক পরেই (প্রথমার্ধে ৩৬৩টি হত্যাকাণ্ড, ২০.৩%)। রাজনৈতিক উপদলীয় সংঘাত এবং অরক্ষিত সীমান্ত পথে অবৈধ অস্ত্র ও মাদক চোরাচালান প্রধান কারণ।',
     drivers: ['রাজনৈতিক সংঘাত', 'সীমান্ত অস্ত্র চোরাচালান', 'মাদক রুট'],
-    path: 'M 232 182 L 278 176 L 308 228 L 328 310 L 342 398 L 308 412 L 284 345 L 238 308 L 212 272 L 222 238 Z',
-    cx: 278,
-    cy: 288,
   },
   {
     id: 'rajshahi',
@@ -93,15 +87,12 @@ const DIVISION_HEATMAP_DATA = [
     name: 'রাজশাহী বিভাগ',
     enName: 'Rajshahi Division',
     murders: 183,
-    sharePct: 10.6,
+    sharePct: 10.2,
     severity: 'উচ্চ ঝুঁকি (High)',
     heatColor: '#FF7A00',
-    bgTint: 'rgba(255, 122, 0, 0.18)',
-    summaryBn: '২০২৬ সালের প্রথমার্ধে ১৮৩টি হত্যাকাণ্ড রেকর্ড হয়েছে। মূলত জমিজমা সংক্রান্ত বিরোধ, আঞ্চলিক আধিপত্য বিস্তার এবং চুরির উচ্চ হারের কারণে তৃতীয় অবস্থানে রয়েছে।',
+    bgTint: 'rgba(255, 122, 0, 0.14)',
+    summaryBn: '২০২৬ সালের প্রথমার্ধে ১৮৩টি হত্যাকাণ্ড (১০.২%) রেকর্ড হয়েছে। মূলত জমিজমা সংক্রান্ত বিরোধ, আঞ্চলিক আধিপত্য বিস্তার এবং চুরির উচ্চ হারের কারণে তৃতীয় অবস্থানে রয়েছে।',
     drivers: ['ভূমি বিরোধ', 'আঞ্চলিক আধিপত্য', 'চুরি ও দস্যুতা'],
-    path: 'M 48 128 L 132 124 L 155 152 L 138 196 L 72 208 L 38 168 Z',
-    cx: 96,
-    cy: 165,
   },
   {
     id: 'khulna',
@@ -109,15 +100,12 @@ const DIVISION_HEATMAP_DATA = [
     name: 'খুলনা বিভাগ',
     enName: 'Khulna Division',
     murders: 173,
-    sharePct: 10.0,
+    sharePct: 9.7,
     severity: 'মাঝারি-উচ্চ ঝুঁকি (Elevated)',
-    heatColor: '#FFA000',
-    bgTint: 'rgba(255, 160, 0, 0.17)',
-    summaryBn: 'প্রথমার্ধে ১৭৩টি হত্যাকাণ্ডসহ মাঝারি থেকে উচ্চ অপরাধ প্রবণতা লক্ষ্য করা গেছে। কিশোর গ্যাং ও সন্ত্রাসী গোষ্ঠীর এলাকা নিয়ন্ত্রণ এবং আন্তঃসীমান্ত চোরাচালান এখানকার প্রধান অপরাধ উৎস।',
+    heatColor: '#EA580C',
+    bgTint: 'rgba(234, 88, 12, 0.14)',
+    summaryBn: 'প্রথমার্ধে ১৭৩টি হত্যাকাণ্ডসহ (৯.৭%) মাঝারি থেকে উচ্চ অপরাধ প্রবণতা লক্ষ্য করা গেছে। কিশোর গ্যাং ও সন্ত্রাসী গোষ্ঠীর এলাকা নিয়ন্ত্রণ এবং আন্তঃসীমান্ত চোরাচালান এখানকার প্রধান অপরাধ উৎস।',
     drivers: ['গ্যাং আধিপত্য', 'সীমান্ত চোরাচালান', 'চাঁদাবাজি'],
-    path: 'M 72 208 L 138 196 L 152 242 L 146 346 L 86 356 L 64 278 Z',
-    cx: 112,
-    cy: 278,
   },
   {
     id: 'rangpur',
@@ -125,15 +113,12 @@ const DIVISION_HEATMAP_DATA = [
     name: 'রংপুর বিভাগ',
     enName: 'Rangpur Division',
     murders: 110,
-    sharePct: 6.4,
+    sharePct: 6.1,
     severity: 'মাঝারি ঝুঁকি (Moderate)',
-    heatColor: '#FFC107',
-    bgTint: 'rgba(255, 193, 7, 0.15)',
-    summaryBn: 'বছরের প্রথমার্ধে ১১০টি হত্যাকাণ্ডসহ নিম্ন-মধ্যম অপরাধ বলয়ে অবস্থান করছে। সম্পত্তি সংক্রান্ত বিরোধ এবং পারিবারিক সহিংসতাই এখানকার পরিসংখ্যানের প্রধান অংশ।',
+    heatColor: '#D97706',
+    bgTint: 'rgba(217, 119, 6, 0.13)',
+    summaryBn: 'বছরের প্রথমার্ধে ১১০টি হত্যাকাণ্ডসহ (৬.১%) নিম্ন-মধ্যম অপরাধ বলয়ে অবস্থান করছে। সম্পত্তি সংক্রান্ত বিরোধ এবং পারিবারিক সহিংসতাই এখানকার পরিসংখ্যানের প্রধান অংশ।',
     drivers: ['সম্পত্তি বিরোধ', 'পারিবারিক সহিংসতা', 'সীমান্ত মাদক'],
-    path: 'M 55 34 L 138 30 L 154 92 L 132 124 L 48 128 L 38 78 Z',
-    cx: 96,
-    cy: 80,
   },
   {
     id: 'sylhet',
@@ -141,15 +126,12 @@ const DIVISION_HEATMAP_DATA = [
     name: 'সিলেট বিভাগ',
     enName: 'Sylhet Division',
     murders: 108,
-    sharePct: 6.2,
+    sharePct: 6.0,
     severity: 'মাঝারি ঝুঁকি (Moderate)',
-    heatColor: '#26C6DA',
-    bgTint: 'rgba(38, 198, 218, 0.15)',
-    summaryBn: 'মোট সংখ্যায় ৬ষ্ঠ স্থানে (১০৮টি হত্যাকাণ্ড) থাকলেও জনসংখ্যার অনুপাতে ডাকাতি, রাহাজানি এবং ভূমি মালিকানা সংক্রান্ত সহিংসতায় উচ্চ ঝুঁকি দেখা যায়।',
+    heatColor: '#CA8A04',
+    bgTint: 'rgba(202, 138, 4, 0.13)',
+    summaryBn: 'মোট সংখ্যায় ৬ষ্ঠ স্থানে (১০৮টি হত্যাকাণ্ড, ৬.০%) থাকলেও জনসংখ্যার অনুপাতে ডাকাতি, রাহাজানি এবং ভূমি মালিকানা সংক্রান্ত সহিংসতায় উচ্চ ঝুঁকি দেখা যায়।',
     drivers: ['ভূমি মালিকানা সংঘাত', 'ডাকাতি ও রাহাজানি', 'চোরাচালান'],
-    path: 'M 232 98 L 326 102 L 336 168 L 278 176 L 232 182 L 210 148 Z',
-    cx: 276,
-    cy: 142,
   },
   {
     id: 'mymensingh',
@@ -157,31 +139,25 @@ const DIVISION_HEATMAP_DATA = [
     name: 'ময়মনসিংহ বিভাগ',
     enName: 'Mymensingh Division',
     murders: 105,
-    sharePct: 6.1,
+    sharePct: 5.9,
     severity: 'নিম্ন-মাঝারি ঝুঁকি (Low-Mod)',
-    heatColor: '#66BB6A',
-    bgTint: 'rgba(102, 187, 106, 0.15)',
-    summaryBn: 'পূর্বপরিকল্পিত সহিংসতা ও সংঘবদ্ধ গ্যাং অপরাধের দিক থেকে তুলনামূলক কম ঝুঁকিপূর্ণ অঞ্চল। প্রথমার্ধে ১০৫টি প্রধান হত্যাকাণ্ডের ঘটনা নথিভুক্ত হয়েছে।',
+    heatColor: '#B45309',
+    bgTint: 'rgba(180, 83, 9, 0.12)',
+    summaryBn: 'পূর্বপরিকল্পিত সহিংসতা ও সংঘবদ্ধ গ্যাং অপরাধের দিক থেকে তুলনামূলক কম ঝুঁকিপূর্ণ অঞ্চল। প্রথমার্ধে ১০৫টি (৫.৯%) প্রধান হত্যাকাণ্ডের ঘটনা নথিভুক্ত হয়েছে।',
     drivers: ['গ্রামীণ বিরোধ', 'স্থানীয় সংঘর্ষ'],
-    path: 'M 132 92 L 232 98 L 210 148 L 155 152 L 132 124 Z',
-    cx: 178,
-    cy: 122,
   },
   {
     id: 'barisal',
     rank: 8,
     name: 'বরিশাল বিভাগ',
     enName: 'Barisal Division',
-    murders: 78,
-    sharePct: 4.5,
+    murders: 102,
+    sharePct: 5.7,
     severity: 'সর্বনিম্ন ঝুঁকি (Lowest)',
-    heatColor: '#10B981',
-    bgTint: 'rgba(16, 185, 129, 0.14)',
-    summaryBn: 'সারাদেশের মধ্যে সর্বনিম্ন মোট অপরাধ প্রবণ বিভাগ (#৮)। বড় ধরনের সংঘবদ্ধ অপরাধ কম হলেও নদীপথ ও স্থানীয় বিরোধকেন্দ্রিক বিচ্ছিন্ন ঘটনা ঘটে।',
+    heatColor: '#A16207',
+    bgTint: 'rgba(161, 98, 7, 0.12)',
+    summaryBn: 'সারাদেশের মধ্যে সর্বনিম্ন মোট অপরাধ প্রবণ বিভাগ (#৮ — ১০২টি হত্যাকাণ্ড, ৫.৭%)। বড় ধরনের সংঘবদ্ধ অপরাধ কম হলেও নদীপথ ও স্থানীয় বিরোধকেন্দ্রিক বিচ্ছিন্ন ঘটনা ঘটে।',
     drivers: ['স্থানীয় বিরোধ', 'নৌপথ অপরাধ'],
-    path: 'M 152 242 L 185 262 L 212 272 L 208 352 L 146 346 Z',
-    cx: 178,
-    cy: 306,
   },
 ];
 
@@ -691,11 +667,99 @@ export default function Graphs() {
     }}>
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display:none }
-        html.light-mode .graphs-page { background: #F8F7F3 !important; color: #0F172A !important; }
-        html.light-mode .graphs-page h1, html.light-mode .graphs-page h2 { color: #0F172A !important; }
-        html.light-mode .graphs-card, html.light-mode .graphs-kpi-card { background: #FFFFFF !important; border-color: #E2DDD5 !important; box-shadow: 0 2px 12px rgba(15,23,42,0.05) !important; }
+        html.light-mode .graphs-page { background: #F4F0E6 !important; color: #0F172A !important; }
+        html.light-mode .graphs-page h1, html.light-mode .graphs-page h2, html.light-mode .graphs-page h3 { color: #0F172A !important; }
+        html.light-mode .graphs-card, html.light-mode .graphs-kpi-card { background: #FAF8F3 !important; border-color: #DCD3C2 !important; box-shadow: 0 3px 14px rgba(15,23,42,0.06) !important; }
         html.light-mode .graphs-kpi-card .kpi-val, html.light-mode .graphs-card .widget-title { color: #0F172A !important; }
-        html.light-mode .graphs-kpi-card .kpi-label { color: #475569 !important; }
+        html.light-mode .graphs-kpi-card .kpi-label { color: #334155 !important; }
+
+        /* Light Mode Month Filter Pills */
+        html.light-mode .graphs-month-pill {
+          background: #EAE3D5 !important;
+          border-color: #D4C9B5 !important;
+          color: #1E293B !important;
+        }
+        html.light-mode .graphs-month-pill:hover {
+          background: #E2D9C6 !important;
+          border-color: #B8AA93 !important;
+          color: #0F172A !important;
+        }
+        html.light-mode .graphs-month-pill.active-all {
+          background: #D62828 !important;
+          border-color: #D62828 !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 4px 14px rgba(214, 40, 40, 0.35) !important;
+        }
+        html.light-mode .graphs-month-pill.active-month {
+          background: #0F172A !important;
+          border-color: #0F172A !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2) !important;
+        }
+
+        /* Light Mode Chart Type Switcher */
+        html.light-mode .graphs-type-switcher {
+          background: #EAE3D5 !important;
+          border: 1px solid #D4C9B5 !important;
+        }
+        html.light-mode .graphs-type-btn {
+          color: #334155 !important;
+        }
+        html.light-mode .graphs-type-btn.active {
+          background: #D62828 !important;
+          color: #FFFFFF !important;
+        }
+
+        /* Light Mode Action Buttons (Select All / Reset / Mobile Collapse) */
+        html.light-mode .graphs-action-btn {
+          background: #EAE3D5 !important;
+          border-color: #D4C9B5 !important;
+          color: #0F172A !important;
+        }
+        html.light-mode .graphs-action-btn:hover {
+          background: #E0D6C3 !important;
+        }
+        html.light-mode .graphs-reset-btn {
+          background: rgba(214, 40, 40, 0.12) !important;
+          border-color: rgba(214, 40, 40, 0.35) !important;
+          color: #B91C1C !important;
+        }
+
+        /* Light Mode Category Chips */
+        html.light-mode .graphs-cat-chip {
+          background: #EFE9DC !important;
+          border-color: #D8CFC0 !important;
+          color: #475569 !important;
+        }
+        html.light-mode .graphs-cat-chip:hover {
+          background: #E5DEC9 !important;
+          color: #0F172A !important;
+        }
+        html.light-mode .graphs-cat-chip.selected {
+          background: #FFFFFF !important;
+          color: #0F172A !important;
+          font-weight: 800 !important;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        /* Light Mode Division Heatmap Cards */
+        html.light-mode .graphs-div-row {
+          background: #F4EFE4 !important;
+          border-color: #DCD3C2 !important;
+        }
+        html.light-mode .graphs-div-row.selected {
+          background: #FFFFFF !important;
+          box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08) !important;
+        }
+        html.light-mode .graphs-driver-pill {
+          background: #EAE3D5 !important;
+          border-color: #D4C9B5 !important;
+          color: #1E293B !important;
+        }
+        html.light-mode .graphs-progress-track {
+          background: #E2D9C8 !important;
+        }
+
         @keyframes slideUp {
           from { transform: translateY(100%); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
@@ -777,6 +841,7 @@ export default function Graphs() {
           }}>
             <button
               onClick={() => setSelectedMonth('all')}
+              className={`graphs-month-pill ${selectedMonth === 'all' ? 'active-all' : ''}`}
               style={{
                 padding: isMobile ? '7px 14px' : '8px 20px', borderRadius: 30,
                 border: `1px solid ${selectedMonth === 'all' ? '#E50914' : 'rgba(255,255,255,0.1)'}`,
@@ -794,6 +859,7 @@ export default function Graphs() {
               <button
                 key={m}
                 onClick={() => setSelectedMonth(m)}
+                className={`graphs-month-pill ${selectedMonth === m ? 'active-month' : ''}`}
                 style={{
                   padding: isMobile ? '7px 14px' : '8px 20px', borderRadius: 30,
                   border: `1px solid ${selectedMonth === m ? '#fff' : 'rgba(255,255,255,0.1)'}`,
@@ -817,7 +883,7 @@ export default function Graphs() {
             <h2 style={{ fontSize: isMobile ? 15 : 18, fontWeight: 800, color: '#fff', margin: 0 }}>প্রধান রেখাচিত্র</h2>
 
             {/* Chart-type switcher: full-width grid on mobile for easy tapping */}
-            <div style={{
+            <div className="graphs-type-switcher" style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? 'repeat(5, 1fr)' : 'repeat(5, auto)',
               gap: isMobile ? 4 : 6,
@@ -827,6 +893,7 @@ export default function Graphs() {
               {CHART_TYPES.map(t => (
                 <button
                   key={t.id} onClick={() => setChartType(t.id)}
+                  className={`graphs-type-btn ${chartType === t.id ? 'active' : ''}`}
                   style={{
                     padding: isMobile ? '7px 0' : '6px 14px', borderRadius: 8, border: 'none',
                     background: chartType === t.id ? '#E50914' : 'transparent',
@@ -850,6 +917,7 @@ export default function Graphs() {
             {isMobile && (
               <button
                 onClick={() => setCatsOpen(o => !o)}
+                className="graphs-action-btn"
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
@@ -875,10 +943,12 @@ export default function Graphs() {
                 {/* Select all / Reset */}
                 <div style={{ display: 'flex', justifyContent: isMobile ? 'stretch' : 'flex-end', gap: 6, marginBottom: 8 }}>
                   <button onClick={() => setSelCats(new Set(CATEGORIES.map(c => c.key)))}
+                    className="graphs-action-btn"
                     style={{ flex: isMobile ? 1 : 'none', padding: isMobile ? '6px 10px' : '6px 14px', borderRadius: isMobile ? 8 : 24, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: isMobile ? 11.5 : 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', minHeight: isMobile ? 34 : 'auto' }}>
                     সব নির্বাচন
                   </button>
                   <button onClick={() => setSelCats(new Set(['murder']))}
+                    className="graphs-reset-btn"
                     style={{ flex: isMobile ? 1 : 'none', padding: isMobile ? '6px 10px' : '6px 14px', borderRadius: isMobile ? 8 : 24, border: '1px solid rgba(229,9,20,0.3)', background: 'rgba(229,9,20,0.1)', color: '#E50914', fontSize: isMobile ? 11.5 : 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', minHeight: isMobile ? 34 : 'auto' }}>
                     রিসেট
                   </button>
@@ -894,9 +964,10 @@ export default function Graphs() {
                         <button
                           key={cat.key}
                           onClick={() => toggleCat(cat.key)}
+                          className={`graphs-cat-chip ${selected ? 'selected' : ''}`}
                           style={{
                             padding: '5px 10px', borderRadius: 20,
-                            border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.06)'}`,
+                            border: `1.5px solid ${selected ? cat.color : 'rgba(255,255,255,0.06)'}`,
                             background: selected ? `${cat.color}18` : 'rgba(0,0,0,0.3)',
                             color: selected ? '#fff' : '#666',
                             fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -905,7 +976,7 @@ export default function Graphs() {
                             minHeight: 30,
                           }}
                         >
-                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 4px ${cat.color}` : 'none', flexShrink: 0 }} />
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: selected ? cat.color : '#64748B', boxShadow: selected ? `0 0 4px ${cat.color}` : 'none', flexShrink: 0 }} />
                           {cat.label}
                         </button>
                       );
@@ -923,9 +994,10 @@ export default function Graphs() {
                           <button
                             key={cat.key}
                             onClick={() => toggleCat(cat.key)}
+                            className={`graphs-cat-chip ${selected ? 'selected' : ''}`}
                             style={{
                               padding: '8px 16px', borderRadius: 30,
-                              border: `1px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
+                              border: `1.5px solid ${selected ? cat.color : 'rgba(255,255,255,0.05)'}`,
                               background: selected ? `${cat.color}15` : 'rgba(0,0,0,0.3)',
                               color: selected ? '#fff' : '#888',
                               fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -933,7 +1005,7 @@ export default function Graphs() {
                               flexShrink: 0, minHeight: 38,
                             }}
                           >
-                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: selected ? cat.color : '#444', boxShadow: selected ? `0 0 6px ${cat.color}` : 'none' }} />
+                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: selected ? cat.color : '#64748B', boxShadow: selected ? `0 0 6px ${cat.color}` : 'none' }} />
                             {cat.label}
                           </button>
                         );
@@ -1068,11 +1140,11 @@ export default function Graphs() {
             return (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : '1.05fr 1.25fr',
+                gridTemplateColumns: isMobile ? '1fr' : '1.15fr 1.15fr',
                 gap: isMobile ? 16 : 28,
                 alignItems: 'stretch',
               }}>
-                {/* Left Column: Interactive SVG Cartogram Map + Selected Division Dossier */}
+                {/* Left Column: Official Bangladesh Crime Heatmap Infographic + Selected Division Dossier */}
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -1080,79 +1152,35 @@ export default function Graphs() {
                   background: 'rgba(10,10,14,0.45)',
                   border: '1px solid rgba(255,255,255,0.06)',
                   borderRadius: 14,
-                  padding: isMobile ? 12 : 18,
+                  padding: isMobile ? 10 : 16,
                 }} className="graphs-card">
-                  <div style={{ position: 'relative', width: '100%', maxWidth: 380, margin: '0 auto' }}>
-                    <svg viewBox="20 15 340 410" style={{ width: '100%', height: 'auto', display: 'block', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.35))' }}>
-                      {DIVISION_HEATMAP_DATA.map((div) => {
-                        const isSelected = div.id === activeDiv.id;
-                        return (
-                          <g
-                            key={div.id}
-                            onClick={() => setSelectedDivisionId(div.id)}
-                            style={{ cursor: 'pointer', transition: 'all 0.25s ease' }}
-                          >
-                            <path
-                              d={div.path}
-                              fill={div.heatColor}
-                              fillOpacity={isSelected ? 0.92 : 0.58}
-                              stroke={isSelected ? '#ffffff' : '#111318'}
-                              strokeWidth={isSelected ? 2.8 : 1.5}
-                              strokeLinejoin="round"
-                            />
-                            <circle
-                              cx={div.cx}
-                              cy={div.cy - 10}
-                              r={isSelected ? 12 : 10}
-                              fill="rgba(10,10,14,0.82)"
-                              stroke={div.heatColor}
-                              strokeWidth={1.5}
-                            />
-                            <text
-                              x={div.cx}
-                              y={div.cy - 6}
-                              textAnchor="middle"
-                              fill="#ffffff"
-                              fontSize="10"
-                              fontWeight="900"
-                            >
-                              #{div.rank}
-                            </text>
-                            <text
-                              x={div.cx}
-                              y={div.cy + 12}
-                              textAnchor="middle"
-                              fill="#ffffff"
-                              fontSize="11"
-                              fontWeight="800"
-                              style={{ paintOrder: 'stroke', stroke: 'rgba(0,0,0,0.85)', strokeWidth: 3 }}
-                            >
-                              {div.name.replace(' বিভাগ', '')}
-                            </text>
-                            <text
-                              x={div.cx}
-                              y={div.cy + 25}
-                              textAnchor="middle"
-                              fill="#ffd700"
-                              fontSize="9.5"
-                              fontWeight="700"
-                              style={{ paintOrder: 'stroke', stroke: 'rgba(0,0,0,0.85)', strokeWidth: 2.5 }}
-                            >
-                              {div.murders} খুন
-                            </text>
-                          </g>
-                        );
-                      })}
-                    </svg>
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    border: '1px solid rgba(229,9,20,0.28)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
+                  }}>
+                    <img
+                      src="/bd-crime-heatmap-2026.jpg"
+                      alt="Bangladesh Crime Heatmap (Homicide Count - First Half of 2026)"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block',
+                        objectFit: 'cover',
+                      }}
+                    />
                   </div>
 
                   {/* Active Division Spotlight Box */}
                   <div style={{
-                    marginTop: 12,
+                    marginTop: 14,
                     padding: isMobile ? 12 : 16,
                     borderRadius: 12,
                     background: activeDiv.bgTint,
-                    border: `1px solid ${activeDiv.heatColor}66`,
+                    border: `1.5px solid ${activeDiv.heatColor}77`,
                     transition: 'all 0.25s ease',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
@@ -1170,16 +1198,15 @@ export default function Graphs() {
                         <h3 className="widget-title" style={{ margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 900, color: '#fff' }}>
                           {activeDiv.name}
                         </h3>
-                        <span style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>({activeDiv.enName})</span>
+                        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 700 }}>({activeDiv.enName})</span>
                       </div>
                       <span style={{
                         fontSize: 11,
                         fontWeight: 800,
-                        color: activeDiv.heatColor,
-                        background: 'rgba(0,0,0,0.35)',
+                        color: '#fff',
+                        background: activeDiv.heatColor,
                         padding: '3px 10px',
                         borderRadius: 20,
-                        border: `1px solid ${activeDiv.heatColor}55`,
                       }}>
                         {activeDiv.severity}
                       </span>
@@ -1193,6 +1220,7 @@ export default function Graphs() {
                       {activeDiv.drivers.map((drv, idx) => (
                         <span
                           key={idx}
+                          className="graphs-driver-pill"
                           style={{
                             fontSize: 10.5,
                             fontWeight: 700,
@@ -1219,13 +1247,13 @@ export default function Graphs() {
                       <div
                         key={div.id}
                         onClick={() => setSelectedDivisionId(div.id)}
-                        className="graphs-card"
+                        className={`graphs-div-row ${isSelected ? 'selected' : ''}`}
                         style={{
                           padding: isMobile ? '10px 12px' : '12px 16px',
                           borderRadius: 12,
                           cursor: 'pointer',
                           background: isSelected ? div.bgTint : 'rgba(255,255,255,0.025)',
-                          border: `1px solid ${isSelected ? div.heatColor : 'rgba(255,255,255,0.06)'}`,
+                          border: `1.5px solid ${isSelected ? div.heatColor : 'rgba(255,255,255,0.06)'}`,
                           transition: 'all 0.2s ease',
                         }}
                       >
@@ -1250,7 +1278,7 @@ export default function Graphs() {
                               <span className="widget-title" style={{ fontWeight: 800, fontSize: isMobile ? 13.5 : 14.5, color: '#fff' }}>
                                 {div.name}
                               </span>
-                              <span style={{ fontSize: 11, color: '#888', marginLeft: 6 }}>
+                              <span style={{ fontSize: 11, color: '#64748B', marginLeft: 6, fontWeight: 600 }}>
                                 {div.enName}
                               </span>
                             </div>
@@ -1260,14 +1288,14 @@ export default function Graphs() {
                             <span style={{ color: div.heatColor, fontWeight: 900, fontSize: isMobile ? 13.5 : 15 }}>
                               {div.murders}টি খুন
                             </span>
-                            <span style={{ color: '#888', fontSize: 10.5, marginLeft: 5 }}>
-                              ({div.sharePct}%)
+                            <span style={{ color: '#64748B', fontSize: 10.5, marginLeft: 5, fontWeight: 700 }}>
+                              (≈{div.sharePct}%)
                             </span>
                           </div>
                         </div>
 
                         {/* Heat Progress Bar */}
-                        <div style={{ width: '100%', height: 6, borderRadius: 4, background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginBottom: 6 }}>
+                        <div className="graphs-progress-track" style={{ width: '100%', height: 6, borderRadius: 4, background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginBottom: 6 }}>
                           <div style={{
                             width: `${barWidthPct}%`,
                             height: '100%',
