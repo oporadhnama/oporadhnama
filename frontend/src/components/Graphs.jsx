@@ -14,9 +14,22 @@ const RAW_DATA = [
   { month: 'মার্চ', year: 2026, dacoity: 5, robbery: 25, murder: 24, speedy_trial: 7, rape: 56, other_violence_women_children: 55, kidnapping: 20, burglary: 62, vehicle_theft: 40, other_theft: 59, road_accident: 31, arms_act: 10, explosives: 1, smuggling: 7, narcotics: 455, other_cases: 448, total: 1305 },
   { month: 'এপ্রিল', year: 2026, dacoity: 3, robbery: 25, murder: 17, speedy_trial: 8, rape: 70, other_violence_women_children: 98, kidnapping: 21, burglary: 44, vehicle_theft: 39, other_theft: 61, road_accident: 32, arms_act: 13, explosives: 1, smuggling: 16, narcotics: 563, other_cases: 477, total: 1488 },
   { month: 'মে', year: 2026, dacoity: 2, robbery: 33, murder: 16, speedy_trial: 4, rape: 92, other_violence_women_children: 82, kidnapping: 13, burglary: 31, vehicle_theft: 33, other_theft: 59, road_accident: 27, arms_act: 10, explosives: 4, smuggling: 4, narcotics: 485, other_cases: 510, total: 1365 },
+  { month: 'জুন', year: 2026, dacoity: 2, robbery: 24, murder: 23, speedy_trial: 2, rape: 58, other_violence_women_children: 80, kidnapping: 17, burglary: 49, vehicle_theft: 35, other_theft: 62, road_accident: 19, arms_act: 14, explosives: 1, smuggling: 16, narcotics: 506, other_cases: 503, total: 1411 },
+  { month: 'জুলাই', year: 2026, dacoity: 3, robbery: 20, murder: 31, speedy_trial: 4, rape: 55, other_violence_women_children: 76, kidnapping: 11, burglary: 34, vehicle_theft: 50, other_theft: 52, road_accident: 22, arms_act: 14, explosives: 2, smuggling: 20, narcotics: 495, other_cases: 545, total: 1434 },
+  { month: 'আগস্ট', year: 2026, dacoity: 4, robbery: 22, murder: 20, speedy_trial: 4, rape: 67, other_violence_women_children: 75, kidnapping: 21, burglary: 38, vehicle_theft: 33, other_theft: 68, road_accident: 28, arms_act: 26, explosives: 4, smuggling: 30, narcotics: 571, other_cases: 498, total: 1509 },
+  { month: 'সেপ্টে', year: 2026, dacoity: 0, robbery: 23, murder: 31, speedy_trial: 6, rape: 56, other_violence_women_children: 135, kidnapping: 17, burglary: 30, vehicle_theft: 40, other_theft: 62, road_accident: 24, arms_act: 24, explosives: 20, smuggling: 32, narcotics: 498, other_cases: 460, total: 1458 },
 ];
 
-const MONTH_FULL = { 'ফেব্র': 'ফেব্রুয়ারি', 'মার্চ': 'মার্চ', 'এপ্রিল': 'এপ্রিল', 'মে': 'মে' };
+const MONTH_FULL = {
+  'ফেব্র': 'ফেব্রুয়ারি',
+  'মার্চ': 'মার্চ',
+  'এপ্রিল': 'এপ্রিল',
+  'মে': 'মে',
+  'জুন': 'জুন',
+  'জুলাই': 'জুলাই',
+  'আগস্ট': 'আগস্ট',
+  'সেপ্টে': 'সেপ্টেম্বর',
+};
 
 /* ─── Categories ─────────────────────────────────────────────────────────── */
 const CATEGORIES = [

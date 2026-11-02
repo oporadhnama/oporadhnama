@@ -13,10 +13,8 @@ export default function SensitiveImage({
   height,
   priority,
   sizes,
-  showDownload = false,
 }) {
   const [isRevealed, setIsRevealed] = useState(!isSensitive);
-  const [downloading, setDownloading] = useState(false);
 
   const handleClick = (e) => {
     if (!isRevealed) {
@@ -25,35 +23,9 @@ export default function SensitiveImage({
     }
   };
 
-  const handleDownload = async (e) => {
-    e.stopPropagation();
-    if (!src || downloading) return;
-    setDownloading(true);
-    try {
-      const response = await fetch(src, { mode: 'cors' });
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      const safeTitle = (alt || 'oporadhnama-news')
-        .replace(/[^\u0980-\u09FFa-zA-Z0-9_-]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 60);
-      a.download = `${safeTitle || 'oporadhnama-news'}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-    } catch (_) {
-      window.open(src, '_blank', 'noopener,noreferrer');
-    } finally {
-      setDownloading(false);
-    }
-  };
-
   return (
     <div
-      className={`relative group ${className || ''}`}
+      className={`relative ${className || ''}`}
       onClick={handleClick}
       style={!isRevealed ? { cursor: 'pointer' } : {}}
     >
@@ -82,19 +54,6 @@ export default function SensitiveImage({
           />
         )}
       </div>
-
-      {isRevealed && showDownload && src && src !== '/og-image.jpg' && (
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={downloading}
-          title="ওয়াটারমার্কসহ ছবি ডাউনলোড করুন"
-          className="absolute top-3 right-3 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 hover:bg-[#D62828] text-white text-xs font-bold border border-white/15 backdrop-blur-md shadow-lg opacity-85 group-hover:opacity-100 transition-all"
-        >
-          <span>{downloading ? '⏳' : '📥'}</span>
-          <span>{downloading ? 'ডাউনলোড হচ্ছে...' : 'ছবি ডাউনলোড'}</span>
-        </button>
-      )}
 
       {!isRevealed && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm p-4 text-center">
