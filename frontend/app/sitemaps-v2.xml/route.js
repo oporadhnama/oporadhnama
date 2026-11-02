@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { resolveImageUrl } from '../../lib/api';
 
 export const revalidate = 3600; // Revalidate every hour so Google always gets a fresh sitemap
 
@@ -121,7 +122,7 @@ async function getSitemapData() {
 
       let image = null;
       if (article.image) {
-        const rawImageUrl = article.image.startsWith('http') ? article.image : `${API_BASE}${article.image}`;
+        const rawImageUrl = resolveImageUrl(article.image);
         image = {
           loc: rawImageUrl,
           title: article.title || '',

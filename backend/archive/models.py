@@ -1,6 +1,7 @@
 import re
 import unicodedata
 from django.db import models
+from .watermark import apply_watermark_to_image_field
 
 
 # Static map: Bengali division names → ASCII slug segments
@@ -132,6 +133,9 @@ class Post(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        if self.image and not self.is_user_report:
+            apply_watermark_to_image_field(self.image)
+
         if not self.pk:
             super().save(*args, **kwargs)
             self.slug = generate_post_slug(self)

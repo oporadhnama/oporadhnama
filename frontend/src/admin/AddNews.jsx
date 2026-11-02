@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchCategories, createPost, createCategory } from '../api';
+import { applyWatermarkToFile } from '../utils/watermark';
 
 function dataUrlToFile(dataUrl, filename = 'scraped-news-image.jpg') {
   try {
@@ -134,7 +135,7 @@ export default function AddNews() {
             if (aiData.image_data_url) {
               const file = dataUrlToFile(aiData.image_data_url);
               if (file) {
-                setImageFile(file);
+                applyWatermarkToFile(file).then(wmFile => setImageFile(wmFile));
               }
             }
           } catch (e) {
@@ -335,7 +336,7 @@ export default function AddNews() {
               e.preventDefault();
               setIsDragging(false);
               if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                setImageFile(e.dataTransfer.files[0]);
+                applyWatermarkToFile(e.dataTransfer.files[0]).then(wmFile => setImageFile(wmFile));
               }
             }}
             onClick={() => document.getElementById('imageUploadInput').click()}
@@ -349,7 +350,7 @@ export default function AddNews() {
                     className="max-h-44 rounded-lg border border-neutral-700 object-contain mb-2"
                   />
                 )}
-                <span className="text-green-400 text-sm">✅ ছবি নির্বাচন করা হয়েছে</span>
+                <span className="text-green-400 text-sm">✅ ছবি নির্বাচন করা হয়েছে (অপরাধনামা ওয়াটারমার্ক যুক্ত)</span>
                 <span className="text-neutral-400 text-xs">{imageFile.name}</span>
                 <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); }} className="text-[#E50914] text-xs hover:underline mt-2">ছবি বাতিল করুন</button>
               </div>
@@ -367,7 +368,14 @@ export default function AddNews() {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => setImageFile(e.target.files[0] || null)}
+              onChange={(e) => {
+                const raw = e.target.files && e.target.files[0];
+                if (raw) {
+                  applyWatermarkToFile(raw).then(wmFile => setImageFile(wmFile));
+                } else {
+                  setImageFile(null);
+                }
+              }}
             />
           </div>
           {/* Sensitive Image Toggle */}

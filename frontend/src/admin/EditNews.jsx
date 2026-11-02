@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchCategories, updatePost, createCategory, fetchPostById } from '../api';
+import { fetchCategories, updatePost, createCategory, fetchPostById, resolveImageUrl } from '../api';
+import { applyWatermarkToFile } from '../utils/watermark';
 import API_BASE from '../api';
 
 export default function EditNews({ postId }) {
@@ -84,7 +85,7 @@ export default function EditNews({ postId }) {
             seo_keywords: postData.seo_keywords || '',
           });
           if (postData.image) {
-            setCurrentImage(postData.image.startsWith('http') ? postData.image : `${API_BASE}${postData.image}`);
+            setCurrentImage(resolveImageUrl(postData.image));
           }
         }
       })
@@ -286,7 +287,7 @@ export default function EditNews({ postId }) {
               e.preventDefault();
               setIsDragging(false);
               if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                setImageFile(e.dataTransfer.files[0]);
+                applyWatermarkToFile(e.dataTransfer.files[0]).then(wmFile => setImageFile(wmFile));
               }
             }}
             onClick={() => document.getElementById('imageUploadInput').click()}
@@ -311,7 +312,14 @@ export default function EditNews({ postId }) {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => setImageFile(e.target.files[0] || null)}
+              onChange={(e) => {
+                const raw = e.target.files && e.target.files[0];
+                if (raw) {
+                  applyWatermarkToFile(raw).then(wmFile => setImageFile(wmFile));
+                } else {
+                  setImageFile(null);
+                }
+              }}
             />
           </div>
           {/* Sensitive Image Toggle */}

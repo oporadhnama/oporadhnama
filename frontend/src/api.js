@@ -4,6 +4,25 @@ const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'htt
 const API_BASE = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
 const isBrowser = typeof window !== 'undefined';
 
+const CLOUDINARY_WATERMARK_TRANSFORM =
+  'l_oporadhnama_watermark,w_0.24,fl_relative/fl_layer_apply,g_south_east,x_0.02,y_0.025,fl_relative,o_95';
+
+export function injectCloudinaryWatermark(url) {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  if (
+    url.includes('l_oporadhnama_watermark') ||
+    /[-_]wm(\.[a-zA-Z0-9]+)?($|\?)/.test(url)
+  ) {
+    return url;
+  }
+  const marker = '/upload/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  const before = url.slice(0, idx + marker.length);
+  const after = url.slice(idx + marker.length);
+  return `${before}${CLOUDINARY_WATERMARK_TRANSFORM}/${after}`;
+}
+
 export function resolveImageUrl(image) {
   if (!image) return null;
   if (typeof image !== 'string') return null;
@@ -11,12 +30,12 @@ export function resolveImageUrl(image) {
   if (!clean) return null;
 
   if (clean.startsWith('http://') || clean.startsWith('https://')) {
-    return clean;
+    return injectCloudinaryWatermark(clean);
   }
 
   if (clean.startsWith('image/upload/') || clean.startsWith('/image/upload/')) {
     const rel = clean.startsWith('/') ? clean : `/${clean}`;
-    return `https://res.cloudinary.com${rel}`;
+    return injectCloudinaryWatermark(`https://res.cloudinary.com${rel}`);
   }
 
   const path = clean.startsWith('/') ? clean : `/${clean}`;

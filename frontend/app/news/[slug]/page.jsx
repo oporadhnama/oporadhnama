@@ -245,6 +245,7 @@ export default async function NewsDetailPage({ params }) {
             className="w-full h-auto"
             priority={true}
             sizes="(max-width: 768px) 100vw, 896px"
+            showDownload={true}
           />
         </div>
       ) : null}
